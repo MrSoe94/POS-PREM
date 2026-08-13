@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutasi Barang - Sistem POS</title>
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.css">
+    <style>
+        .mutasi-qty-col {
+            min-width: 120px;
+            white-space: nowrap;
+        }
+        @media (max-width: 576px) {
+            .mutasi-qty-col {
+                min-width: 100px;
+            }
+        }
+    </style>
+    <link rel="icon" href="/favicon.ico">
+</head>
+<body>
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('pos_offline_auth_user') || '';
+          if (!raw) { window.location.replace('/login.html'); return; }
+          var user = JSON.parse(raw);
+          var role = String((user && user.role) || '').toLowerCase();
+          var isAdminRole = (role === 'admin' || role === 'superadmin' || role === 'owner' || role.indexOf('admin') !== -1);
+          if (!isAdminRole) window.location.replace('/pos.html');
+        } catch (e) {
+          window.location.replace('/login.html');
+        }
+      })();
+    </script>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <a href="/admin.html" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-arrow-left"></i> Kembali ke Admin</a>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-light me-3">Mutasi Barang</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <main class="col-12 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h2>Mutasi Barang</h2>
+                    <div>
+                        <button class="btn btn-success me-2" id="exportMutasiBtn">
+                            <i class="bi bi-download"></i> Export ke XLSX
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Filter Pencarian</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Pilih Produk</label>
+                                <select class="form-select" id="productSelect">
+                                    <option value="">-- Semua Produk --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Dari Tanggal</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Sampai Tanggal</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button class="btn btn-primary w-100" id="searchBtn">
+                                    <i class="bi bi-search"></i> Cari
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <button class="btn btn-outline-secondary btn-sm" id="resetFilterBtn">
+                                    <i class="bi bi-arrow-clockwise"></i> Reset Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Summary -->
+                <div class="alert alert-info d-none" id="resultsSummary">
+                    <i class="bi bi-info-circle"></i> 
+                    <span id="summaryText"></span>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <span>Tampilkan</span>
+                        <select class="form-select d-inline-block w-auto" id="pageSizeSelect">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="all">Semua</option>
+                        </select>
+                        <span>data</span>
+                    </div>
+                </div>
+
+                <!-- Pagination Top -->
+                <div class="d-flex justify-content-center mb-2">
+                    <nav id="paginationTop"></nav>
+                </div>
+
+                <!-- Results Table -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>ID Transaksi</th>
+                                <th>Tanggal & Waktu</th>
+                                <th>Kasir</th>
+                                <th>Produk</th>
+                                    <th class="mutasi-qty-col">Jumlah</th>
+                                    <th>Satuan</th>
+                                    <th>Harga</th>
+                                    <th>Subtotal</th>
+                                    <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mutasiTableBody">
+                            <tr>
+                                <td colspan="9" class="text-center text-muted">
+                                    Silakan pilih produk dan rentang tanggal untuk melihat mutasi barang
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Bottom -->
+                <div class="d-flex justify-content-center mt-2">
+                    <nav id="paginationBottom"></nav>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Transaction Details Modal -->
+    <div class="modal fade" id="transactionDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Transaksi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="transactionDetailsContent">
+                        <!-- Details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="printTransactionBtn">
+                        <i class="bi bi-printer"></i> Cetak Struk
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Performance Optimizer -->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/js/offline-api.js?v=20260621mutasi"></script>
+    <script src="/js/performance-optimizer.js"></script>
+    <script src="/vendor/xlsx/xlsx.full.min.js" defer></script>
+    <script src="/js/mutasi-barang.js?v=20260621mutasi" defer></script>
+</body>
+</html>
+
+

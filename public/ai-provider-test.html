@@ -1,0 +1,204 @@
+﻿<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Provider Test</title>
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <style>
+    body { background: #f6f8fb; }
+    .wrap { max-width: 1100px; margin: 24px auto; }
+    .result-img { max-width: 100%; border: 1px solid #d7dde6; border-radius: 10px; }
+    .mono { font-family: Consolas, monospace; font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <div class="container wrap">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0">AI Provider Test</h4>
+      <a class="btn btn-outline-secondary btn-sm" href="/admin">Kembali ke Admin</a>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label" for="prompt">Prompt</label>
+            <input id="prompt" class="form-control" value="Foto produk realistis kopi kemasan, studio lighting, clean background">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label" for="size">Size</label>
+            <select id="size" class="form-select">
+              <option value="512x512">512x512</option>
+              <option value="1024x1024" selected>1024x1024</option>
+              <option value="1536x1024">1536x1024</option>
+              <option value="1024x1536">1024x1536</option>
+            </select>
+          </div>
+          <div class="col-md-2 d-grid">
+            <label class="form-label">&nbsp;</label>
+            <button id="testAllBtn" class="btn btn-primary">Test Semua</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>OpenAI</strong>
+            <button class="btn btn-sm btn-outline-primary" data-provider="openai">Test</button>
+          </div>
+          <div class="card-body">
+            <label class="form-label" for="openaiKey">API Key</label>
+            <input id="openaiKey" class="form-control" type="password" placeholder="sk-...">
+            <div id="openaiStatus" class="mt-3 small text-muted">Belum dites.</div>
+            <img id="openaiImg" class="result-img mt-2 d-none" alt="OpenAI result">
+            <div id="openaiRaw" class="mono mt-2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Gemini</strong>
+            <button class="btn btn-sm btn-outline-primary" data-provider="gemini">Test</button>
+          </div>
+          <div class="card-body">
+            <label class="form-label" for="geminiKey">API Key</label>
+            <input id="geminiKey" class="form-control" type="password" placeholder="AIza...">
+            <div id="geminiStatus" class="mt-3 small text-muted">Belum dites.</div>
+            <img id="geminiImg" class="result-img mt-2 d-none" alt="Gemini result">
+            <div id="geminiRaw" class="mono mt-2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Z.AI</strong>
+            <button class="btn btn-sm btn-outline-primary" data-provider="zai">Test</button>
+          </div>
+          <div class="card-body">
+            <label class="form-label" for="zaiKey">API Key</label>
+            <input id="zaiKey" class="form-control" type="password" placeholder="zai-...">
+            <div id="zaiStatus" class="mt-3 small text-muted">Belum dites.</div>
+            <img id="zaiImg" class="result-img mt-2 d-none" alt="ZAI result">
+            <div id="zaiRaw" class="mono mt-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/offline-api.js?v=20260218a"></script>
+  <script src="/js/offline-fetch-bridge.js?v=20260217a"></script>
+  <script>
+    async function ensureCsrf() {
+      const r = await fetch('/api/csrf', { credentials: 'include' });
+      if (!r.ok) throw new Error('Gagal ambil CSRF');
+      const j = await r.json();
+      return String(j.csrfToken || '');
+    }
+
+    function setStatus(provider, ok, msg) {
+      const el = document.getElementById(provider + 'Status');
+      el.className = 'mt-3 small ' + (ok ? 'text-success' : 'text-danger');
+      el.textContent = msg;
+    }
+
+    function setRaw(provider, data) {
+      const el = document.getElementById(provider + 'Raw');
+      el.textContent = data ? JSON.stringify(data, null, 2) : '';
+    }
+
+    function setImage(provider, src) {
+      const img = document.getElementById(provider + 'Img');
+      if (src) {
+        img.src = src;
+        img.classList.remove('d-none');
+      } else {
+        img.src = '';
+        img.classList.add('d-none');
+      }
+    }
+
+    async function testProvider(provider) {
+      const prompt = document.getElementById('prompt').value.trim();
+      const size = document.getElementById('size').value;
+      if (!prompt) return;
+      setStatus(provider, false, 'Memproses...');
+      setImage(provider, '');
+      setRaw(provider, null);
+
+      const csrf = await ensureCsrf();
+      const body = { provider, prompt, size };
+      if (provider === 'openai') body.openaiApiKey = document.getElementById('openaiKey').value.trim();
+      if (provider === 'gemini') body.geminiApiKey = document.getElementById('geminiKey').value.trim();
+      if (provider === 'zai') body.zaiApiKey = document.getElementById('zaiKey').value.trim();
+
+      const r = await fetch('/api/ai/generate-image', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrf,
+          'x-xsrf-token': csrf
+        },
+        body: JSON.stringify(body)
+      });
+      const j = await r.json().catch(() => ({}));
+      setRaw(provider, j);
+      if (!r.ok || !j.imageBase64) {
+        setStatus(provider, false, 'Gagal: ' + (j.message || ('HTTP ' + r.status)));
+        return;
+      }
+      setImage(provider, j.imageBase64);
+      setStatus(provider, true, 'Sukses');
+    }
+
+    document.querySelectorAll('button[data-provider]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const provider = btn.getAttribute('data-provider');
+        btn.disabled = true;
+        const old = btn.textContent;
+        btn.textContent = 'Testing...';
+        try { await testProvider(provider); } catch (e) { setStatus(provider, false, 'Error: ' + (e.message || e)); }
+        btn.textContent = old;
+        btn.disabled = false;
+      });
+    });
+
+    document.getElementById('testAllBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('testAllBtn');
+      btn.disabled = true;
+      const old = btn.textContent;
+      btn.textContent = 'Testing...';
+      try {
+        for (const p of ['openai', 'gemini', 'zai']) {
+          try { await testProvider(p); } catch (e) { setStatus(p, false, 'Error: ' + (e.message || e)); }
+        }
+      } finally {
+        btn.textContent = old;
+        btn.disabled = false;
+      }
+    });
+
+    (async function init() {
+      try {
+        const r = await fetch('/api/settings', { cache: 'no-store', credentials: 'include' });
+        if (!r.ok) return;
+        const s = await r.json();
+        const ai = (s && s.aiConfig) || {};
+        if (ai.openaiApiKey) document.getElementById('openaiKey').value = ai.openaiApiKey;
+        if (ai.geminiApiKey || ai.googleApiKey) document.getElementById('geminiKey').value = ai.geminiApiKey || ai.googleApiKey;
+        if (ai.zaiApiKey) document.getElementById('zaiKey').value = ai.zaiApiKey;
+        if (ai.imageSize) document.getElementById('size').value = ai.imageSize;
+      } catch {}
+    })();
+  </script>
+</body>
+</html>
+
+

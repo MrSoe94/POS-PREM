@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pendapatan - POS System</title>
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.css" />
+  <link rel="stylesheet" href="/css/style.css?v=2" />
+  <link rel="icon" href="/favicon.ico" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Pendapatan</a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="/pos.html" class="btn btn-outline-light btn-sm">Kembali ke Kasir</a>
+        <a href="/admin.html" class="btn btn-outline-light btn-sm">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-md-3">
+            <label class="form-label">Dari Tanggal</label>
+            <input type="date" id="fromDate" class="form-control" />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Sampai Tanggal</label>
+            <input type="date" id="toDate" class="form-control" />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Group</label>
+            <select id="groupSelect" class="form-select">
+              <option value="day">Harian</option>
+              <option value="month">Bulanan</option>
+              <option value="year">Tahunan</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Pencarian</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="ID / Nama Pelanggan / Item" />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Cakupan Pengeluaran</label>
+            <select id="expenseScope" class="form-select">
+              <option value="operational_only">Operasional Saja (disarankan)</option>
+              <option value="with_supplier">Operasional + Bayar Supplier</option>
+            </select>
+          </div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button id="presetToday" class="btn btn-outline-secondary btn-sm">Hari ini</button>
+            <button id="presetThisMonth" class="btn btn-outline-secondary btn-sm">Bulan ini</button>
+            <button id="presetThisYear" class="btn btn-outline-secondary btn-sm">Tahun ini</button>
+            <button id="btnRefresh" class="btn btn-primary btn-sm">Terapkan Filter</button>
+            <div class="ms-auto d-flex gap-2">
+              <button id="btnExportXlsx" class="btn btn-success btn-sm">Export XLSX</button>
+              <button id="btnExportPdf" class="btn btn-danger btn-sm">Export PDF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-lg-4">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center gap-2">
+            <span>Ringkasan</span>
+            <button type="button" class="btn btn-link btn-sm p-0 text-muted" data-bs-toggle="modal" data-bs-target="#summaryInfoModal" title="Penjelasan perhitungan" aria-label="Penjelasan perhitungan ringkasan">
+              <i class="bi bi-info-circle fs-5"></i>
+            </button>
+          </div>
+          <div class="card-body" id="summaryBox">
+            <div class="text-muted">Memuat...</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-8">
+        <div class="card h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Rekap Berdasarkan <span id="groupLabel">Harian</span></span>
+          </div>
+          <div class="table-responsive" style="max-height: 360px;">
+            <table class="table table-sm table-striped align-middle mb-0" id="groupTable">
+              <thead class="table-light">
+                <tr>
+                  <th>Periode</th>
+                  <th class="text-end">Transaksi</th>
+                  <th class="text-end">Subtotal</th>
+                  <th class="text-end">Diskon</th>
+                  <th class="text-end">HPP</th>
+                  <th class="text-end">Laba Kotor</th>
+                  <th class="text-end">Pengeluaran</th>
+                  <th class="text-end">Laba Bersih</th>
+                  <th class="text-end">Total</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">Input Pengeluaran Operasional</div>
+      <div class="card-body">
+        <form id="expenseForm" class="row g-3">
+          <div class="col-12 col-md-3">
+            <label class="form-label">Tanggal</label>
+            <input type="date" id="expenseDate" class="form-control" required />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Kategori</label>
+            <select id="expenseCategory" class="form-select">
+              <option value="Operasional">Operasional</option>
+              <option value="Gaji">Gaji</option>
+              <option value="Sewa">Sewa</option>
+              <option value="Utilitas">Utilitas</option>
+              <option value="Transport">Transport</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Metode</label>
+            <select id="expenseMethod" class="form-select">
+              <option value="cash">Tunai</option>
+              <option value="transfer">Transfer</option>
+              <option value="ewallet">E-Wallet</option>
+              <option value="other">Lainnya</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Nominal</label>
+            <input type="number" id="expenseAmount" class="form-control" min="1" step="1" required />
+          </div>
+          <div class="col-12 col-md-9">
+            <label class="form-label">Keterangan</label>
+            <input type="text" id="expenseDescription" class="form-control" maxlength="160" placeholder="Contoh: Bayar listrik bulan ini" required />
+          </div>
+          <div class="col-12 col-md-3 d-flex align-items-end">
+            <button type="submit" id="btnSaveExpense" class="btn btn-warning w-100">Simpan Pengeluaran</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">Detail Pengeluaran</div>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle mb-0" id="expenseTable">
+          <thead class="table-light">
+            <tr>
+              <th>Tanggal</th>
+              <th>ID</th>
+              <th>Sumber</th>
+              <th>Kategori</th>
+              <th>Keterangan</th>
+              <th>Metode</th>
+              <th class="text-end">Nominal</th>
+              <th class="text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">Detail Transaksi</div>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle mb-0" id="txTable">
+          <thead class="table-light">
+            <tr>
+              <th>Tanggal</th>
+              <th>ID</th>
+              <th>Pelanggan</th>
+              <th class="text-end">Item</th>
+              <th class="text-end">Subtotal</th>
+              <th class="text-end">Diskon</th>
+              <th class="text-end">Laba</th>
+              <th class="text-end">Total</th>
+              <th>Metode</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="summaryInfoModal" tabindex="-1" aria-labelledby="summaryInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="summaryInfoModalLabel"><i class="bi bi-calculator me-2"></i>Penjelasan Perhitungan Ringkasan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small mb-3">
+            Semua angka dihitung dari transaksi penjualan <strong>aktif</strong> dalam rentang tanggal filter.
+            Transaksi yang sudah <strong>void</strong> tidak dihitung. Tanggal mengacu pada <strong>tanggal penjualan</strong>, bukan tanggal bayar hutang.
+          </p>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle mb-3">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:28%">Metrik</th>
+                  <th>Cara Menghitung</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Transaksi</strong></td>
+                  <td>Jumlah transaksi penjualan aktif dalam periode filter.</td>
+                </tr>
+                <tr>
+                  <td><strong>Subtotal</strong></td>
+                  <td>Total harga barang <em>sebelum</em> diskon, pajak, dan service. Diambil dari data transaksi kasir (jumlah harga item).</td>
+                </tr>
+                <tr>
+                  <td><strong>Diskon</strong></td>
+                  <td>Total diskon per produk + diskon keranjang dari semua transaksi.</td>
+                </tr>
+                <tr>
+                  <td><strong>Pajak</strong></td>
+                  <td>Total pajak (per produk + pajak global) yang tercatat di transaksi.</td>
+                </tr>
+                <tr>
+                  <td><strong>Service</strong></td>
+                  <td>Total biaya service charge dari semua transaksi.</td>
+                </tr>
+                <tr>
+                  <td><strong>HPP</strong></td>
+                  <td>Harga Pokok Penjualan = <code>harga beli produk × jumlah terjual</code>. Produk varian memakai pengali qty varian. Harga beli diambil dari data produk saat laporan dihitung.</td>
+                </tr>
+                <tr>
+                  <td><strong>Laba Kotor</strong></td>
+                  <td><code>Penjualan bersih − HPP</code><br>
+                  <span class="text-muted small">Penjualan bersih = Total Penjualan − Pajak − Service (setelah semua diskon).</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Pengeluaran</strong></td>
+                  <td>Total semua pengeluaran dalam periode: operasional + pembayaran supplier (jika cakupan filter menyertakan supplier).</td>
+                </tr>
+                <tr>
+                  <td><strong>Pengeluaran Operasional</strong></td>
+                  <td>Pengeluaran manual (gaji, sewa, listrik, dll.) yang diinput di halaman ini.</td>
+                </tr>
+                <tr>
+                  <td><strong>Bayar Supplier</strong></td>
+                  <td>Pembayaran ke supplier dari data stok masuk (<em>stock in</em>) yang sudah dibayar, sesuai tanggal pembayaran.</td>
+                </tr>
+                <tr>
+                  <td><strong>Laba Bersih</strong></td>
+                  <td><code>Laba Kotor − Pengeluaran</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Total Penjualan</strong></td>
+                  <td>Total yang dibayar pelanggan = <code>Subtotal − Diskon + Pajak + Service</code>. Menggunakan nilai <em>total transaksi</em> dari kasir sebagai acuan utama.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h6 class="mb-2">Rumus singkat</h6>
+          <ul class="small mb-3">
+            <li>Total Penjualan = Subtotal − Diskon + Pajak + Service</li>
+            <li>Penjualan bersih (dasar laba) = Total Penjualan − Pajak − Service</li>
+            <li>Laba Kotor = Penjualan bersih − HPP</li>
+            <li>Laba Bersih = Laba Kotor − Pengeluaran</li>
+          </ul>
+
+          <h6 class="mb-2">Kenapa laba bersih bisa minus?</h6>
+          <ul class="small mb-3">
+            <li><strong>Pengeluaran besar</strong> — gaji, sewa, listrik, atau bayar supplier melebihi laba kotor.</li>
+            <li><strong>Bayar supplier + HPP</strong> — HPP sudah mengurangi laba kotor dari penjualan. Jika filter <em>Operasional + Bayar Supplier</em> aktif, pembayaran stok masuk ikut dikurangkan lagi (cocok untuk laporan kas, bisa terlihat minus meski penjualan untung).</li>
+            <li><strong>Diskon besar / jual di bawah HPP</strong> — laba kotor per transaksi bisa negatif jika harga jual setelah diskon lebih kecil dari HPP produk.</li>
+            <li><strong>HPP produk salah / diubah belakangan</strong> — HPP dihitung dari <em>harga beli produk saat ini</em>, bukan saat transaksi dibuat. Jika Anda naikkan harga beli setelah penjualan, laba transaksi lama bisa turun atau minus.</li>
+            <li><strong>Harga beli kosong</strong> — jika harga beli 0, HPP dianggap 0 (laba kotor jadi lebih tinggi dari seharusnya, bukan minus).</li>
+          </ul>
+
+          <h6 class="mb-2">Catatan penting</h6>
+          <ul class="small mb-0">
+            <li>Semua nominal dibulatkan ke <strong>Rupiah utuh</strong> (tanpa desimal).</li>
+            <li>Produk varian: qty efektif = qty keranjang × qty varian (mis. 2 pack × 1,5 kg).</li>
+            <li>Jika harga beli produk belum diisi, HPP item tersebut dianggap 0.</li>
+            <li>Filter <strong>Cakupan Pengeluaran</strong>: pilih <strong>Operasional Saja</strong> untuk laba bersih berbasis HPP penjualan. Pilih <strong>+ Bayar Supplier</strong> hanya jika ingin laporan arus kas termasuk pembayaran stok masuk.</li>
+            <li>Rekap harian/bulanan/tahunan memakai rumus yang sama, dikelompokkan per periode.</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <!-- Performance Optimizer -->
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/js/performance-optimizer.js"></script>
+  <!-- Client-side SheetJS for XLSX export -->
+  <script src="/vendor/xlsx/xlsx.full.min.js" defer></script>
+  <!-- jsPDF and autoTable for PDF export -->
+  <script src="/vendor/jspdf/jspdf.umd.min.js" defer></script>
+  <script src="/vendor/jspdf-autotable/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="/js/revenue-calc.js?v=20260704revenue"></script>
+  <script src="/js/offline-api.js?v=20260704revenue"></script>
+  <script src="/js/offline-fetch-bridge.js?v=20260217a"></script>
+  <script src="/js/revenue.js?v=20260616revenuedate" defer></script>
+</body>
+</html>
+
+

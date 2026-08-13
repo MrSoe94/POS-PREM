@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sinkronisasi</title>
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left-right fs-4 text-primary"></i>
+        <h4 class="mb-0">Sinkronisasi</h4>
+        <span id="syncStatusBadge" class="badge bg-secondary">Idle</span>
+      </div>
+      <a class="btn btn-sm btn-outline-secondary" href="/admin.html"><i class="bi bi-gear"></i> Admin</a>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-lg-7">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-sliders"></i> Pengaturan Sinkronisasi</span>
+            <span id="remoteSummary" class="text-muted small"></span>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="syncEnabled">
+                  <label class="form-check-label" for="syncEnabled">Aktifkan Sinkronisasi</label>
+                </div>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Base URL</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                  <input type="text" id="syncBaseUrl" class="form-control" placeholder="https://server-anda">
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  <button type="button" class="btn btn-outline-secondary btn-sm" id="scanSyncBaseUrlBtn" title="Scan QR Base URL">
+                    <i class="bi bi-qr-code-scan"></i> Scan QR
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="showSyncBaseUrlQrBtn" title="Tampilkan QR Base URL">
+                    <i class="bi bi-qr-code"></i> Tampilkan QR
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Token</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                  <input type="text" id="syncToken" class="form-control" placeholder="Bearer Token">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Chunk Size</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-layers"></i></span>
+                  <input type="number" id="syncChunkSize" class="form-control" min="1" step="1" placeholder="1000">
+                </div>
+              </div>
+              <div class="col-md-4 d-flex align-items-center">
+                <div class="form-check mt-3">
+                  <input class="form-check-input" type="checkbox" id="integrityVerify">
+                  <label class="form-check-label" for="integrityVerify">Verifikasi Integritas</label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="button" id="saveSyncCfgBtn" class="btn btn-primary"><i class="bi bi-save2"></i> Simpan Pengaturan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-3" id="bluetoothSyncCard">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-bluetooth"></i> Sinkron Bluetooth</span>
+            <span id="bluetoothSyncBadge" class="badge bg-secondary">Tidak aktif</span>
+          </div>
+          <div class="card-body">
+            <div id="bluetoothSyncInfo" class="small text-muted mb-3">
+              Mode ini mengirim snapshot penuh data terpilih ke perangkat Android lain yang sudah dipasangkan via Bluetooth.
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mode Bluetooth</label>
+              <div class="btn-group w-100" role="group" aria-label="Mode Bluetooth Sinkron">
+                <input type="radio" class="btn-check" name="bluetoothSyncMode" id="bluetoothModeSend" value="send" checked>
+                <label class="btn btn-outline-primary" for="bluetoothModeSend"><i class="bi bi-send"></i> Mode Kirim</label>
+                <input type="radio" class="btn-check" name="bluetoothSyncMode" id="bluetoothModeReceive" value="receive">
+                <label class="btn btn-outline-primary" for="bluetoothModeReceive"><i class="bi bi-download"></i> Mode Terima</label>
+              </div>
+            </div>
+            <div class="mb-3" id="bluetoothTargetSection">
+              <label class="form-label">Perangkat Tujuan</label>
+              <div class="input-group">
+                <select id="bluetoothDeviceSelect" class="form-select">
+                  <option value="">Muat perangkat berpasangan dulu</option>
+                </select>
+                <button type="button" class="btn btn-outline-secondary" id="bluetoothRefreshBtn">
+                  <i class="bi bi-arrow-clockwise"></i> Muat
+                </button>
+              </div>
+              <div class="form-text">Pasangkan kedua perangkat dulu dari pengaturan Bluetooth Android.</div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-2" id="bluetoothActionSection">
+              <button type="button" class="btn btn-outline-primary btn-sm" id="bluetoothReceiveBtn">
+                <i class="bi bi-download"></i> Terima via Bluetooth
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" id="bluetoothStopBtn">
+                <i class="bi bi-stop-circle"></i> Stop
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" id="bluetoothSendBtn">
+                <i class="bi bi-send"></i> Kirim Snapshot
+              </button>
+            </div>
+            <div id="bluetoothSendProgressWrap" class="d-none mb-2">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span id="bluetoothSendProgressLabel" class="small text-muted">Menyiapkan kirim Bluetooth...</span>
+                <span id="bluetoothSendProgressValue" class="small fw-semibold">0%</span>
+              </div>
+              <div class="progress" style="height: 10px;">
+                <div
+                  id="bluetoothSendProgressBar"
+                  class="progress-bar progress-bar-striped progress-bar-animated"
+                  role="progressbar"
+                  style="width: 0%;"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="0"
+                ></div>
+              </div>
+            </div>
+            <div id="bluetoothSyncStatus" class="small text-muted">Belum aktif.</div>
+          </div>
+        </div>
+
+        <!-- Data Selection Card -->
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-check2-square"></i> Pilihan Data Sinkronisasi</span>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="selectAllData">
+              <label class="form-check-label small" for="selectAllData">Pilih Semua</label>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncProducts" value="products" checked>
+                  <label class="form-check-label" for="syncProducts"><i class="bi bi-box-seam"></i> Produk</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncCategories" value="categories" checked>
+                  <label class="form-check-label" for="syncCategories"><i class="bi bi-tags"></i> Kategori</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncUnits" value="units" checked>
+                  <label class="form-check-label" for="syncUnits"><i class="bi bi-boxes"></i> Satuan</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncTransactions" value="transactions" checked>
+                  <label class="form-check-label" for="syncTransactions"><i class="bi bi-receipt"></i> Transaksi</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncShifts" value="shifts" checked>
+                  <label class="form-check-label" for="syncShifts"><i class="bi bi-clock-history"></i> Shift Kasir</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncStockMoves" value="stock_moves" checked>
+                  <label class="form-check-label" for="syncStockMoves"><i class="bi bi-arrow-left-right"></i> Mutasi Stok</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncCustomers" value="customers" checked>
+                  <label class="form-check-label" for="syncCustomers"><i class="bi bi-people"></i> Pelanggan</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncSuppliers" value="suppliers" checked>
+                  <label class="form-check-label" for="syncSuppliers"><i class="bi bi-truck"></i> Supplier</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncStockIn" value="stock_in" checked>
+                  <label class="form-check-label" for="syncStockIn"><i class="bi bi-box-arrow-in-down"></i> Barang Masuk</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncUsers" value="users" checked>
+                  <label class="form-check-label" for="syncUsers"><i class="bi bi-person-gear"></i> Pengguna</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncBanners" value="banners" checked>
+                  <label class="form-check-label" for="syncBanners"><i class="bi bi-images"></i> Banner</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncQris" value="qris" checked>
+                  <label class="form-check-label" for="syncQris"><i class="bi bi-qr-code"></i> QRIS</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncPriceHistory" value="price_history" checked>
+                  <label class="form-check-label" for="syncPriceHistory"><i class="bi bi-clock-history"></i> Riwayat Harga</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncExpenses" value="expenses" checked>
+                  <label class="form-check-label" for="syncExpenses"><i class="bi bi-cash-stack"></i> Pengeluaran</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncInvoices" value="invoices" checked>
+                  <label class="form-check-label" for="syncInvoices"><i class="bi bi-file-text"></i> Invoice</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncSettings" value="settings" checked>
+                  <label class="form-check-label" for="syncSettings"><i class="bi bi-gear"></i> Pengaturan</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-6">
+                <div class="form-check">
+                  <input class="form-check-input sync-data-checkbox" type="checkbox" id="syncConfig" value="sync_config" checked>
+                  <label class="form-check-label" for="syncConfig"><i class="bi bi-sliders"></i> Konfigurasi Sinkron</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header"><i class="bi bi-hdd-network"></i> Progres</div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div id="syncStatusText" class="text-muted">Siap.</div>
+              <div class="small text-muted" id="syncPhaseLabel"></div>
+            </div>
+            <div class="progress" role="progressbar" aria-label="Progres Sinkron" aria-valuemin="0" aria-valuemax="100">
+              <div id="syncProgressBar" class="progress-bar progress-bar-striped" style="width: 0%"></div>
+            </div>
+            <div id="syncStatusDetail" class="small text-muted mt-2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-cloud-arrow-left-right"></i> Aksi Sinkron</span>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="syncStatusBtn"><i class="bi bi-activity"></i> Status</button>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="syncPushBtn"><i class="bi bi-cloud-upload"></i> Kirim</button>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="syncPullBtn"><i class="bi bi-cloud-download"></i> Tarik</button>
+              <button type="button" class="btn btn-sm btn-primary" id="syncNowBtn"><i class="bi bi-arrow-repeat"></i> Sinkron</button>
+              <button type="button" class="btn btn-sm btn-danger" id="syncFullBtn"><i class="bi bi-exclamation-triangle"></i> Full Sync</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row g-3 text-center">
+              <div class="col-6">
+                <div class="border rounded p-3">
+                  <div class="small text-muted">Outbox</div>
+                  <div id="statOutbox" class="fs-5">-</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="border rounded p-3">
+                  <div class="small text-muted">Remote</div>
+                  <div id="statRemote" class="fs-5">-</div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="border rounded p-3 bg-light">
+                  <div class="small text-muted"><i class="bi bi-clock-history"></i> Last Sinkron</div>
+                  <div id="lastSyncTime" class="fs-6 fw-semibold text-primary">-</div>
+                  <div class="small text-muted mt-1">Server: <span id="lastServerSyncTime">-</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card mb-3" id="debugDiagCard">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-bug"></i> Diagnostik & Debug</span>
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#debugDiagBody">Tampilkan</button>
+          </div>
+          <div class="collapse" id="debugDiagBody">
+            <div class="card-body">
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <button type="button" class="btn btn-outline-info btn-sm" id="debugCheckLocalBtn">
+                  <i class="bi bi-database"></i> Cek Data Lokal
+                </button>
+                <button type="button" class="btn btn-outline-warning btn-sm" id="debugCheckServerBtn">
+                  <i class="bi bi-cloud"></i> Cek Data Server
+                </button>
+                <button type="button" class="btn btn-success btn-sm" id="debugReloadPosBtn">
+                  <i class="bi bi-arrow-clockwise"></i> Reload Halaman POS
+                </button>
+              </div>
+              <pre id="debugDiagResult" class="bg-dark text-light p-2 rounded" style="max-height:250px;overflow:auto;font-size:11px">Tekan tombol di atas untuk melihat hasil diagnostik.</pre>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><i class="bi bi-fingerprint"></i> Checksum</div>
+          <div class="card-body">
+            <button id="loadChecksumsBtn" class="btn btn-outline-secondary btn-sm mb-3"><i class="bi bi-list-check"></i> Muat Checksum Lokal</button>
+            <pre id="checksumsPre" class="bg-light p-2 rounded border" style="max-height:300px;overflow:auto"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <!-- Performance Optimizer -->
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/js/performance-optimizer.js"></script>
+  <script src="/js/offline-api.js?v=20260627live"></script>
+  <script src="/js/android-auto-sync.js?v=20260704sync"></script>
+  <script src="/js/sync.js?v=20260704sync" defer></script>
+  <div class="modal fade" id="syncBaseUrlQrModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-qr-code"></i> QR Base URL</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="syncBaseUrlQrCanvasWrap" class="d-flex justify-content-center mb-3"></div>
+          <div id="syncBaseUrlQrFallback" class="small text-muted mb-3 d-none">
+            QR generator belum tersedia. Silakan copy Base URL secara manual.
+          </div>
+          <div class="input-group">
+            <input type="text" class="form-control" id="syncBaseUrlQrText" readonly>
+            <button type="button" class="btn btn-outline-secondary" id="copySyncBaseUrlQrBtn">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Toast Container -->
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

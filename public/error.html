@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terjadi Kesalahan</title>
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#0f172a;--bg2:#0b1220;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22d3ee;--accent-2:#38bdf8;--danger:#ef4444;
+    }
+    html,body{height:100%;}
+    body{margin:0; background: radial-gradient(1200px 600px at 10% 10%, rgba(34,211,238,.06), transparent),
+                             radial-gradient(800px 400px at 90% 30%, rgba(56,189,248,.05), transparent),
+                             linear-gradient(180deg, var(--bg1), var(--bg2));
+         color:var(--fg); overflow:hidden;}
+    /* Animated grid */
+    .grid{position:fixed; inset:0; background-size: 40px 40px; background-image:
+      linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+      animation: drift 40s linear infinite; opacity:.35;}
+    @keyframes drift{from{background-position:0 0, 0 0;} to{background-position: 40px 40px, 40px 40px;}}
+
+    .container-err{position:relative; height:100%; display:flex; align-items:center; justify-content:center; padding:24px;}
+    .stage{position:relative; width:min(960px,100%);}
+
+    /* Giant code digits */
+    .big-code{font-weight:800; letter-spacing:.02em; line-height:1; display:flex; gap:.15em; justify-content:center; user-select:none;}
+    .big-code span{font-size: clamp(72px, 18vw, 220px); background: linear-gradient(180deg, #fff, #9fb3c8);
+      color:transparent; -webkit-background-clip:text; background-clip:text; filter: drop-shadow(0 12px 40px rgba(0,0,0,.5));}
+    .big-code .pulse{position:relative;}
+    .big-code .pulse::after{content:''; position:absolute; inset:-8px; border-radius:16px; background: radial-gradient(closest-side, rgba(34,211,238,.28), transparent 70%);
+      animation: pulse 2.2s ease-in-out infinite;}
+    @keyframes pulse{0%{opacity:.25; transform:scale(.98);}50%{opacity:.45; transform:scale(1.02);}100%{opacity:.25; transform:scale(.98);}}
+
+    /* Card */
+    .panel{margin-top:22px; background: rgba(17,24,39,.65); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:20px 22px; box-shadow:0 20px 60px rgba(0,0,0,.35);}
+    .title{font-size:clamp(18px,2.2vw,24px); margin:0 0 8px;}
+    .desc{color:var(--muted); margin-bottom:14px;}
+    .meta{color:var(--muted); font-size:14px;}
+    .meta strong{color:#cbd5e1}
+
+    .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;}
+    .btn-accent{--bs-btn-color:#06131a; --bs-btn-bg:var(--accent); --bs-btn-border-color:var(--accent); --bs-btn-hover-bg:var(--accent-2); --bs-btn-hover-border-color:var(--accent-2)}
+    .btn-outline-light{--bs-btn-hover-bg:#fff; --bs-btn-hover-color:#0b1220}
+
+    pre{background:#0b1220; color:#cbd5e1; border-radius:12px; padding:.75rem 1rem; max-height:240px; overflow:auto; border:1px solid rgba(255,255,255,.06)}
+
+    /* Floating bubbles */
+    .bubbles{position:fixed; inset:0; pointer-events:none;}
+    .bubble{position:absolute; width:12px; height:12px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff, #9ae6ff);
+      opacity:.12; filter: blur(.5px); animation: floatUp linear infinite;}
+    @keyframes floatUp{from{transform: translateY(20vh) scale(.8);} to{transform: translateY(-120vh) scale(1.2);}}
+  </style>
+</head>
+<body>
+  <div class="grid" aria-hidden="true"></div>
+  <div class="bubbles" id="bubbles" aria-hidden="true"></div>
+
+  <div class="container-err">
+    <div class="stage">
+      <div class="big-code" aria-label="error-code">
+        <span class="pulse" id="digitA">5</span>
+        <span id="digitB">0</span>
+        <span id="digitC">0</span>
+      </div>
+
+      <div class="panel">
+        <h1 class="title" id="titleText">Oops! Terjadi Kesalahan</h1>
+        <p class="desc" id="descText">Kami mengalami masalah saat memproses permintaan Anda.</p>
+
+        <div class="meta mb-2">
+          <div><strong>Kode:</strong> <span id="errCodeText">500</span></div>
+          <div><strong>Pesan:</strong> <span id="errMsg">Internal Server Error</span></div>
+          <div><strong>Path:</strong> <span id="errPath">-</span></div>
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-accent" href="/">Kembali ke Beranda</a>
+          <button class="btn btn-outline-light" id="btnReload">Muat Ulang</button>
+          <button class="btn btn-outline-warning" id="btnCopy">Salin Detail</button>
+        </div>
+
+        <div id="adv" class="mt-3 d-none">
+          <p class="small text-secondary mb-2">Detail (untuk admin/developer):</p>
+          <pre id="errDetail" class="small"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script>
+    // Create some floating bubbles
+    (function createBubbles(){
+      const root = document.getElementById('bubbles');
+      const n = 24; const W = window.innerWidth; const H = window.innerHeight;
+      for (let i=0;i<n;i++){
+        const el = document.createElement('div'); el.className='bubble';
+        const size = 6 + Math.random()*16; el.style.width=el.style.height=size+'px';
+        el.style.left = (Math.random()*W)+'px';
+        el.style.bottom = (-Math.random()*H*0.3)+'px';
+        const dur = 16 + Math.random()*18; el.style.animationDuration = dur+'s';
+        root.appendChild(el);
+      }
+    })();
+
+    // Dynamic data from query params
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const code = (p.get('code')||'500').trim();
+      const msg  = p.get('msg') ? decodeURIComponent(p.get('msg')) : 'Internal Server Error';
+      const path = p.get('path') || '-';
+      const detail = p.get('detail');
+
+      // Set large digits (support 3 digits typical: 403/404/500)
+      const digits = (code.match(/\d+/)?.[0] || '500').padEnd(3,'0').slice(0,3).split('');
+      document.getElementById('digitA').textContent = digits[0] || '5';
+      document.getElementById('digitB').textContent = digits[1] || '0';
+      document.getElementById('digitC').textContent = digits[2] || '0';
+
+      // Title by code
+      const titleMap = {
+        '404':'Halaman Tidak Ditemukan',
+        '403':'Akses Dilarang',
+        '401':'Tidak Terautentikasi',
+        '500':'Terjadi Kesalahan Server'
+      };
+      document.getElementById('titleText').textContent = titleMap[code] || 'Oops! Terjadi Kesalahan';
+      document.getElementById('descText').textContent = (code==='404')
+        ? 'Halaman yang Anda cari tidak tersedia atau telah dipindahkan.'
+        : (code==='403') ? 'Anda tidak memiliki izin untuk mengakses halaman ini.'
+        : 'Kami mengalami masalah saat memproses permintaan Anda.';
+
+      document.getElementById('errCodeText').textContent = code;
+      document.getElementById('errMsg').textContent = msg;
+      document.getElementById('errPath').textContent = path;
+
+      const adv = document.getElementById('adv');
+      if (detail) {
+        adv.classList.remove('d-none');
+        try { document.getElementById('errDetail').textContent = JSON.stringify(JSON.parse(detail), null, 2); }
+        catch { document.getElementById('errDetail').textContent = detail; }
+      }
+
+      document.getElementById('btnReload').addEventListener('click', () => location.reload());
+      document.getElementById('btnCopy').addEventListener('click', async () => {
+        const payload = { code, msg, path, time:new Date().toISOString(), ua:navigator.userAgent };
+        try { await navigator.clipboard.writeText(JSON.stringify(payload, null, 2)); alert('Detail error disalin ke clipboard'); }
+        catch { alert('Gagal menyalin, salin manual:\n' + JSON.stringify(payload)); }
+      });
+    })();
+  </script>
+</body>
+</html>
+

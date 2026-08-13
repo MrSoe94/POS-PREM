@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POS PRO Offline</title>
+</head>
+<body>
+  <p style="font-family: sans-serif; padding: 16px;">Memuat aplikasi...</p>
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('pos_offline_auth_user') || '';
+        if (raw) {
+          var user = JSON.parse(raw);
+          if (user && user.role) {
+            var role = String(user.role).toLowerCase();
+            var isAdminRole = (role === 'admin' || role === 'superadmin' || role === 'owner' || role.indexOf('admin') !== -1);
+            if (isAdminRole) {
+              window.location.replace('/admin.html');
+              return;
+            }
+            window.location.replace('/pos.html');
+            return;
+          }
+        }
+      } catch (e) {}
+      window.location.replace('/login.html');
+    })();
+  </script>
+</body>
+</html>
+

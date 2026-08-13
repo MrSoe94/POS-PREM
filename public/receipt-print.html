@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struk Pembayaran</title>
+    <style>
+        @media print {
+            @page {
+                size: auto;
+                margin: 0;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            html, body {
+                width: 100% !important;
+            }
+            body { 
+                margin: 0; 
+                padding: 5px; 
+                background: white !important;
+            }
+            .no-print { 
+                display: none !important; 
+            }
+            .print-controls {
+                display: none !important;
+            }
+            .receipt-container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 10px !important;
+            }
+            table { page-break-inside: auto !important; }
+            tr, td, th { page-break-inside: avoid !important; page-break-after: auto !important; }
+            
+            /* Thermal 58mm */
+            body.thermal-58mm {
+                width: 58mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body.thermal-58mm .receipt-container {
+                width: 58mm !important;
+                max-width: 58mm !important;
+                font-size: 6px !important;
+                line-height: 1.0 !important;
+                padding: 3px !important;
+                margin: 0 auto !important;
+                overflow: hidden !important;
+                font-family: 'Courier New', monospace !important;
+            }
+            
+            body.thermal-58mm .header h1 {
+                font-size: 8px !important;
+                margin: 0 0 3px 0 !important;
+                text-align: center !important;
+                font-weight: bold !important;
+                line-height: 1.0 !important;
+            }
+            
+            body.thermal-58mm .city-name {
+                font-size: 6px !important;
+                margin: 0 0 3px 0 !important;
+                text-align: center !important;
+                color: #666 !important;
+                line-height: 1.0 !important;
+            }
+            
+            body.thermal-58mm .info-section {
+                margin: 3px 0 !important;
+                padding: 0 !important;
+            }
+            
+            body.thermal-58mm .info-section p {
+                font-size: 5px !important;
+                margin: 1px 0 !important;
+                line-height: 1.0 !important;
+                word-wrap: break-word !important;
+                overflow: hidden !important;
+                padding: 0 !important;
+            }
+            
+            body.thermal-58mm .info-section strong {
+                font-size: 5px !important;
+                font-weight: bold !important;
+            }
+            
+            body.thermal-58mm .items-table {
+                font-size: 5px !important;
+                margin: 3px 0 !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
+            }
+            
+            body.thermal-58mm .items-table th,
+            body.thermal-58mm .items-table td {
+                padding: 1px 2px !important;
+                font-size: 5px !important;
+                line-height: 1.0 !important;
+                border-bottom: 1px solid #000 !important;
+                vertical-align: top !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            
+            body.thermal-58mm .items-table th {
+                font-weight: bold !important;
+                font-size: 5px !important;
+                text-align: center !important;
+                padding: 2px 1px !important;
+                background: #f0f0f0 !important;
+            }
+            
+            body.thermal-58mm .items-table td:nth-child(1) {
+                width: 45% !important;
+                text-align: left !important;
+            }
+            
+            body.thermal-58mm .items-table td:nth-child(2) {
+                width: 20% !important;
+                text-align: center !important;
+            }
+            
+            body.thermal-58mm .items-table td:nth-child(3) {
+                width: 17% !important;
+                text-align: right !important;
+            }
+            
+            body.thermal-58mm .items-table td:nth-child(4) {
+                width: 18% !important;
+                text-align: right !important;
+            }
+            
+            body.thermal-58mm .total-section {
+                margin: 3px 0 !important;
+                text-align: left !important;
+                padding: 0 !important;
+            }
+            
+            body.thermal-58mm .total-row {
+                font-size: 5px !important;
+                margin: 1px 0 !important;
+                line-height: 1.0 !important;
+                padding: 0 !important;
+            }
+            
+            body.thermal-58mm .total-row strong {
+                font-size: 6px !important;
+                font-weight: bold !important;
+            }
+
+            body.thermal-58mm.layout-escpos .receipt-container,
+            body.thermal-58mm.layout-escpos .items-escpos,
+            body.thermal-58mm.layout-escpos .items-escpos-name,
+            body.thermal-58mm.layout-escpos .items-escpos-detail,
+            body.thermal-58mm.layout-escpos .items-escpos-sep,
+            body.thermal-58mm.layout-escpos .info-section p,
+            body.thermal-58mm.layout-escpos .total-row {
+                font-size: 8px !important;
+                line-height: 1.15 !important;
+            }
+
+            body.thermal-58mm.layout-escpos .header h1 {
+                font-size: 10px !important;
+            }
+
+            body.thermal-58mm.layout-escpos .footer,
+            body.thermal-58mm.layout-escpos .footer p {
+                font-size: 7px !important;
+            }
+
+            body.thermal-80mm.layout-escpos .receipt-container,
+            body.thermal-80mm.layout-escpos .items-escpos,
+            body.thermal-80mm.layout-escpos .items-escpos-name,
+            body.thermal-80mm.layout-escpos .items-escpos-detail,
+            body.thermal-80mm.layout-escpos .items-escpos-sep,
+            body.thermal-80mm.layout-escpos .info-section p,
+            body.thermal-80mm.layout-escpos .total-row {
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+            }
+
+            body.thermal-80mm.layout-escpos .header h1 {
+                font-size: 12px !important;
+            }
+            
+            body.thermal-58mm .footer {
+                margin-top: 5px !important;
+                padding-top: 3px !important;
+                font-size: 4px !important;
+                text-align: center !important;
+                line-height: 1.0 !important;
+                border-top: 1px solid #000 !important;
+            }
+            
+            body.thermal-58mm .footer p {
+                font-size: 4px !important;
+                margin: 1px 0 !important;
+                line-height: 1.0 !important;
+            }
+            
+            /* Thermal 80mm */
+            body.thermal-80mm {
+                width: 80mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body.thermal-80mm .receipt-container {
+                width: 80mm !important;
+                max-width: 80mm !important;
+                font-size: 10px !important;
+                line-height: 1.1 !important;
+            }
+            
+            body.thermal-80mm .header h1 {
+                font-size: 14px !important;
+            }
+            
+            body.thermal-80mm .city-name {
+                font-size: 10px !important;
+                color: #666 !important;
+                margin: 0 0 5px 0 !important;
+                text-align: center !important;
+            }
+            
+            body.thermal-80mm .items-table {
+                font-size: 9px !important;
+            }
+            
+            body.thermal-80mm .items-table th,
+            body.thermal-80mm .items-table td {
+                padding: 3px !important;
+            }
+            
+            body.thermal-80mm .total-row {
+                font-size: 10px !important;
+            }
+            
+            body.thermal-80mm .info-section p {
+                font-size: 9px !important;
+            }
+            
+            /* A4 */
+            body.a4 .receipt-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                font-size: 12px !important;
+            }
+
+            /* ESC/POS-like styling for system dialog */
+            body.escpos-print .receipt-container {
+                font-family: 'Courier New', monospace !important;
+                font-size: 9px !important;
+                line-height: 1.0 !important;
+            }
+            body.escpos-print .header {
+                border-bottom: 1px solid #000 !important;
+                margin-bottom: 6px !important;
+                padding-bottom: 4px !important;
+            }
+            body.escpos-print .items-table {
+                border-collapse: collapse !important;
+                margin: 6px 0 !important;
+            }
+            body.escpos-print .items-table th,
+            body.escpos-print .items-table td {
+                border: none !important;
+                padding: 1px 0 !important;
+                font-size: 9px !important;
+            }
+            body.escpos-print .items-table th {
+                border-bottom: 1px solid #000 !important;
+                padding-bottom: 2px !important;
+            }
+            body.escpos-print .total-section {
+                margin: 6px 0 !important;
+                text-align: left !important;
+            }
+            body.escpos-print .footer {
+                border-top: 1px solid #000 !important;
+                margin-top: 6px !important;
+                padding-top: 4px !important;
+                font-size: 8px !important;
+            }
+        }
+        
+        @media screen {
+            body {
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 12px;
+                line-height: 1.2;
+                margin: 0;
+                padding: 20px;
+                background: #f5f5f5;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .print-controls {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            
+            .print-controls h3 {
+                margin: 0 0 15px 0;
+                color: #333;
+            }
+
+            #exitPreviewBtn.preview-back-bar {
+                display: none;
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: auto;
+                z-index: 1000;
+                padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+                background: rgba(255, 255, 255, 0.97);
+                box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
+                text-align: center;
+            }
+
+            #exitPreviewBtn.preview-back-bar.is-visible {
+                display: block;
+            }
+
+            #exitPreviewBtn.preview-back-bar button {
+                width: 100%;
+                max-width: 360px;
+                background: #0d6efd;
+                color: #fff;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+            body.preview-mode-active {
+                padding-bottom: 84px;
+            }
+            
+            .printer-options {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .printer-select {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                min-width: 200px;
+            }
+            
+            .print-btn {
+                background: #007bff;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 0.3s;
+            }
+            
+            .print-btn:hover {
+                background: #0056b3;
+            }
+            
+            .print-btn.bluetooth {
+                background: #28a745;
+            }
+            
+            .print-btn.bluetooth:hover {
+                background: #1e7e34;
+            }
+            
+            .print-btn.close {
+                background: #6c757d;
+            }
+            
+            .print-btn.close:hover {
+                background: #545b62;
+            }
+            
+            .receipt-container {
+                max-width: 400px;
+                margin: 0 auto;
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                flex: 1;
+            }
+
+            body.thermal-58mm.layout-escpos .receipt-container {
+                width: 58mm;
+                max-width: 58mm;
+                padding: 4px 2px;
+                font-size: var(--receipt-font-base, 10px);
+                line-height: var(--receipt-line-height, 1.2);
+                overflow: visible;
+            }
+
+            body.thermal-80mm.layout-escpos .receipt-container {
+                width: 80mm;
+                max-width: 80mm;
+                padding: 6px 4px;
+                font-size: var(--receipt-font-base, 12px);
+                line-height: var(--receipt-line-height, 1.25);
+                overflow: visible;
+            }
+
+            body.a4.layout-escpos .receipt-container,
+            body.a4 .receipt-container {
+                max-width: 400px;
+                font-size: var(--receipt-font-base, 14px);
+            }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .receipt-logo {
+            display: none;
+            margin: 0 auto 6px auto;
+            max-height: 60px;
+            max-width: 160px;
+            object-fit: contain;
+        }
+
+        .header h1 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .city-name {
+            margin: 0;
+            font-size: 12px;
+            font-weight: normal;
+            color: #666;
+            text-align: center;
+        }
+        
+        .info-section {
+            margin: 15px 0;
+        }
+        
+        .info-section p {
+            margin: 3px 0;
+            font-size: 11px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10px;
+        }
+        
+        .items-table th,
+        .items-table td {
+            padding: 5px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .items-table th {
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+            font-size: 11px;
+        }
+        
+        .items-table td:last-child {
+            text-align: right;
+        }
+
+        body.layout-escpos .receipt-container,
+        body.layout-escpos .items-escpos,
+        body.layout-escpos .total-section,
+        body.layout-escpos .info-section {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: left;
+        }
+
+        body.layout-escpos .items-table {
+            display: none;
+        }
+
+        body.layout-escpos .items-escpos {
+            display: block;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: var(--receipt-line-height, 1.25);
+            font-size: var(--receipt-font-item, 12px);
+        }
+
+        body.layout-escpos .items-escpos-name,
+        body.layout-escpos .items-escpos-detail,
+        body.layout-escpos .items-escpos-sep {
+            font-size: var(--receipt-font-item, 12px);
+        }
+
+        body.layout-escpos .items-escpos-item + .items-escpos-item {
+            margin-top: 4px;
+        }
+
+        body.layout-escpos .items-escpos-detail {
+            padding-left: 2px;
+        }
+
+        body.layout-escpos .items-escpos-sep {
+            margin: 6px 0;
+            overflow: hidden;
+        }
+
+        body.layout-escpos .escpos-hide {
+            display: none !important;
+        }
+
+        body.layout-escpos .info-section p {
+            font-size: var(--receipt-font-info, 11px);
+            line-height: var(--receipt-line-height, 1.25);
+        }
+
+        body.layout-escpos .header h1 {
+            font-size: var(--receipt-font-header, 15px);
+        }
+
+        body.layout-escpos .city-name {
+            font-size: var(--receipt-font-info, 11px);
+        }
+
+        body.layout-escpos .total-section {
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        body.layout-escpos .total-row {
+            margin: 2px 0;
+            font-size: var(--receipt-font-total, 12px);
+            line-height: var(--receipt-line-height, 1.25);
+        }
+
+        body.layout-escpos .total-row strong,
+        body.layout-escpos .total-row.total-main {
+            font-size: var(--receipt-font-total, 12px);
+        }
+
+        body.layout-escpos .footer,
+        body.layout-escpos .footer p {
+            font-size: var(--receipt-font-footer, 10px);
+            line-height: var(--receipt-line-height, 1.25);
+        }
+
+        .items-escpos {
+            display: none;
+        }
+        
+        .total-section {
+            margin: 15px 0;
+            text-align: left;
+        }
+        
+        .total-row {
+            margin: 5px 0;
+            font-size: 11px;
+        }
+        
+        .total-row strong {
+            font-size: 12px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            font-size: 10px;
+            color: #666;
+        }
+
+        .template-compact .info-section {
+            margin: 8px 0;
+        }
+
+        .template-compact .items-table th,
+        .template-compact .items-table td {
+            padding: 3px;
+            border-bottom: 1px dotted #ddd;
+        }
+
+        .template-compact .footer {
+            margin-top: 10px;
+        }
+
+        .template-minimal .items-table th,
+        .template-minimal .items-table td {
+            border-bottom: none;
+        }
+
+        .template-minimal .header {
+            border-bottom: 1px solid #ccc;
+        }
+
+        .template-minimal .footer {
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="print-controls no-print">
+        <h3>Cetak Struk</h3>
+        
+        <!-- Paper Size Selection -->
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: bold; margin-right: 10px;">Ukuran Kertas:</label>
+            <select id="paperSizeSelect" class="printer-select" onchange="updatePaperSize()">
+                <option value="thermal-58mm">Thermal 58mm (Kecil)</option>
+                <option value="thermal-80mm">Thermal 80mm (Sedang)</option>
+                <option value="a4">A4 (Besar)</option>
+            </select>
+        </div>
+        
+        <!-- Printer Selection -->
+        <div class="printer-options" style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+            <div style="position: relative; display: flex; align-items: center;">
+                <select id="printerSelect" class="printer-select" style="padding-right: 40px;">
+                    <option value="">Pilih Printer Bluetooth</option>
+                </select>
+                <button id="refreshPrinterBtn" onclick="populatePairedPrinters()" title="Refresh daftar printer" aria-label="Refresh daftar printer" style="position: absolute; right: 5px; width: 30px; height: 30px; background: none; border: none; cursor: pointer; color: #007bff; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 18px; line-height: 1;">?</span>
+                </button>
+            </div>
+            
+            <button class="print-btn bluetooth" onclick="handlePrintAction()">Cetak Struk</button>
+            <button id="searchPrinterBtn" class="print-btn bluetooth" onclick="searchNewBluetooth()" title="Cari printer Bluetooth baru">Cari Printer</button>
+            <button class="print-btn" style="background: #ff6b6b;" onclick="forgetPairedPrinter()" title="Hapus printer dari daftar paired">Hapus Printer</button>
+            <a href="pos.html" class="print-btn close" id="closeReceiptBtn" data-action="close-receipt" onclick="safeCloseReceiptPage(); return false;">Tutup</a>
+        </div>
+        
+        <!-- Preview Mode -->
+        <div style="margin-top: 15px;">
+            <label>
+                <input type="checkbox" id="previewMode" onchange="togglePreviewMode()"> 
+                Mode Preview (Lihat tampilan print)
+            </label>
+        </div>
+        
+        <div id="printerStatus" style="margin-top: 10px; font-size: 12px; color: #666;">
+            Pilih ukuran kertas dan metode print, kemudian klik tombol print
+        </div>
+    </div>
+
+    <div id="exitPreviewBtn" class="preview-back-bar no-print">
+        <button type="button" onclick="handlePreviewBack()">Kembali</button>
+    </div>
+    
+    <div class="receipt-container" id="receiptContent">
+        <div class="header">
+            <img id="receiptLogo" class="receipt-logo" alt="Logo">
+            <h1>STRUK PEMBAYARAN</h1>
+            <p class="city-name" id="cityName"></p>
+        </div>
+        
+        <div class="info-section">
+            <p><strong>ID:</strong> <span id="transactionId"></span></p>
+            <p><strong>Tgl:</strong> <span id="dateTime"></span></p>
+            <p><strong>Ksr:</strong> <span id="cashier"></span></p>
+            <p><strong>Plg:</strong> <span id="customerName"></span></p>
+            <p class="escpos-hide"><strong>Metode Pembayaran:</strong> <span id="paymentMethod"></span></p>
+        </div>
+
+        <div id="itemsEscpos" class="items-escpos" aria-hidden="true"></div>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Jumlah</th>
+                    <th>Harga</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody">
+                <!-- Items will be populated by JavaScript -->
+            </tbody>
+        </table>
+        
+        <div class="total-section">
+            <div class="total-row">
+                Qty Brg : <span id="totalItemsQty"></span>
+            </div>
+            <div class="total-row">
+                Subtotal: <span id="subtotal"></span>
+            </div>
+            <div class="total-row">
+                Diskon  : <span id="discountAmount"></span>
+            </div>
+            <div class="total-row" id="balanceUsedRow" style="display: none;">
+                Saldo   : <span id="balanceUsed"></span>
+            </div>
+            <div class="total-row total-main">
+                <strong>TOTAL   : <span id="total"></span></strong>
+            </div>
+            <div class="total-row">
+                Dibayar : <span id="amountReceived"></span>
+            </div>
+            <div class="total-row">
+                Kembali : <span id="change"></span>
+            </div>
+        </div>
+        
+        <div id="notesSection" style="display: none;" class="info-section">
+            <p><strong>Catatan:</strong> <span id="notes"></span></p>
+        </div>
+        
+        <div class="footer" id="receiptFooter">
+            <p>Terima kasih atas kunjungan Anda</p>
+            <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
+        </div>
+    </div>
+    
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/js/offline-api.js?v=20260218a"></script>
+    <script src="/js/offline-fetch-bridge.js?v=20260217a"></script>
+    <script src="/js/bluetooth-receipt-bridge.js?v=20260813c"></script>
+    <script>window.__POS_HTTPS_PORT__ = window.__POS_HTTPS_PORT__ || 3012;</script>
+    <script>
+        const __btBridge = window.BluetoothReceiptBridge || {};
+        const isAndroidWebViewApp = __btBridge.isAndroidWebViewApp || (() => false);
+        const hasWebBluetoothSupport = __btBridge.hasWebBluetoothSupport || (() => false);
+        const hasNativeBluetoothSupport = __btBridge.hasNativeBluetoothSupport || (() => false);
+        const getNativeBluetoothPlugin = __btBridge.getNativeBluetoothPlugin || (() => null);
+        const ensureCapacitorBridgeReady = __btBridge.ensureCapacitorBridgeReady || (async () => false);
+        const getAddPrinterOptionLabel = __btBridge.getAddPrinterOptionLabel || (() => 'Tambah Printer Baru...');
+        const getBluetoothUnavailableMessage = __btBridge.getBluetoothUnavailableMessage || (() => 'Web Bluetooth tidak tersedia.');
+        const saveWebBluetoothPrinter = __btBridge.saveWebBluetoothPrinter || (() => {});
+        const removeSavedWebBluetoothPrinter = __btBridge.removeSavedWebBluetoothPrinter || (() => {});
+        const loadCachedNativePrinters = __btBridge.loadCachedNativePrinters || (() => []);
+        const saveCachedNativePrinters = __btBridge.saveCachedNativePrinters || (() => {});
+        const mergeNativePrinterLists = __btBridge.mergeNativePrinterLists || ((a, b) => (Array.isArray(a) ? a : []));
+        const collectWebBluetoothPrinterOptions = __btBridge.collectWebBluetoothPrinterOptions || (async () => []);
+        const requestBluetoothDeviceInteractive = __btBridge.requestBluetoothDeviceInteractive || (async () => { throw new Error('Web Bluetooth tidak tersedia.'); });
+        const resolveWebBluetoothDevice = __btBridge.resolveWebBluetoothDevice || (async () => null);
+        const isAndroidBrowserContext = __btBridge.isAndroidBrowserContext || (() => false);
+        const isPosBrowserNativeApp = __btBridge.isPosBrowserNativeApp || (() => false);
+        const isAndroidNativeAppContext = __btBridge.isAndroidNativeAppContext || isAndroidWebViewApp;
+        const isSecureContextForBluetooth = __btBridge.isSecureContextForBluetooth || (() => !!(window.isSecureContext));
+        const getWebBluetoothBlockReason = __btBridge.getWebBluetoothBlockReason || getBluetoothUnavailableMessage;
+        function applyBluetoothCapabilityUI() {
+            if (typeof __btBridge.applyBluetoothCapabilityUI === 'function') {
+                __btBridge.applyBluetoothCapabilityUI(updateStatus);
+            }
+        }
+
+        // Paper size management
+        const RECEIPT_PAPER_SCALES = {
+            'thermal-58mm': {
+                width: '58mm',
+                base: '10px',
+                item: '10px',
+                info: '10px',
+                total: '10px',
+                header: '12px',
+                footer: '9px',
+                lineHeight: '1.2',
+                padding: '4px 2px'
+            },
+            'thermal-80mm': {
+                width: '80mm',
+                base: '12px',
+                item: '12px',
+                info: '11px',
+                total: '12px',
+                header: '15px',
+                footer: '10px',
+                lineHeight: '1.25',
+                padding: '6px 4px'
+            },
+            'a4': {
+                width: '400px',
+                base: '14px',
+                item: '14px',
+                info: '13px',
+                total: '14px',
+                header: '18px',
+                footer: '12px',
+                lineHeight: '1.3',
+                padding: '12px'
+            }
+        };
+
+        function applyReceiptPaperScale(paperSize) {
+            const cfg = RECEIPT_PAPER_SCALES[paperSize] || RECEIPT_PAPER_SCALES['thermal-80mm'];
+            const receiptContainer = document.getElementById('receiptContent');
+            const root = document.documentElement;
+            if (!receiptContainer) return;
+
+            receiptContainer.style.width = cfg.width;
+            receiptContainer.style.maxWidth = cfg.width;
+            receiptContainer.style.fontSize = cfg.base;
+            receiptContainer.style.lineHeight = cfg.lineHeight;
+            receiptContainer.style.padding = cfg.padding;
+            receiptContainer.style.fontFamily = "'Courier New', monospace";
+            receiptContainer.style.overflow = 'visible';
+
+            root.style.setProperty('--receipt-font-base', cfg.base);
+            root.style.setProperty('--receipt-font-item', cfg.item);
+            root.style.setProperty('--receipt-font-info', cfg.info);
+            root.style.setProperty('--receipt-font-total', cfg.total);
+            root.style.setProperty('--receipt-font-header', cfg.header);
+            root.style.setProperty('--receipt-font-footer', cfg.footer);
+            root.style.setProperty('--receipt-line-height', cfg.lineHeight);
+        }
+
+        function updatePaperSize() {
+            const paperSize = document.getElementById('paperSizeSelect').value;
+            const body = document.body;
+            
+            // Remove all paper size classes
+            body.classList.remove('thermal-58mm', 'thermal-80mm', 'a4');
+            
+            // Add selected paper size class
+            body.classList.add(paperSize);
+            applyReceiptLayoutMode();
+            applyReceiptPaperScale(paperSize);
+            if (window.transactionData) {
+                populateReceipt(window.transactionData).catch((e) => console.warn('Gagal refresh layout struk:', e));
+            }
+            
+            const paperNames = {
+                'thermal-58mm': 'Thermal 58mm',
+                'thermal-80mm': 'Thermal 80mm',
+                'a4': 'A4'
+            };
+            updateStatus(`Ukuran kertas: ${paperNames[paperSize] || paperSize} - font disesuaikan lebar kertas`);
+        }
+        
+        function togglePreviewMode() {
+            const previewMode = document.getElementById('previewMode').checked;
+            const receiptContainer = document.getElementById('receiptContent');
+            const printControls = document.querySelector('.print-controls');
+            const exitBtn = document.getElementById('exitPreviewBtn');
+            
+            if (previewMode) {
+                printControls.style.display = 'none';
+                exitBtn.classList.add('is-visible');
+                document.body.classList.add('preview-mode-active');
+                receiptContainer.style.margin = '20px auto';
+                receiptContainer.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+                updateStatus('Mode preview aktif. Tekan tombol Kembali untuk keluar dari preview.');
+                
+                const escHandler = function(e) {
+                    if (e.key === 'Escape') {
+                        handlePreviewBack();
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
+                window.currentEscHandler = escHandler;
+            } else {
+                printControls.style.display = 'block';
+                exitBtn.classList.remove('is-visible');
+                document.body.classList.remove('preview-mode-active');
+                receiptContainer.style.margin = '0 auto';
+                receiptContainer.style.boxShadow = '';
+                updateStatus('Preview dimatikan. Pilih ukuran kertas dan metode print.');
+                
+                // Remove ESC key listener if exists
+                if (window.currentEscHandler) {
+                    document.removeEventListener('keydown', window.currentEscHandler);
+                    window.currentEscHandler = null;
+                }
+            }
+        }
+        
+        function exitPreview() {
+            document.getElementById('previewMode').checked = false;
+            togglePreviewMode();
+        }
+
+        function handlePreviewBack() {
+            try {
+                if (window.currentEscHandler) {
+                    document.removeEventListener('keydown', window.currentEscHandler);
+                    window.currentEscHandler = null;
+                }
+            } catch (e) {}
+            exitPreview();
+        }
+        
+        // Print functions
+        function printWithDefaultPrinter() {
+            const paperSize = document.getElementById('paperSizeSelect').value;
+            updateStatus(`Mencetak dengan ukuran ${getPaperSizeName(paperSize)}...`);
+            window.print();
+        }
+        
+        let bluetoothDevice = null;
+        let pairedDevicesById = {};
+
+        async function ensureNativeBluetoothPermissions() {
+            if (window.PosBrowserNative) {
+                try {
+                    if (typeof window.PosBrowserNative.hasBluetoothPermissions === 'function'
+                        && window.PosBrowserNative.hasBluetoothPermissions()) {
+                        return true;
+                    }
+                    if (typeof window.PosBrowserNative.ensureBluetoothPermissions === 'function') {
+                        window.PosBrowserNative.ensureBluetoothPermissions();
+                    }
+                    for (let i = 0; i < 48; i++) {
+                        await new Promise(r => setTimeout(r, 250));
+                        if (window.PosBrowserNative.hasBluetoothPermissions
+                            && window.PosBrowserNative.hasBluetoothPermissions()) {
+                            return true;
+                        }
+                    }
+                } catch (e) {}
+                return false;
+            }
+            const plugin = getNativeBluetoothPlugin();
+            if (!plugin || typeof plugin.ensurePermissions !== 'function') return false;
+            try {
+                const result = await plugin.ensurePermissions();
+                return !!(result && result.granted);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function uint8ToBase64(bytes) {
+            let binary = '';
+            const chunkSize = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                const sub = bytes.subarray(i, i + chunkSize);
+                binary += String.fromCharCode.apply(null, sub);
+            }
+            return btoa(binary);
+        }
+
+        function concatUint8Arrays(arrays) {
+            const totalLength = arrays.reduce((sum, arr) => sum + (arr ? arr.length : 0), 0);
+            const merged = new Uint8Array(totalLength);
+            let offset = 0;
+            arrays.forEach((arr) => {
+                if (!arr || !arr.length) return;
+                merged.set(arr, offset);
+                offset += arr.length;
+            });
+            return merged;
+        }
+
+        async function buildEscPosPayloadFromCurrentReceipt() {
+            const parts = [];
+            const mockCharacteristic = {
+                writeValue: async (chunk) => {
+                    const bytes = chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk);
+                    parts.push(bytes);
+                }
+            };
+            await sendEscPosData(mockCharacteristic);
+            return concatUint8Arrays(parts);
+        }
+
+        async function nativeBluetoothPrint(address) {
+            const bytes = await buildEscPosPayloadFromCurrentReceipt();
+            const payloadBase64 = uint8ToBase64(bytes);
+            if (window.PosBrowserNative && typeof window.PosBrowserNative.printEscPos === 'function') {
+                return new Promise((resolve, reject) => {
+                    const cbId = 'p' + Date.now() + Math.random().toString(36).slice(2, 6);
+                    window.__posNativePrintCb = window.__posNativePrintCb || {};
+                    window.__posNativePrintCb[cbId] = (result) => {
+                        try { delete window.__posNativePrintCb[cbId]; } catch (e) {}
+                        if (result && result.success) resolve(result);
+                        else reject(new Error((result && result.error) || 'Gagal cetak ke printer.'));
+                    };
+                    try {
+                        window.PosBrowserNative.printEscPos(address, payloadBase64, cbId);
+                    } catch (e) {
+                        reject(e);
+                    }
+                });
+            }
+            const plugin = getNativeBluetoothPlugin();
+            if (!plugin || typeof plugin.printEscPos !== 'function') {
+                throw new Error('Plugin Bluetooth Android tidak tersedia.');
+            }
+            return plugin.printEscPos({ address, payloadBase64 });
+        }
+
+        async function getNativePairedPrinters() {
+            try {
+                if (window.PosBrowserNative && typeof window.PosBrowserNative.getPairedPrintersJson === 'function') {
+                    if (typeof window.PosBrowserNative.ensureBluetoothPermissions === 'function') {
+                        window.PosBrowserNative.ensureBluetoothPermissions();
+                    }
+                    const raw = window.PosBrowserNative.getPairedPrintersJson();
+                    const direct = JSON.parse(raw || '[]');
+                    if (Array.isArray(direct) && direct.length) return direct;
+                }
+            } catch (e) {
+                console.warn('PosBrowserNative getPairedPrinters gagal:', e);
+            }
+            const plugin = getNativeBluetoothPlugin();
+            if (!plugin || typeof plugin.getPairedPrinters !== 'function') return [];
+            const result = await plugin.getPairedPrinters();
+            return Array.isArray(result && result.devices) ? result.devices : [];
+        }
+
+        async function discoverNativePrinters(timeoutMs = 12000) {
+            if (window.PosBrowserNative && typeof window.PosBrowserNative.discoverPrinters === 'function') {
+                return new Promise((resolve) => {
+                    const cbId = 'd' + Date.now() + Math.random().toString(36).slice(2, 6);
+                    window.__posNativeDiscoverCb = window.__posNativeDiscoverCb || {};
+                    window.__posNativeDiscoverCb[cbId] = (result) => {
+                        try { delete window.__posNativeDiscoverCb[cbId]; } catch (e) {}
+                        resolve(Array.isArray(result && result.devices) ? result.devices : []);
+                    };
+                    try {
+                        window.PosBrowserNative.discoverPrinters(timeoutMs, cbId);
+                    } catch (e) {
+                        resolve([]);
+                    }
+                });
+            }
+            const plugin = getNativeBluetoothPlugin();
+            if (!plugin || typeof plugin.discoverPrinters !== 'function') return [];
+            const result = await plugin.discoverPrinters({ timeoutMs });
+            return Array.isArray(result && result.devices) ? result.devices : [];
+        }
+
+        async function populatePairedPrinters(extraNativeDevices) {
+            const select = document.getElementById('printerSelect');
+            const lastPrinterName = localStorage.getItem('lastBluetoothPrinter');
+            const lastPrinterId = localStorage.getItem('lastBluetoothPrinterId');
+            const lastNativePrinter = localStorage.getItem('lastNativeBluetoothPrinter');
+            const hasDirectNative = !!(window.PosBrowserNative && typeof window.PosBrowserNative.getPairedPrintersJson === 'function');
+            const nativeSupported = hasDirectNative || hasNativeBluetoothSupport();
+            const webSupported = hasWebBluetoothSupport();
+            
+            if (!select) return;
+            const previousValue = select.value;
+            let nativeDevices = Array.isArray(extraNativeDevices) ? extraNativeDevices.slice() : [];
+            let usedNativeCache = false;
+
+            if (nativeSupported) {
+                try {
+                    await ensureNativeBluetoothPermissions();
+                    const liveDevices = await getNativePairedPrinters();
+                    if (liveDevices.length > 0) {
+                        nativeDevices = mergeNativePrinterLists(liveDevices, nativeDevices);
+                        saveCachedNativePrinters(liveDevices);
+                    } else if (nativeDevices.length === 0) {
+                        nativeDevices = loadCachedNativePrinters();
+                        usedNativeCache = nativeDevices.length > 0;
+                    }
+                } catch (e) {
+                    console.warn('Gagal memuat printer native Android:', e);
+                    if (nativeDevices.length === 0) {
+                        nativeDevices = loadCachedNativePrinters();
+                        usedNativeCache = nativeDevices.length > 0;
+                    }
+                }
+            } else if (nativeDevices.length === 0) {
+                nativeDevices = loadCachedNativePrinters();
+                usedNativeCache = nativeDevices.length > 0;
+            }
+
+            select.innerHTML = '<option value="">Pilih Printer Bluetooth</option>';
+            pairedDevicesById = {};
+
+            nativeDevices.forEach((device) => {
+                const address = String(device.address || '').trim();
+                if (!address) return;
+                const option = document.createElement('option');
+                option.value = `native:${address}`;
+                const cacheSuffix = (device.cached || usedNativeCache) && !device.discovered ? ' (tersimpan)' : '';
+                option.textContent = `Android: ${device.name || 'Unknown Printer'} (${address})${cacheSuffix}`;
+                if (lastNativePrinter && lastNativePrinter === address) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            if (webSupported) {
+                try {
+                    const webCandidates = await collectWebBluetoothPrinterOptions();
+                    webCandidates.forEach((entry) => {
+                        const deviceId = String(entry.id || '').trim();
+                        if (!deviceId) return;
+                        if (entry.device) pairedDevicesById[deviceId] = entry.device;
+                        const option = document.createElement('option');
+                        option.value = `web:${deviceId}`;
+                        const savedSuffix = entry.savedOnly && !entry.device ? ' (tersimpan)' : '';
+                        option.textContent = `Bluetooth: ${entry.name || 'Unknown Printer'}${savedSuffix}`;
+                        if ((lastPrinterId && lastPrinterId === deviceId) || (lastPrinterName && lastPrinterName === entry.name)) {
+                            option.selected = true;
+                            if (entry.device) bluetoothDevice = entry.device;
+                        }
+                        select.appendChild(option);
+                    });
+                } catch (err) {
+                    console.error('Error saat memuat printer Web Bluetooth:', err);
+                }
+            }
+
+            const systemOption = document.createElement('option');
+            systemOption.value = "system_dialog";
+            systemOption.textContent = "Gunakan Dialog Sistem (Default)";
+            select.appendChild(systemOption);
+
+            const addNewOption = document.createElement('option');
+            addNewOption.value = "add_new";
+            addNewOption.textContent = getAddPrinterOptionLabel();
+            select.appendChild(addNewOption);
+
+            if (!nativeSupported && !webSupported) {
+                applyBluetoothCapabilityUI();
+                updateStatus(getBluetoothUnavailableMessage());
+                return;
+            }
+
+            if (previousValue && Array.from(select.options).some(opt => opt.value === previousValue)) {
+                select.value = previousValue;
+            }
+
+            const printerCount = Math.max(0, select.options.length - 3);
+            if (printerCount > 0) {
+                const cacheNote = usedNativeCache ? ' (beberapa dari cache)' : '';
+                updateStatus(`OK: ${printerCount} printer tersedia${cacheNote}.`);
+            } else if (isAndroidBrowserContext() && webSupported) {
+                updateStatus('Belum ada printer di daftar. Klik "Cari Printer" lalu pilih printer Bluetooth yang sudah dipasangkan di Android.');
+            } else if (nativeSupported && window.PosBrowserNative && window.PosBrowserNative.hasBluetoothPermissions && !window.PosBrowserNative.hasBluetoothPermissions()) {
+                updateStatus('Izinkan akses Bluetooth saat diminta, lalu tap tombol ↻ refresh.');
+            } else if (nativeSupported) {
+                updateStatus('Belum ada printer. Tap "Cari Printer" (tunggu ~10 detik) atau pair dulu di Pengaturan → Bluetooth Android.');
+            } else {
+                updateStatus('Belum ada printer. Klik "Cari Printer" untuk memindai.');
+            }
+        }
+
+        async function handlePrintAction() {
+            const select = document.getElementById('printerSelect');
+            const val = select.value;
+            const lastPrinterName = localStorage.getItem('lastBluetoothPrinter');
+            const lastPrinterId = localStorage.getItem('lastBluetoothPrinterId');
+            const lastNativePrinter = localStorage.getItem('lastNativeBluetoothPrinter');
+
+            if (val === "system_dialog" || val === "") {
+                if (lastNativePrinter) {
+                    const nativeOption = Array.from(select.options).find(opt => opt.value === `native:${lastNativePrinter}`);
+                    if (nativeOption) {
+                        select.value = nativeOption.value;
+                        return printWithBluetooth({ nativeAddress: lastNativePrinter });
+                    }
+                }
+                // Try last used bluetooth printer first (even if system dialog is selected)
+                if (lastPrinterName || lastPrinterId) {
+                    const webOption = Array.from(select.options).find(opt => {
+                        if (!opt.value.startsWith('web:')) return false;
+                        const id = opt.value.slice(4);
+                        return (lastPrinterId && id === lastPrinterId) || (lastPrinterName && opt.textContent.includes(lastPrinterName));
+                    });
+                    if (webOption) {
+                        select.value = webOption.value;
+                        return printWithBluetooth({ webValue: webOption.value });
+                    }
+                    if (navigator.bluetooth && navigator.bluetooth.getDevices) {
+                        try {
+                            const devices = await navigator.bluetooth.getDevices();
+                            const found = devices.find(d => d && (d.name === lastPrinterName || d.id === lastPrinterId));
+                            if (found) {
+                                bluetoothDevice = found;
+                                saveWebBluetoothPrinter(found);
+                                await populatePairedPrinters();
+                                const refreshed = Array.from(select.options).find(opt => opt.value === `web:${found.id}`);
+                                if (refreshed) select.value = refreshed.value;
+                                return printWithBluetooth({ webValue: `web:${found.id}` });
+                            }
+                        } catch {}
+                    }
+                }
+                // Fallback to system dialog
+                printWithSystemDialog();
+            } else if (val.startsWith('native:')) {
+                const address = val.slice('native:'.length);
+                localStorage.setItem('lastNativeBluetoothPrinter', address);
+                printWithBluetooth({ nativeAddress: address });
+            } else if (val.startsWith('web:')) {
+                printWithBluetooth({ webValue: val });
+            } else if (val === "add_new") {
+                bluetoothDevice = null;
+                if (!hasNativeBluetoothSupport()) {
+                    await ensureCapacitorBridgeReady(2500);
+                    await populatePairedPrinters();
+                }
+                if (hasNativeBluetoothSupport()) {
+                    await searchNewBluetooth();
+                    return;
+                }
+                printWithBluetooth({ forceRequest: true });
+            } else {
+                // Use the selected paired device
+                printWithBluetooth();
+            }
+        }
+
+        // Remember printer selection (avoid re-selecting)
+        document.addEventListener('change', (e) => {
+            const select = document.getElementById('printerSelect');
+            if (!select || e.target !== select) return;
+            const val = select.value;
+            if (val && val.startsWith('native:')) {
+                const address = val.slice('native:'.length);
+                if (address) localStorage.setItem('lastNativeBluetoothPrinter', address);
+                return;
+            }
+            if (val && val.startsWith('web:')) {
+                const id = val.slice(4);
+                if (id) localStorage.setItem('lastBluetoothPrinterId', id);
+                const device = pairedDevicesById[id];
+                if (device && device.name) localStorage.setItem('lastBluetoothPrinter', device.name);
+                return;
+            }
+            if (val && val !== 'system_dialog' && val !== 'add_new') {
+                const device = pairedDevicesById[val];
+                if (device && device.name) {
+                    localStorage.setItem('lastBluetoothPrinter', device.name);
+                    bluetoothDevice = device;
+                }
+            }
+        });
+
+        async function printWithBluetooth(options = {}) {
+            const forceRequest = !!options.forceRequest;
+            const nativeAddress = String(options.nativeAddress || '').trim();
+            const webValue = String(options.webValue || '').trim();
+            const paperSize = document.getElementById('paperSizeSelect').value;
+            const selectedIdx = document.getElementById('printerSelect').value;
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const withTimeout = (promise, ms, label) => {
+                let t;
+                const timeout = new Promise((_, rej) => {
+                    t = setTimeout(() => rej(new Error(`${label} timeout`)), ms);
+                });
+                return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
+            };
+
+            if (nativeAddress) {
+                try {
+                    const granted = await ensureNativeBluetoothPermissions();
+                    if (!granted) throw new Error('Izin Bluetooth belum diberikan.');
+                    updateStatus('Mencetak via Bluetooth Android...');
+                    await nativeBluetoothPrint(nativeAddress);
+                    updateStatus('Selesai mencetak via Bluetooth Android.');
+                    return;
+                } catch (nativeErr) {
+                    console.error('Native Bluetooth print error:', nativeErr);
+                    updateStatus(`Gagal cetak Bluetooth Android: ${nativeErr.message || nativeErr}`);
+                    setTimeout(() => window.print(), 1200);
+                    return;
+                }
+            }
+            
+            if (!navigator.bluetooth) {
+                updateStatus(getBluetoothUnavailableMessage());
+                setTimeout(() => window.print(), 2000);
+                return;
+            }
+
+            try {
+                // Step 1: Get Device - dengan logika verifikasi koneksi
+                let device = null;
+                
+                // Jika user memilih dari dropdown
+                if (webValue || (selectedIdx && selectedIdx.startsWith('web:'))) {
+                    const targetValue = webValue || selectedIdx;
+                    device = pairedDevicesById[targetValue.slice(4)] || null;
+                    if (!device) {
+                        device = await resolveWebBluetoothDevice(targetValue, { forceRequest: true });
+                    }
+                    console.log('Menggunakan printer Web Bluetooth:', device?.name || targetValue);
+                } else if (selectedIdx !== "" && selectedIdx !== "system_dialog" && selectedIdx !== "add_new") {
+                    device = pairedDevicesById[selectedIdx] || null;
+                    console.log('Menggunakan printer dari dropdown:', device?.name);
+                } else if (!forceRequest && bluetoothDevice && bluetoothDevice.gatt) {
+                    // Jika ada printer yang tersimpan, verifikasi apakah masih valid
+                    console.log('Verifikasi printer yang tersimpan:', bluetoothDevice.name);
+                    if (bluetoothDevice.gatt.connected) {
+                        device = bluetoothDevice;
+                        console.log('Printer masih terhubung, gunakan.');
+                    } else {
+                        console.log('Printer tidak terhubung, coba sambung ulang...');
+                        try {
+                            // Coba menyambung ulang ke printer lama
+                            await bluetoothDevice.gatt.connect();
+                            device = bluetoothDevice;
+                            console.log('Berhasil menyambung ulang printer lama.');
+                        } catch (e) {
+                            console.warn('Printer lama tidak bisa disambung, cari baru...', e);
+                            device = null;
+                            bluetoothDevice = null;
+                        }
+                    }
+                } else if (!forceRequest && navigator.bluetooth.getDevices) {
+                    // Ambil dari getDevices jika ada
+                    const devices = await navigator.bluetooth.getDevices();
+                    if (devices.length > 0) {
+                        const lastPrinterName = localStorage.getItem('lastBluetoothPrinter');
+                        device = devices.find(d => d.name === lastPrinterName) || devices[0];
+                        console.log('Menggunakan printer dari getDevices():', device.name);
+                    }
+                }
+
+                // Jika masih tidak ada, request baru
+                if (!device) {
+                    updateStatus('Mencari printer Bluetooth... Silakan pilih dari daftar.');
+                    device = await requestBluetoothDeviceInteractive();
+                    await populatePairedPrinters();
+                }
+
+                bluetoothDevice = device;
+                saveWebBluetoothPrinter(bluetoothDevice);
+                
+                // Simpan nama printer untuk sesi berikutnya
+                if (bluetoothDevice.name) {
+                    localStorage.setItem('lastBluetoothPrinter', bluetoothDevice.name);
+                }
+                if (bluetoothDevice.id) {
+                    localStorage.setItem('lastBluetoothPrinterId', bluetoothDevice.id);
+                }
+
+                // Step 2: Connection Handling with Retry
+                let server = null;
+                let retryCount = 0;
+                const maxRetries = 2;
+
+                while (retryCount <= maxRetries && !server) {
+                    try {
+                        updateStatus(`Menghubungkan ke ${bluetoothDevice.name}... ${retryCount > 0 ? '(Mencoba ulang ' + retryCount + ')' : ''}`);
+                        
+                        if (bluetoothDevice.gatt.connected) {
+                            server = bluetoothDevice.gatt;
+                        } else {
+                            server = await withTimeout(bluetoothDevice.gatt.connect(), 8000, 'GATT connect');
+                        }
+                    } catch (connErr) {
+                        console.warn(`Gagal menyambung (Percobaan ${retryCount + 1}):`, connErr);
+                        retryCount++;
+                        
+                        // KHUSUS LAPTOP: Jika error "No longer in range" padahal printer ada
+                        if (connErr.message.includes('range') && !isMobile && retryCount >= 1) {
+                            updateStatus('Koneksi Windows bermasalah. Mencari ulang printer...');
+                            bluetoothDevice = null; // Paksa cari baru
+                            return await printWithBluetooth({ forceRequest: true }); // Rekursif ke dialog pencarian
+                        }
+
+                        if (retryCount > maxRetries) throw connErr;
+                        await new Promise(r => setTimeout(r, 1500)); // Jeda lebih lama untuk Windows
+                    }
+                }
+                
+                updateStatus(`Terhubung. Mencari layanan cetak...`);
+                
+                const services = await withTimeout(server.getPrimaryServices(), 8000, 'Service discovery');
+                let charFound = null;
+                
+                for (const service of services) {
+                    try {
+                        const chars = await service.getCharacteristics();
+                        for (const char of chars) {
+                            if (char.properties.write || char.properties.writeWithoutResponse) {
+                                charFound = char;
+                                break;
+                            }
+                        }
+                    } catch (e) { console.warn('Skip service:', service.uuid); }
+                    if (charFound) break;
+                }
+
+                if (charFound) {
+                    updateStatus('Mencetak struk...');
+                    await sendEscPosData(charFound);
+                    updateStatus('Selesai mencetak!');
+                    
+                    // Auto-disconnect to free up printer for other devices
+                    setTimeout(() => {
+                        if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                            bluetoothDevice.gatt.disconnect();
+                            console.log('Printer diputuskan otomatis agar bisa digunakan perangkat lain.');
+                        }
+                    }, 1000);
+                } else {
+                    throw new Error('Printer tidak mendukung direct print (GATT Write tidak ditemukan).');
+                }
+
+            } catch (error) {
+                console.error('Bluetooth error:', error);
+                
+                // Reset state on range/connection errors
+                if (error.message.includes('range') || error.message.includes('connection') || error.message.includes('GATT')) {
+                    bluetoothDevice = null;
+                    updateStatus(`Gagal: Printer offline/jauh atau koneksi timeout. Klik "Cari Printer" lalu pilih ulang.`);
+                } else {
+                    updateStatus(`Gagal: ${error.message}. Menggunakan dialog sistem.`);
+                }
+                
+                setTimeout(() => window.print(), 2000);
+            }
+        }
+
+        async function forgetPairedPrinter() {
+            const select = document.getElementById('printerSelect');
+            const selectedIdx = select.value;
+            
+            if (!selectedIdx || selectedIdx === "system_dialog" || selectedIdx === "add_new") {
+                updateStatus('Pilih printer dari daftar terlebih dahulu sebelum menghapus.');
+                return;
+            }
+
+            if (selectedIdx.startsWith('native:')) {
+                const address = selectedIdx.slice('native:'.length);
+                if (address) {
+                    localStorage.removeItem('lastNativeBluetoothPrinter');
+                    updateStatus(`Pilihan printer Android (${address}) dihapus dari favorit.`);
+                    select.value = '';
+                }
+                return;
+            }
+            
+            if (selectedIdx.startsWith('web:')) {
+                const id = selectedIdx.slice(4);
+                removeSavedWebBluetoothPrinter(id);
+                if (bluetoothDevice && bluetoothDevice.id === id && bluetoothDevice.forget) {
+                    try { await bluetoothDevice.forget(); } catch (e) {}
+                }
+                if (localStorage.getItem('lastBluetoothPrinterId') === id) {
+                    localStorage.removeItem('lastBluetoothPrinterId');
+                }
+                updateStatus('Printer dihapus dari daftar tersimpan.');
+                bluetoothDevice = null;
+                await populatePairedPrinters();
+                select.value = '';
+                return;
+            }
+
+            const device = pairedDevicesById[selectedIdx];
+            if (!device) {
+                updateStatus('Printer tidak ditemukan.');
+                return;
+            }
+            
+            if (confirm(`Hapus printer "${device.name}" dari daftar paired? Anda bisa menambahkannya kembali dengan "Cari Printer".`)) {
+                try {
+                    if (device.forget) {
+                        // Try to forget device if supported
+                        await device.forget();
+                        updateStatus(`Printer "${device.name}" sudah dihapus dari daftar paired.`);
+                    } else {
+                        updateStatus('Browser tidak mendukung "forget" untuk device ini. Coba buka chrome://settings/content/bluetoothDevices untuk menghapus secara manual.');
+                    }
+                    // Refresh list
+                    await populatePairedPrinters();
+                    bluetoothDevice = null;
+                    select.value = '';
+                } catch (error) {
+                    console.error('Error forgetting device:', error);
+                    updateStatus(`Gagal menghapus printer: ${error.message}. Coba buka chrome://settings/content/bluetoothDevices untuk menghapus secara manual.`);
+                }
+            }
+        }
+
+        async function searchNewBluetooth() {
+            try {
+                if (isAndroidNativeAppContext() && !hasNativeBluetoothSupport()) {
+                    await ensureCapacitorBridgeReady(2500);
+                }
+
+                if (hasNativeBluetoothSupport()) {
+                    const granted = await ensureNativeBluetoothPermissions();
+                    if (!granted) {
+                        updateStatus('Izin Bluetooth belum diberikan.');
+                        return;
+                    }
+                    updateStatus('Mencari printer Bluetooth Android...');
+                    const devices = await discoverNativePrinters(12000);
+                    if (devices.length > 0) {
+                        saveCachedNativePrinters(devices);
+                    }
+                    await populatePairedPrinters(devices);
+                    if (devices.length > 0) {
+                        const firstWithAddress = devices.find(d => d && d.address);
+                        if (firstWithAddress && firstWithAddress.address) {
+                            const select = document.getElementById('printerSelect');
+                            if (select) {
+                                const val = `native:${firstWithAddress.address}`;
+                                const option = Array.from(select.options).find(opt => opt.value === val);
+                                if (option) select.value = val;
+                            }
+                            localStorage.setItem('lastNativeBluetoothPrinter', firstWithAddress.address);
+                        }
+                    }
+                    updateStatus(devices.length > 0
+                        ? `Scan selesai. Ditemukan ${devices.length} perangkat Bluetooth.`
+                        : 'Printer tidak ditemukan. Buka Pengaturan → Bluetooth, pasangkan (pair) printer, lalu tap ↻ refresh atau "Cari Printer" lagi.');
+                    if (devices.length === 0 && window.PosBrowserNative && typeof window.PosBrowserNative.openBluetoothSettings === 'function') {
+                        if (confirm('Printer tidak ditemukan.\n\nBuka Pengaturan Bluetooth Android untuk memasangkan printer?')) {
+                            window.PosBrowserNative.openBluetoothSettings();
+                        }
+                    }
+                    return;
+                }
+
+                if (!isSecureContextForBluetooth() || !hasWebBluetoothSupport()) {
+                    updateStatus(getWebBluetoothBlockReason());
+                    return;
+                }
+
+                if (bluetoothDevice && bluetoothDevice.gatt && bluetoothDevice.gatt.connected) {
+                    try { bluetoothDevice.gatt.disconnect(); } catch (e) {}
+                }
+                bluetoothDevice = null;
+                const select = document.getElementById('printerSelect');
+                if (select) select.value = '';
+                updateStatus('Mencari printer baru... Pilih perangkat pada dialog Bluetooth.');
+
+                const picked = await requestBluetoothDeviceInteractive();
+                if (!picked) return;
+                bluetoothDevice = picked;
+                saveWebBluetoothPrinter(picked);
+                if (picked.name) localStorage.setItem('lastBluetoothPrinter', picked.name);
+                if (picked.id) localStorage.setItem('lastBluetoothPrinterId', picked.id);
+
+                try { await populatePairedPrinters(); } catch (e) {}
+                updateStatus(`Printer dipilih: ${picked.name || 'Unknown Printer'}. Klik "Cetak Struk" untuk lanjut.`);
+            } catch (error) {
+                if (error && error.name === 'NotFoundError') {
+                    updateStatus('Tidak ada printer dipilih.');
+                    return;
+                }
+                updateStatus(`Gagal mencari printer: ${error.message || error}`);
+            }
+        }
+
+        function getReceiptItemVariantInfo(item) {
+            if (!item) return '';
+            if (item.variantNote) return item.variantNote;
+            if (item.variant && typeof item.variant === 'object') {
+                const v = item.variant;
+                const parts = [];
+                if (v.note) parts.push(v.note);
+                if (v.qty && v.unit) parts.push(`${v.qty} ${v.unit}`);
+                if (v.sku) parts.push(`SKU: ${v.sku}`);
+                return parts.join(' - ');
+            }
+            return '';
+        }
+
+        function formatReceiptItemEscposLines(item, itemNumber) {
+            const quantity = toNumberSafe(item.quantity ?? item.qty ?? 0);
+            const price = toNumberSafe(item.price ?? 0);
+            const subtotal = toNumberSafe(item.subtotal ?? (price * quantity));
+            const unitLabel = getItemUnitLabel(item);
+            const variantInfo = getReceiptItemVariantInfo(item);
+            const itemName = (item.name || 'Item') + (variantInfo ? ` (${variantInfo})` : '');
+            const displayName = `${itemNumber}. ${itemName}`;
+            const detailLine = `  ${quantity}${unitLabel ? ' ' + unitLabel : ''} x ${formatNumber(price)} = ${formatNumber(subtotal)}`;
+            return { displayName, detailLine };
+        }
+
+        function escapeReceiptHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function shouldUseEscposLayout() {
+            const paperSize = document.getElementById('paperSizeSelect')?.value || 'thermal-58mm';
+            return paperSize !== 'a4';
+        }
+
+        function applyReceiptLayoutMode() {
+            const useEscpos = shouldUseEscposLayout();
+            document.body.classList.toggle('layout-escpos', useEscpos);
+            const itemsEscpos = document.getElementById('itemsEscpos');
+            if (itemsEscpos) itemsEscpos.setAttribute('aria-hidden', useEscpos ? 'false' : 'true');
+        }
+
+        function renderReceiptItemsEscpos(container, items) {
+            if (!container) return;
+            container.innerHTML = '';
+            const topSep = document.createElement('div');
+            topSep.className = 'items-escpos-sep';
+            topSep.textContent = '--------------------------------';
+            container.appendChild(topSep);
+            (Array.isArray(items) ? items : []).forEach((item, index) => {
+                const lines = formatReceiptItemEscposLines(item, index + 1);
+                const block = document.createElement('div');
+                block.className = 'items-escpos-item';
+                block.innerHTML = `<div class="items-escpos-name">${escapeReceiptHtml(lines.displayName)}</div><div class="items-escpos-detail">${escapeReceiptHtml(lines.detailLine)}</div>`;
+                container.appendChild(block);
+            });
+            const bottomSep = document.createElement('div');
+            bottomSep.className = 'items-escpos-sep';
+            bottomSep.textContent = '--------------------------------';
+            container.appendChild(bottomSep);
+        }
+
+        async function sendEscPosData(characteristic) {
+            const encoder = new TextEncoder();
+            const transaction = normalizeReceiptTransaction(window.transactionData || {});
+            transaction.items = await enrichItemsWithUnits(transaction.items);
+            
+            // Detect if device is mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            // Adaptive settings based on device
+            const CHUNK_SIZE = isMobile ? 128 : 512;
+            const DELAY = isMobile ? 20 : 0;
+            
+            console.log(`Cetak menggunakan mode: ${isMobile ? 'HP/Mobile' : 'Laptop/Desktop'}`);
+            console.log(`Settings: Chunk ${CHUNK_SIZE}, Delay ${DELAY}ms`);
+
+            // ESC/POS Commands
+            const ESC = '\x1b';
+            const INIT = ESC + '@';
+            const CENTER = ESC + 'a' + '\x01';
+            const LEFT = ESC + 'a' + '\x00';
+            const BOLD_ON = ESC + 'E' + '\x01';
+            const BOLD_OFF = ESC + 'E' + '\x00';
+            const FEED = '\n\n\n\n\n';
+
+            const buildLogoBytes = async () => {
+                let logoUrl = transaction.receiptLogo || transaction.storeLogo || '';
+                if (!logoUrl) {
+                    const logoEl = document.getElementById('receiptLogo');
+                    if (logoEl && logoEl.src) logoUrl = logoEl.src;
+                }
+                if (!logoUrl) return null;
+                const paperSize = document.getElementById('paperSizeSelect')?.value || 'thermal-80mm';
+                const maxWidth = paperSize === 'thermal-58mm' ? 384 : 576; // dots
+                return await buildRasterLogoBytes(logoUrl, maxWidth);
+            };
+
+            const buildRasterLogoBytes = async (logoUrl, maxWidth) => {
+                try {
+                    const img = await loadImage(logoUrl);
+                    const scale = Math.min(1, maxWidth / img.width);
+                    const w = Math.max(1, Math.floor(img.width * scale));
+                    const h = Math.max(1, Math.floor(img.height * scale));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, w, h);
+                    ctx.drawImage(img, 0, 0, w, h);
+                    const imgData = ctx.getImageData(0, 0, w, h).data;
+                    const bytesPerRow = Math.ceil(w / 8);
+                    const raster = new Uint8Array(bytesPerRow * h);
+                    for (let y = 0; y < h; y++) {
+                        for (let x = 0; x < w; x++) {
+                            const idx = (y * w + x) * 4;
+                            const r = imgData[idx];
+                            const g = imgData[idx + 1];
+                            const b = imgData[idx + 2];
+                            const a = imgData[idx + 3];
+                            const gray = (0.299 * r + 0.587 * g + 0.114 * b);
+                            const isBlack = a > 10 && gray < 200;
+                            if (isBlack) {
+                                const byteIndex = y * bytesPerRow + (x >> 3);
+                                raster[byteIndex] |= (0x80 >> (x & 7));
+                            }
+                        }
+                    }
+                    const xL = bytesPerRow & 0xff;
+                    const xH = (bytesPerRow >> 8) & 0xff;
+                    const yL = h & 0xff;
+                    const yH = (h >> 8) & 0xff;
+                    const header = Uint8Array.from([0x1d, 0x76, 0x30, 0x00, xL, xH, yL, yH]);
+                    const out = new Uint8Array(header.length + raster.length);
+                    out.set(header, 0);
+                    out.set(raster, header.length);
+                    return out;
+                } catch (e) {
+                    return null;
+                }
+            };
+
+            const loadImage = (src) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = src;
+                });
+            };
+
+            let data = CENTER + BOLD_ON;
+            data += (document.getElementById('cityName').textContent || 'Indonesia') + '\n';
+            data += 'STRUK PEMBAYARAN\n';
+            data += BOLD_OFF + '\n';
+            
+            data += LEFT;
+            data += `ID: ${transaction.id || '-'}\n`;
+            data += `Tgl: ${transaction.dateText || '-'}\n`;
+            data += `Ksr: ${transaction.cashierText || 'Admin'}\n`;
+            data += `Plg: ${transaction.customerText || 'Pelanggan Umum'}\n`;
+            data += '--------------------------------\n';
+            
+            if (transaction.items && Array.isArray(transaction.items)) {
+                transaction.items.forEach((item, index) => {
+                    const lines = formatReceiptItemEscposLines(item, index + 1);
+                    data += `${lines.displayName}\n`;
+                    data += `${lines.detailLine}\n`;
+                });
+            }
+            
+            data += '--------------------------------\n';
+            const totalItemsQty = sumReceiptItemsQty(transaction.items);
+            data += `Qty Brg : ${totalItemsQty}\n`;
+            data += `Subtotal: ${formatNumber(transaction.subtotal || 0)}\n`;
+            data += `Diskon  : ${formatNumber(transaction.discountAmount || 0)}\n`;
+            const balanceUsed = Number((transaction && transaction.customerBalanceUsed) || 0) || 0;
+            if (balanceUsed > 0) {
+                data += `Saldo   : ${formatNumber(balanceUsed)}\n`;
+            }
+            data += BOLD_ON + `TOTAL   : ${formatNumber(transaction.totalAmount || 0)}\n` + BOLD_OFF;
+            data += `Dibayar : ${formatNumber(transaction.amountReceived || 0)}\n`;
+            data += `Kembali : ${formatNumber(getReceiptChange(transaction))}\n`;
+            
+            if (transaction.showFooter !== false) {
+                const f1 = transaction.receiptFooter || 'Terima Kasih';
+                const f2 = transaction.receiptFooter1 || 'Barang yang sudah dibeli tidak dapat dikembalikan';
+                data += '\n' + CENTER + f1 + '\n';
+                if (f2) data += f2 + '\n';
+            }
+            data += FEED;
+
+            const chunks = [];
+            chunks.push(encoder.encode(INIT));
+            const logoBytes = await buildLogoBytes();
+            if (logoBytes) {
+                chunks.push(Uint8Array.from([0x1b, 0x61, 0x01]));
+                chunks.push(logoBytes);
+                chunks.push(encoder.encode('\n'));
+            }
+            chunks.push(encoder.encode(data));
+
+            for (const bytes of chunks) {
+                for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+                    const chunk = bytes.slice(i, i + CHUNK_SIZE);
+                    await characteristic.writeValue(chunk);
+                    if (DELAY > 0) await new Promise(r => setTimeout(r, DELAY));
+                }
+            }
+        }
+        
+        function printWithSystemDialog() {
+            const paperSize = document.getElementById('paperSizeSelect').value;
+            updateStatus(`Membuka dialog print untuk ukuran ${getPaperSizeName(paperSize)}...`);
+            // Force system print dialog
+            const originalTitle = document.title;
+            document.title = `Struk_Pembayaran_{{transactionId}}_${paperSize}`;
+            // Make system dialog output look like ESC/POS
+            const body = document.body;
+            const onAfter = () => {
+                body.classList.remove('escpos-print');
+                window.removeEventListener('afterprint', onAfter);
+            };
+            body.classList.add('escpos-print');
+            window.addEventListener('afterprint', onAfter);
+            window.print();
+            document.title = originalTitle;
+        }
+        
+        function getPaperSizeName(paperSize) {
+            const sizes = {
+                'thermal-58mm': 'Thermal 58mm',
+                'thermal-80mm': 'Thermal 80mm',
+                'a4': 'A4'
+            };
+            return sizes[paperSize] || 'Unknown';
+        }
+        
+        function updateStatus(message) {
+            const statusEl = document.getElementById('printerStatus');
+            if (statusEl) {
+                statusEl.textContent = message;
+                statusEl.style.color = '#007bff';
+            }
+        }
+
+        function safeCloseReceiptPage() {
+            try {
+                if (window.opener && !window.opener.closed) {
+                    window.close();
+                    return;
+                }
+            } catch (e) {}
+            try {
+                if (history.length > 1) {
+                    history.back();
+                    return;
+                }
+            } catch (e) {}
+            try {
+                const ref = String(document.referrer || '');
+                if (ref.includes('/admin')) {
+                    window.location.replace('/admin.html');
+                    return;
+                }
+            } catch (e) {}
+            try { window.location.replace('pos.html'); return; } catch (e) {}
+            window.location.href = '/pos.html';
+        }
+        try {
+            document.addEventListener('click', function (e) {
+                const btn = e.target && e.target.closest ? e.target.closest('[data-action=\"close-receipt\"]') : null;
+                if (!btn) return;
+                e.preventDefault();
+                safeCloseReceiptPage();
+            }, true);
+            document.addEventListener('touchend', function (e) {
+                const btn = e.target && e.target.closest ? e.target.closest('[data-action=\"close-receipt\"]') : null;
+                if (!btn) return;
+                e.preventDefault();
+                safeCloseReceiptPage();
+            }, { passive: false, capture: true });
+        } catch (e) {}
+        
+        let cachedStoreSettings = null;
+        async function loadStoreSettings() {
+            if (cachedStoreSettings) return cachedStoreSettings;
+            try {
+                // Try to get from settings API (includes license data)
+                const response = await fetch('/api/settings', { cache: 'no-store' });
+                if (response.ok) {
+                    cachedStoreSettings = await response.json();
+                    return cachedStoreSettings;
+                }
+            } catch (e) {
+                console.warn('Failed to load store name from settings:', e);
+            }
+            
+            // Fallback to default
+            return {};
+        }
+
+        async function loadStoreName() {
+            const settings = await loadStoreSettings();
+            return settings.storeName || 'Indonesia';
+        }
+
+        function toNumberSafe(value) {
+            if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+            if (value == null) return 0;
+            const raw = String(value).trim();
+            if (!raw) return 0;
+            const cleaned = raw.replace(/[^\d-]/g, '');
+            const parsed = Number(cleaned);
+            return Number.isFinite(parsed) ? parsed : 0;
+        }
+
+        function pickFirst(...values) {
+            for (const val of values) {
+                if (val !== undefined && val !== null && String(val).trim() !== '') return val;
+            }
+            return '';
+        }
+
+        function getItemUnitLabel(item) {
+            if (!item) return '';
+            const direct = String(pickFirst(item.unit, item.satuan, item.unitName)).trim();
+            if (direct) return direct;
+            if (item.variant && typeof item.variant === 'object') {
+                const variantUnit = String(pickFirst(item.variant.unit, item.variant.variantUnit)).trim();
+                if (variantUnit) return variantUnit;
+            }
+            return String(item.variantUnit || '').trim();
+        }
+
+        let cachedProductUnitMap = null;
+        async function loadProductUnitMap() {
+            if (cachedProductUnitMap) return cachedProductUnitMap;
+            cachedProductUnitMap = new Map();
+            try {
+                const response = await fetch('/api/products', { cache: 'no-store' });
+                if (response.ok) {
+                    const products = await response.json();
+                    if (Array.isArray(products)) {
+                        products.forEach((p) => {
+                            if (!p || p.id == null) return;
+                            const unit = String(pickFirst(p.unit, p.satuan, p.unitName)).trim();
+                            if (unit) cachedProductUnitMap.set(String(p.id), unit);
+                        });
+                    }
+                }
+            } catch (e) {}
+            return cachedProductUnitMap;
+        }
+
+        async function enrichItemsWithUnits(items) {
+            const list = Array.isArray(items) ? items.slice() : [];
+            const productMap = await loadProductUnitMap();
+            return list.map((item) => {
+                const unit = getItemUnitLabel(item);
+                if (unit) return Object.assign({}, item, { unit });
+                const pid = item && item.productId;
+                const fromProduct = pid != null ? productMap.get(String(pid)) : '';
+                return fromProduct ? Object.assign({}, item, { unit: fromProduct }) : item;
+            });
+        }
+
+        function sumReceiptItemsQty(items) {
+            return (Array.isArray(items) ? items : []).reduce((sum, item) => sum + toNumberSafe(item.quantity ?? item.qty ?? 0), 0);
+        }
+
+        function normalizeReceiptTransaction(transaction) {
+            const tx = transaction || {};
+            const items = Array.isArray(tx.items) ? tx.items : [];
+            const itemsSubtotal = items.reduce((sum, item) => {
+                const qty = toNumberSafe(item.quantity ?? item.qty ?? 0);
+                const price = toNumberSafe(item.price ?? 0);
+                const lineSubtotalRaw = item.subtotal ?? (qty * price);
+                const lineSubtotal = toNumberSafe(lineSubtotalRaw);
+                return sum + lineSubtotal;
+            }, 0);
+
+            const subtotalFromPayload = toNumberSafe(pickFirst(tx.subtotal, tx.subTotal, tx.baseSubtotal, tx.totalBeforeDiscount, tx.total_belanja));
+            const subtotal = subtotalFromPayload > 0 ? subtotalFromPayload : itemsSubtotal;
+            const discountAmount = toNumberSafe(pickFirst(tx.discountAmount, tx.discount, tx.discountValue, 0));
+            const taxAmount = toNumberSafe(pickFirst(tx.taxAmount, tx.tax, 0));
+            const serviceAmount = toNumberSafe(pickFirst(tx.serviceAmount, tx.service, 0));
+            const totalFromPayload = toNumberSafe(
+                pickFirst(
+                    tx.totalAmount,
+                    tx.total,
+                    tx.grandTotal,
+                    tx.totalBelanja,
+                    tx.payableTotal,
+                    tx.payableAfterBalance,
+                    subtotal - discountAmount + taxAmount + serviceAmount
+                )
+            );
+            const totalAmount = totalFromPayload > 0
+                ? totalFromPayload
+                : Math.max(0, subtotal - discountAmount + taxAmount + serviceAmount);
+            const amountReceived = toNumberSafe(
+                pickFirst(
+                    tx.amountReceived,
+                    tx.receivedAmount,
+                    tx.cashReceived,
+                    tx.paidAmount,
+                    tx.paid,
+                    tx.paymentAmount,
+                    tx.amountPaid,
+                    0
+                )
+            );
+            const totalItemsQty = (tx.totalItemsQty != null && tx.totalItemsQty !== '')
+                ? toNumberSafe(tx.totalItemsQty)
+                : sumReceiptItemsQty(items);
+
+            const dateRaw = pickFirst(tx.timestamp, tx.dateTime, tx.date, tx.createdAt, tx.updatedAt, tx.paymentDate);
+            let dateText = '-';
+            if (dateRaw) {
+                const dateObj = new Date(dateRaw);
+                if (!isNaN(dateObj.getTime())) {
+                    dateText = dateObj.toLocaleString('id-ID');
+                }
+            }
+
+            return {
+                ...tx,
+                id: pickFirst(tx.id, tx.transactionId),
+                dateText,
+                cashierText: pickFirst(tx.cashier, tx.cashierName, tx.cashierUsername, tx.cashir, tx.userName, tx.username, tx.user, 'Unknown'),
+                customerText: pickFirst(
+                    tx.customerName,
+                    (tx.customer && typeof tx.customer === 'object' ? tx.customer.name : ''),
+                    (typeof tx.customer === 'string' ? tx.customer : ''),
+                    'Pelanggan Umum'
+                ),
+                paymentMethodText: pickFirst(tx.paymentMethod, tx.method, tx.paymentType, 'Cash'),
+                subtotal,
+                discountAmount,
+                totalAmount,
+                amountReceived,
+                totalItemsQty,
+                items
+            };
+        }
+        
+        async function populateReceipt(transaction) {
+            const tx = normalizeReceiptTransaction(transaction);
+            tx.items = await enrichItemsWithUnits(tx.items);
+            // Apply template style
+            const receiptContainer = document.getElementById('receiptContent');
+            const rawTemplate = (tx.receiptTemplate || 'classic').toString().toLowerCase();
+            const template = ['classic', 'compact', 'minimal'].includes(rawTemplate) ? rawTemplate : 'classic';
+            if (receiptContainer) {
+                receiptContainer.classList.remove('template-classic', 'template-compact', 'template-minimal');
+                receiptContainer.classList.add('template-' + template);
+            }
+
+            // Apply logo (local override)
+            const logoEl = document.getElementById('receiptLogo');
+            let logoUrl = tx.receiptLogo || tx.storeLogo || '';
+            if (logoEl) {
+                if (!logoUrl) {
+                    try {
+                        const settings = await loadStoreSettings();
+                        logoUrl = settings?.logoBase64 || '';
+                    } catch {}
+                }
+                if (logoUrl) {
+                    logoEl.src = logoUrl;
+                    logoEl.style.display = 'block';
+                } else {
+                    logoEl.style.display = 'none';
+                }
+            }
+
+            // Populate city name with store name from settings/license
+            const cityNameElement = document.getElementById('cityName');
+            if (cityNameElement) {
+                // Try to get city from transaction first, then from settings/license
+                let cityName = tx.storeCity || tx.city || tx.storeName || 'Indonesia';
+                if (cityName === 'Indonesia' || !cityName) {
+                    // If still default, try to load from settings
+                    try {
+                        cityName = await loadStoreName();
+                    } catch (e) {
+                        cityName = 'Indonesia';
+                    }
+                }
+                cityNameElement.textContent = cityName;
+            }
+            
+            // Populate basic info
+            document.getElementById('transactionId').textContent = tx.id || '-';
+            document.getElementById('dateTime').textContent = tx.dateText;
+            document.getElementById('cashier').textContent = tx.cashierText;
+            document.getElementById('customerName').textContent = tx.customerText;
+            document.getElementById('paymentMethod').textContent = tx.paymentMethodText;
+            
+            // Populate items
+            const itemsBody = document.getElementById('itemsBody');
+            const itemsEscpos = document.getElementById('itemsEscpos');
+            const useEscpos = shouldUseEscposLayout();
+            applyReceiptLayoutMode();
+            if (itemsBody) itemsBody.innerHTML = '';
+            renderReceiptItemsEscpos(itemsEscpos, tx.items);
+            
+            if (itemsBody && !useEscpos && tx.items && Array.isArray(tx.items)) {
+                tx.items.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    const quantity = toNumberSafe(item.quantity ?? item.qty ?? 0);
+                    const price = toNumberSafe(item.price ?? 0);
+                    const subtotal = toNumberSafe(item.subtotal ?? (price * quantity));
+                    const unitLabel = getItemUnitLabel(item);
+                    const variantInfo = getReceiptItemVariantInfo(item);
+                    const itemName = (item.name || 'Item') + (variantInfo ? ` (${variantInfo})` : '');
+
+                    row.innerHTML = `
+                        <td>${index + 1}. ${escapeReceiptHtml(itemName)}</td>
+                        <td>${quantity}${unitLabel ? ` ${unitLabel}` : ''}</td>
+                        <td>Rp ${formatNumber(price)}</td>
+                        <td>Rp ${formatNumber(subtotal)}</td>
+                    `;
+                    itemsBody.appendChild(row);
+                });
+            }
+            
+            // Populate totals
+            const moneyPrefix = useEscpos ? '' : 'Rp ';
+            const totalItemsQtyEl = document.getElementById('totalItemsQty');
+            if (totalItemsQtyEl) {
+                totalItemsQtyEl.textContent = String(tx.totalItemsQty != null ? tx.totalItemsQty : sumReceiptItemsQty(tx.items));
+            }
+            document.getElementById('subtotal').textContent = moneyPrefix + formatNumber(tx.subtotal || 0);
+            document.getElementById('discountAmount').textContent = moneyPrefix + formatNumber(tx.discountAmount || 0);
+            const balanceUsed = Number((tx && tx.customerBalanceUsed) || 0) || 0;
+            const balanceUsedRow = document.getElementById('balanceUsedRow');
+            const balanceUsedEl = document.getElementById('balanceUsed');
+            if (balanceUsedRow && balanceUsedEl) {
+                if (balanceUsed > 0) {
+                    balanceUsedEl.textContent = moneyPrefix + formatNumber(balanceUsed);
+                    balanceUsedRow.style.display = 'block';
+                } else {
+                    balanceUsedEl.textContent = '0';
+                    balanceUsedRow.style.display = 'none';
+                }
+            }
+            document.getElementById('total').textContent = moneyPrefix + formatNumber(tx.totalAmount || 0);
+            document.getElementById('amountReceived').textContent = moneyPrefix + formatNumber(tx.amountReceived || 0);
+            document.getElementById('change').textContent = moneyPrefix + formatNumber(getReceiptChange(tx));
+            
+            // Handle notes
+            const notesSection = document.getElementById('notesSection');
+            const notesElement = document.getElementById('notes');
+            if (tx.notes) {
+                notesElement.textContent = tx.notes;
+                notesSection.style.display = 'block';
+            } else {
+                notesSection.style.display = 'none';
+            }
+
+            // Footer content
+            const footerEl = document.getElementById('receiptFooter');
+            const showFooter = tx.showFooter !== false;
+            if (footerEl) {
+                if (!showFooter) {
+                    footerEl.style.display = 'none';
+                } else {
+                    const f1 = tx.receiptFooter || 'Terima kasih atas kunjungan Anda';
+                    const f2 = tx.receiptFooter1 || 'Barang yang sudah dibeli tidak dapat dikembalikan';
+                    footerEl.innerHTML = `<p>${f1}</p>` + (f2 ? `<p>${f2}</p>` : '');
+                    footerEl.style.display = 'block';
+                }
+            }
+        }
+        
+        function getReceiptChange(transaction) {
+            const tx = transaction || {};
+            const paymentMethod = String(tx.paymentMethodText || tx.paymentMethod || tx.method || '').toLowerCase();
+            const rawExplicitChange = pickFirst(tx.change, tx.kembalian, tx.returnAmount);
+            const explicitChange = rawExplicitChange === '' ? NaN : Number(rawExplicitChange);
+            const amountReceived = Number(
+                pickFirst(
+                    tx.amountReceived,
+                    tx.receivedAmount,
+                    tx.cashReceived,
+                    tx.paidAmount,
+                    tx.paid,
+                    tx.paymentAmount,
+                    tx.amountPaid,
+                    0
+                )
+            ) || 0;
+            const rawPayableAfterBalance = pickFirst(tx.payableAfterBalance, tx.payableTotal);
+            const payableAfterBalance = rawPayableAfterBalance === '' ? NaN : Number(rawPayableAfterBalance);
+            const totalAmount = Number(pickFirst(tx.totalAmount, tx.total, tx.grandTotal, 0)) || 0;
+            const customerBalanceUsed = Number(tx.customerBalanceUsed || 0) || 0;
+
+            // Non-cash should not show calculated cash change.
+            if (paymentMethod && paymentMethod !== 'cash') {
+                return Number.isFinite(explicitChange) ? explicitChange : 0;
+            }
+
+            const computedChange = Number.isFinite(payableAfterBalance)
+                ? (amountReceived - payableAfterBalance)
+                : (amountReceived - Math.max(0, totalAmount - customerBalanceUsed));
+
+            // If backend sent non-zero explicit value, trust it.
+            if (Number.isFinite(explicitChange) && explicitChange !== 0) return explicitChange;
+            // If explicit is zero but computed indicates real change, use computed.
+            if (Math.abs(computedChange) >= 1) return computedChange;
+            return Number.isFinite(explicitChange) ? explicitChange : computedChange;
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('id-ID').format(num);
+        }
+        
+        async function loadTransactionData() {
+            // Check for embedded data first (from server)
+            if (window.transactionData) {
+                await populateReceipt(window.transactionData);
+                return;
+            }
+            
+            // Fallback to URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const payloadToken = urlParams.get('payloadToken');
+            if (payloadToken) {
+                try {
+                    const raw = localStorage.getItem(`pos_receipt_payload_${payloadToken}`);
+                    if (raw) {
+                        const transaction = JSON.parse(raw);
+                        localStorage.removeItem(`pos_receipt_payload_${payloadToken}`);
+                        window.transactionData = transaction;
+                        await populateReceipt(transaction);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Error membaca payload token struk:', e);
+                }
+            }
+            const transactionData = urlParams.get('data');
+            
+            if (transactionData) {
+                try {
+                    const transaction = JSON.parse(decodeURIComponent(transactionData));
+                    // Store in window.transactionData so Bluetooth print can access it
+                    window.transactionData = transaction;
+                    await populateReceipt(transaction);
+                } catch (e) {
+                    console.error('Error parsing transaction data:', e);
+                    updateStatus('Error: Data transaksi tidak valid');
+                }
+            } else {
+                updateStatus('Error: Data transaksi tidak ditemukan');
+            }
+        }
+        
+        // Auto-focus on print buttons
+        document.addEventListener('DOMContentLoaded', async function() {
+            applyReceiptLayoutMode();
+            // Set default paper size
+            updatePaperSize();
+            await ensureCapacitorBridgeReady(6000);
+            for (let i = 0; i < 25 && !window.PosBrowserNative && !hasNativeBluetoothSupport(); i++) {
+                await new Promise(r => setTimeout(r, 120));
+            }
+            applyBluetoothCapabilityUI();
+            
+            // Load transaction data
+            await loadTransactionData();
+
+            // Populate paired printers list
+            await populatePairedPrinters();
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'p') {
+                    e.preventDefault();
+                    printWithSystemDialog();
+                }
+                if (e.key === 'Escape') {
+                    safeCloseReceiptPage();
+                }
+                // Number keys for quick paper size selection
+                if (e.key === '1') {
+                    document.getElementById('paperSizeSelect').value = 'thermal-58mm';
+                    updatePaperSize();
+                }
+                if (e.key === '2') {
+                    document.getElementById('paperSizeSelect').value = 'thermal-80mm';
+                    updatePaperSize();
+                }
+                if (e.key === '3') {
+                    document.getElementById('paperSizeSelect').value = 'a4';
+                    updatePaperSize();
+                }
+            });
+            
+            if (hasNativeBluetoothSupport()) {
+                updateStatus('Printer Android native siap. Klik Cari Printer untuk scan printer.');
+            } else if (isPosBrowserNativeApp()) {
+                updateStatus(getBluetoothUnavailableMessage());
+            } else if (isAndroidBrowserContext() && hasWebBluetoothSupport()) {
+                updateStatus('Browser Android: klik "Cari Printer" untuk memilih printer Bluetooth. Printer yang dipilih akan tersimpan di daftar.');
+            } else if (isAndroidBrowserContext()) {
+                updateStatus(getWebBluetoothBlockReason());
+            } else if (!hasWebBluetoothSupport() && !hasNativeBluetoothSupport() && isAndroidNativeAppContext()) {
+                updateStatus('Mode aplikasi Android: Bluetooth langsung tidak tersedia. Gunakan Dialog Sistem untuk cetak.');
+            } else {
+                updateStatus('Struk siap dicetak. Pilih ukuran kertas dan metode print.');
+            }
+        });
+    </script>
+</body>
+</html>
+
+

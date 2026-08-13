@@ -1,0 +1,166 @@
+﻿<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure Data Passphrase</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <style>
+    body { background:#f6f7fb; }
+    .container-narrow { max-width: 760px; }
+    .card { border:0; box-shadow:0 10px 25px rgba(0,0,0,0.05); }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand .dot { width:10px; height:10px; border-radius:50%; background:#198754; display:inline-block; }
+    .muted { color:#6c757d; }
+    .password-eye { cursor:pointer; }
+    .code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .step { border-left:4px solid #e9ecef; padding-left:12px; margin:12px 0; }
+    .step strong { color:#0d6efd; }
+  </style>
+</head>
+<body>
+  <div class="container container-narrow py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="brand">
+        <span class="dot"></span>
+        <h4 class="m-0">Secure Data Passphrase</h4>
+      </div>
+      <span class="badge text-bg-success">Admin Only</span>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-2">Panduan Singkat</h5>
+        <div class="step">
+          <strong>Langkah 1:</strong> Enkripsi semua file plaintext terlebih dahulu (sekali saja) dengan tombol "Encrypt Plaintext".
+        </div>
+        <div class="step">
+          <strong>Langkah 2:</strong> Ganti passphrase (Rekey). Setelah berhasil, <u>restart aplikasi</u> dengan passphrase baru.
+        </div>
+        <div class="mt-2 small muted">
+          Catatan: Jika Anda lupa passphrase baru, data tidak bisa dipulihkan. Simpan dengan aman.
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Encrypt Plaintext Files</h5>
+        <p class="muted">Menulis ulang semua file data yang belum terenkripsi menjadi terenkripsi menggunakan passphrase <em>saat ini</em>.</p>
+        <div class="d-flex gap-2">
+          <button id="btnMigrate" class="btn btn-outline-primary">Encrypt Plaintext</button>
+          <div id="migrateStatus" class="align-self-center small muted"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Restore Backup</h5>
+        <p class="muted">Pilih file backup (.enc terenkripsi atau .json). Sistem akan mendeteksi otomatis dan memulihkan data.</p>
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-8">
+            <input id="backupFile" type="file" class="form-control" accept=".enc,.json,.txt,application/json,text/plain">
+          </div>
+          <div class="col-12 col-md-4 d-grid d-md-block">
+            <button id="btnRestore" class="btn btn-success w-100">Restore Now</button>
+          </div>
+        </div>
+        <div id="restoreMsg" class="mt-3"></div>
+        <pre id="restoreDetails" class="small mt-2" style="white-space:pre-wrap"></pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Change Passphrase (Rekey)</h5>
+        <p class="muted">Ganti passphrase untuk seluruh file data terenkripsi. Pastikan Anda mengetahui passphrase lama dan akan <strong>restart</strong> server dengan passphrase baru.</p>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label">Old Passphrase</label>
+            <div class="input-group">
+              <input id="oldPass" type="password" class="form-control" autocomplete="current-password">
+              <span class="input-group-text password-eye" data-target="oldPass">Lihat</span>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">New Passphrase</label>
+            <div class="input-group">
+              <input id="newPass" type="password" class="form-control" autocomplete="new-password">
+              <span class="input-group-text password-eye" data-target="newPass">Lihat</span>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">Confirm New Passphrase</label>
+            <div class="input-group">
+              <input id="newPass2" type="password" class="form-control" autocomplete="new-password">
+              <span class="input-group-text password-eye" data-target="newPass2">Lihat</span>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">Strength</label>
+            <div class="progress" role="progressbar" aria-label="Strength" aria-valuemin="0" aria-valuemax="100">
+              <div id="strengthBar" class="progress-bar bg-success" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <button id="btnRekey" class="btn btn-primary">Apply Rekey</button>
+          <button id="btnClear" class="btn btn-light">Clear</button>
+          <div class="ms-auto small muted">Setelah sukses: restart app dengan <span class="code">POS_PASSPHRASE=pass-baru</span></div>
+        </div>
+        <div id="msg" class="mt-3"></div>
+        <div id="details" class="mt-2 small"></div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4 muted small">
+      Halaman ini tidak ditampilkan di menu. Simpan URL secara privat: <span class="code">/admin-rekey.html</span>
+    </div>
+  </div>
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/js/offline-api.js?v=20260218a"></script>
+  <script src="/js/offline-fetch-bridge.js?v=20260217a"></script>
+  <script>
+    function qs(id){ return document.getElementById(id); }
+    function setMsg(text, ok){ const el=qs('msg'); el.className = ok? 'alert alert-success':'alert alert-danger'; el.textContent = text; }
+    function setDetails(obj){ const el=qs('details'); el.textContent=''; if(!obj) return; try{ el.textContent = JSON.stringify(obj, null, 2);}catch{}}
+    function setMigrate(text){ qs('migrateStatus').textContent = text || ''; }
+    function zxcv(str){ let s=0; if(!str) return 0; const uniq=new Set(str.split('')).size; s += Math.min(uniq*2,30); if(/[A-Z]/.test(str)) s+=15; if(/[a-z]/.test(str)) s+=15; if(/[0-9]/.test(str)) s+=15; if(/[^A-Za-z0-9]/.test(str)) s+=15; s += Math.min((str.length||0)*2, 30); return Math.min(s,100); }
+    function renderStrength(){ const v=qs('newPass').value; const p=zxcv(v); const bar=qs('strengthBar'); bar.style.width=p+'%'; bar.classList.toggle('bg-danger', p<30); bar.classList.toggle('bg-warning', p>=30&&p<60); bar.classList.toggle('bg-success', p>=60); }
+    document.getElementById('newPass').addEventListener('input', renderStrength);
+    document.querySelectorAll('.password-eye').forEach(el=>{ el.addEventListener('click',()=>{ const id=el.getAttribute('data-target'); const inp=qs(id); inp.type = inp.type==='password'?'text':'password'; }); });
+    async function csrf(){ try{ const r=await fetch('/api/csrf'); const j=await r.json(); return j.csrfToken||''; }catch{return ''} }
+    qs('btnClear').addEventListener('click', ()=>{ ['oldPass','newPass','newPass2'].forEach(id=>qs(id).value=''); setMsg('',true); setDetails(null); renderStrength(); });
+    qs('btnMigrate').addEventListener('click', async ()=>{ setMigrate('Processing...'); try{ const t=await csrf(); const r=await fetch('/api/admin/encrypt-migrate',{ method:'POST', headers:{ 'x-csrf-token': t }}); const j=await r.json(); if(r.ok&&j&&j.success){ setMigrate(`Done. Processed: ${j.processed}${j.skipped && j.skipped.length? ", skipped: "+j.skipped.length: ''}`); } else { setMigrate((j&&j.message)||'Failed'); } }catch{ setMigrate('Error'); } });
+    qs('btnRekey').addEventListener('click', async ()=>{ const o=qs('oldPass').value.trim(); const n=qs('newPass').value.trim(); const n2=qs('newPass2').value.trim(); if(!o||!n){ setMsg('All fields are required', false); return; } if(n!==n2){ setMsg('Confirmation does not match', false); return; } if(zxcv(n)<40){ setMsg('New passphrase too weak. Use longer with mixed chars.', false); return; } setMsg('Processing...', true); setDetails(null); try{ const t=await csrf(); const r=await fetch('/api/admin/rekey', { method:'POST', headers:{ 'Content-Type':'application/json', 'x-csrf-token': t }, body: JSON.stringify({ oldPassphrase:o, newPassphrase:n }) }); const j=await r.json(); if(r.ok && j && j.success){ setMsg('Rekey success. Restart aplikasi dengan passphrase baru.', true); setDetails(j); } else { setMsg((j&&j.message)||'Failed', false); setDetails(j); } } catch(e){ setMsg('Error', false); } });
+
+    function setRestore(text, ok){ const el=qs('restoreMsg'); el.className = ok? 'alert alert-success':'alert alert-warning'; el.textContent = text; }
+    function setRestoreDetails(obj){ const el=qs('restoreDetails'); try{ el.textContent = obj ? JSON.stringify(obj, null, 2) : ''; } catch { el.textContent=''; } }
+    qs('btnRestore').addEventListener('click', async ()=>{
+      try {
+        setRestore('Processing...', true); setRestoreDetails(null);
+        const f = qs('backupFile').files[0];
+        if (!f) { setRestore('Pilih file backup terlebih dahulu', false); return; }
+        const text = await f.text();
+        const t = await csrf();
+        let r;
+        if (text.startsWith('ENC1:')) {
+          r = await fetch('/api/backup/database/restore-enc', { method:'POST', headers:{ 'Content-Type':'text/plain', 'x-csrf-token': t }, body: text });
+        } else {
+          let payload;
+          try { payload = JSON.parse(text); }
+          catch { payload = { __encrypted: text }; }
+          r = await fetch('/api/backup/database/restore', { method:'POST', headers:{ 'Content-Type':'application/json', 'x-csrf-token': t }, body: JSON.stringify(payload) });
+        }
+        const j = await r.json().catch(()=>null);
+        if (r.ok && j && j.success) { setRestore('Restore berhasil', true); setRestoreDetails(j); }
+        else { setRestore((j&&j.message)||'Restore gagal', false); setRestoreDetails(j); }
+      } catch(e){ setRestore('Error', false); }
+    });
+  </script>
+</body>
+</html>
+
+

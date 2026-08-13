@@ -1,0 +1,358 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="loginTitle">Login - POS System</title>
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/favicon.ico">
+</head>
+<body class="bg-light" id="loginBody">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-md-5">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <img id="loginLogo" src="" alt="Logo" style="display:none; object-fit:contain;" />
+                        </div>
+                        <h2 class="text-center mb-4" id="loginTitleText">POS Login</h2>
+                        <form id="loginForm">
+                            <div class="mb-3"><label for="username" class="form-label">Username</label><input type="text" class="form-control" id="username" required></div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn" aria-label="Tampilkan password" title="Tampilkan password">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="loginButton">Login</button>
+                        </form>
+                        <div id="alertContainer" class="mt-3"></div>
+                        <div id="licenseSectionLogin" class="mt-3 d-none">
+                            <hr>
+                            <h6>LICENSE KEY</h6>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" id="licenseKeyInputLogin" placeholder="Masukkan LICENSE KEY">
+                                <button class="btn btn-outline-primary" type="button" id="licenseSaveBtnLogin">Simpan</button>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12">
+                                    <input type="text" class="form-control" id="licenseStoreNameInputLogin" placeholder="Nama Toko (otomatis dari license)" readonly disabled>
+                                </div>
+                                <div class="col-12">
+                                    <input type="text" class="form-control" id="licenseAdminNameInputLogin" placeholder="Nama Admin (otomatis dari license)" readonly disabled>
+                                </div>
+                            </div>
+                            <div id="licenseStatusLogin" class="small text-muted"></div>
+                            <div class="small text-muted">Untuk mendapatkan LICENSE KEY, silakan hubungi admin <br>(via Whatsapp : 0852-0646-1713).</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bcryptjs/bcrypt.min.js"></script>
+    <script src="/js/offline-api.js?v=20260704a"></script>
+    <script src="/js/login.js?v=20260704a"></script>
+    <script src="/js/back-to-top.js"></script>
+    <script>
+      (function () {
+        function apiFetchLoginInline(input, init) {
+          try {
+            if (window.__POS_OFFLINE_API__ && typeof window.__POS_OFFLINE_API__.request === 'function') {
+              var raw = (typeof input === 'string') ? input : (input && input.url) || '';
+              var isLicenseEndpoint = typeof raw === 'string' && raw.indexOf('/api/license/') === 0;
+              var reqInit = Object.assign({}, init || {});
+              if (isLicenseEndpoint) reqInit.__forceOffline = true;
+              return window.__POS_OFFLINE_API__.request(input, reqInit, window.fetch.bind(window));
+            }
+          } catch (e) {}
+          return window.fetch(input, init);
+        }
+
+        function decodeBase64UrlUtf8Inline(input) {
+          try {
+            var b64 = String(input || '').replace(/-/g, '+').replace(/_/g, '/');
+            while (b64.length % 4) b64 += '=';
+            var bin = atob(b64);
+            var bytes = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            if (typeof TextDecoder !== 'undefined') return new TextDecoder('utf-8').decode(bytes);
+            var s = '';
+            for (var j = 0; j < bytes.length; j++) s += '%' + ('00' + bytes[j].toString(16)).slice(-2);
+            return decodeURIComponent(s);
+          } catch (e) { return ''; }
+        }
+
+        function parseLicenseNamesFromKeyInline(rawKey) {
+          var out = { storeName: '', adminName: '' };
+          try {
+            var key = String(rawKey || '').trim();
+            if (!key) return out;
+
+            // Preferred format: POS1-{base64url(payload)}.{sig}
+            if (key.indexOf('POS1-') === 0) {
+              var body = key.slice(5).trim();
+              var parts = body.split('.');
+              if (parts.length > 0) {
+                var txt = decodeBase64UrlUtf8Inline(parts[0]);
+                if (txt) {
+                  var payload = JSON.parse(txt);
+                  if (payload && typeof payload === 'object') {
+                    out.storeName = String(payload.storeName || payload.note || '').trim();
+                    out.adminName = String(payload.adminName || out.storeName || '').trim();
+                    return out;
+                  }
+                }
+              }
+            }
+
+            // Fallback key-value format
+            var mStore = key.match(/(?:store|store_name|toko|nama_toko)=([^|]+)/i);
+            if (mStore && mStore[1]) out.storeName = decodeURIComponent(mStore[1]).trim();
+            var mAdmin = key.match(/(?:admin|admin_name|nama_admin|owner)=([^|]+)/i);
+            if (mAdmin && mAdmin[1]) out.adminName = decodeURIComponent(mAdmin[1]).trim();
+            if (!out.storeName) {
+              var mNote = key.match(/note=([^|]+)/i);
+              if (mNote && mNote[1]) out.storeName = decodeURIComponent(mNote[1]).trim();
+            }
+            if (!out.adminName && out.storeName) out.adminName = out.storeName;
+          } catch (e) {}
+          return out;
+        }
+
+        // Toggle password visibility
+        try {
+          var toggleBtn = document.getElementById('togglePasswordBtn');
+          var passwordInput = document.getElementById('password');
+          if (toggleBtn && passwordInput) {
+            toggleBtn.addEventListener('click', function () {
+              var isHidden = passwordInput.type === 'password';
+              passwordInput.type = isHidden ? 'text' : 'password';
+              toggleBtn.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+              toggleBtn.setAttribute('title', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+              var icon = toggleBtn.querySelector('i');
+              if (icon) {
+                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+              }
+            });
+          }
+        } catch (e) {}
+
+        async function refreshLicenseLogin() {
+          try {
+            var section = document.getElementById('licenseSectionLogin');
+            var statusEl = document.getElementById('licenseStatusLogin');
+            var loginBtn = document.getElementById('loginButton');
+            if (!section || !statusEl) return;
+            var resp = await apiFetchLoginInline('/api/license/status', { headers: { 'Accept': 'application/json' } });
+            if (!resp.ok) {
+              section.classList.remove('d-none');
+              statusEl.textContent = 'Tidak dapat memeriksa license. Masukkan LICENSE KEY terlebih dahulu.';
+              if (loginBtn) {
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Login (terkunci)';
+              }
+              return;
+            }
+            var data = await resp.json();
+            var off = data && data.offline;
+            var lock = data && data.lock;
+
+            // Jika ada lock (license habis / dicurangi), paksa input LICENSE KEY baru dan nonaktifkan tombol login
+            if (lock && lock.locked) {
+              section.classList.remove('d-none');
+              statusEl.textContent = 'LICENSE KEY sudah habis. Masukkan LICENSE KEY baru.';
+              if (loginBtn) {
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Login (terkunci)';
+              }
+              return;
+            }
+
+            // Jika license offline masih valid, sembunyikan section license dan aktifkan login
+            if (off && off.valid) {
+              section.classList.add('d-none');
+              if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+              }
+            } else {
+              section.classList.remove('d-none');
+
+              // Jika sudah kadaluarsa atau terdeteksi manipulasi waktu, langsung paksa pengisian LICENSE KEY
+              if (off && off.reason === 'EXPIRED') {
+                statusEl.textContent = 'Masa berlaku LICENSE KEY sudah habis. Masukkan LICENSE KEY baru.';
+                if (loginBtn) {
+                  loginBtn.disabled = true;
+                  loginBtn.textContent = 'Login (terkunci)';
+                }
+              } else if (off && off.reason === 'CLOCK_TAMPER') {
+                statusEl.textContent = 'LICENSE KEY diblokir karena terdeteksi manipulasi waktu sistem. Masukkan LICENSE KEY baru.';
+                if (loginBtn) {
+                  loginBtn.disabled = true;
+                  loginBtn.textContent = 'Login (terkunci)';
+                }
+              } else {
+                // License kosong / invalid: jangan izinkan login sampai license valid
+                if (off && off.reason === 'NO_KEY') {
+                  statusEl.textContent = 'LICENSE KEY belum diisi. Masukkan LICENSE KEY terlebih dahulu.';
+                } else if (off && off.reason === 'BAD_FORMAT') {
+                  statusEl.textContent = 'Format LICENSE KEY tidak valid. Periksa kembali LICENSE KEY Anda.';
+                } else if (off && (off.reason === 'BAD_SIGNATURE' || off.reason === 'BAD_PAYLOAD')) {
+                  statusEl.textContent = 'LICENSE KEY tidak valid. Periksa kembali LICENSE KEY Anda.';
+                } else if (off && off.reason) {
+                  statusEl.textContent = 'License belum aktif (' + off.reason + ')';
+                } else {
+                  statusEl.textContent = 'License belum aktif';
+                }
+                if (loginBtn) {
+                  loginBtn.disabled = true;
+                  loginBtn.textContent = 'Login (terkunci)';
+                }
+              }
+            }
+          } catch (e) {
+            try {
+              var sectionEl = document.getElementById('licenseSectionLogin');
+              var statusLoginEl = document.getElementById('licenseStatusLogin');
+              var btnLoginEl = document.getElementById('loginButton');
+              if (sectionEl) sectionEl.classList.remove('d-none');
+              if (statusLoginEl) statusLoginEl.textContent = 'Gagal memeriksa license. Masukkan LICENSE KEY terlebih dahulu.';
+              if (btnLoginEl) {
+                btnLoginEl.disabled = true;
+                btnLoginEl.textContent = 'Login (terkunci)';
+              }
+            } catch (e2) {}
+          }
+        }
+
+        async function submitLicenseLogin() {
+          try {
+            var input = document.getElementById('licenseKeyInputLogin');
+            var storeInput = document.getElementById('licenseStoreNameInputLogin');
+            var adminInput = document.getElementById('licenseAdminNameInputLogin');
+            var statusEl = document.getElementById('licenseStatusLogin');
+            if (!input || !statusEl) return;
+            var key = String(input.value || '').trim();
+            var parsed = parseLicenseNamesFromKeyInline(key);
+            var storeName = String(parsed.storeName || '').trim();
+            var adminName = String(parsed.adminName || storeName || '').trim();
+            if (storeInput) storeInput.value = storeName;
+            if (adminInput) adminInput.value = adminName;
+            if (!key) {
+              statusEl.textContent = 'LICENSE KEY wajib diisi';
+              return;
+            }
+            statusEl.textContent = 'Memeriksa LICENSE KEY...';
+            var resp = await apiFetchLoginInline('/api/license/offline', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ licenseKey: key, storeName: storeName, adminName: adminName })
+            });
+            var data = null;
+            try { data = await resp.json(); } catch (e) {}
+            if (resp.ok && data && data.success) {
+              statusEl.textContent = 'LICENSE KEY valid. Terima kasih.';
+              try {
+                var section = document.getElementById('licenseSectionLogin');
+                var loginBtn = document.getElementById('loginButton');
+                if (section) section.classList.add('d-none');
+                if (loginBtn) {
+                  loginBtn.disabled = false;
+                  loginBtn.textContent = 'Login';
+                }
+              } catch (e0) {}
+              input.value = '';
+              if (storeInput) storeInput.value = '';
+              if (adminInput) adminInput.value = '';
+              try {
+                var verifyResp = await apiFetchLoginInline('/api/license/status', { headers: { 'Accept': 'application/json' } });
+                if (verifyResp.ok) {
+                  var verifyData = await verifyResp.json().catch(function(){ return null; });
+                  var off = verifyData && verifyData.offline;
+                  if (!(off && off.valid)) {
+                    var reason = (off && off.reason) ? String(off.reason) : 'INVALID';
+                    statusEl.textContent = 'License belum aktif (' + reason + ')';
+                    var btnLock = document.getElementById('loginButton');
+                    var secLock = document.getElementById('licenseSectionLogin');
+                    if (secLock) secLock.classList.remove('d-none');
+                    if (btnLock) {
+                      btnLock.disabled = true;
+                      btnLock.textContent = 'Login (terkunci)';
+                    }
+                  }
+                }
+              } catch (e1) {}
+              await refreshLicenseLogin();
+            } else {
+              var msg = (data && data.message) ? data.message : 'LICENSE KEY tidak valid';
+              statusEl.textContent = msg;
+            }
+          } catch (e) {}
+        }
+
+        function initLicenseLogin() {
+          refreshLicenseLogin();
+          var btn = document.getElementById('licenseSaveBtnLogin');
+          var keyInput = document.getElementById('licenseKeyInputLogin');
+          var storeInput = document.getElementById('licenseStoreNameInputLogin');
+          var adminInput = document.getElementById('licenseAdminNameInputLogin');
+          function enforceIdentityFieldsLocked() {
+            try {
+              if (storeInput) {
+                storeInput.readOnly = true;
+                storeInput.disabled = true;
+                storeInput.setAttribute('aria-readonly', 'true');
+                storeInput.setAttribute('data-locked-by-license', '1');
+              }
+              if (adminInput) {
+                adminInput.readOnly = true;
+                adminInput.disabled = true;
+                adminInput.setAttribute('aria-readonly', 'true');
+                adminInput.setAttribute('data-locked-by-license', '1');
+              }
+            } catch (e) {}
+          }
+          enforceIdentityFieldsLocked();
+          if (keyInput && !keyInput._autoNameBound) {
+            keyInput._autoNameBound = true;
+            keyInput.addEventListener('input', function () {
+              try {
+                var parsed = parseLicenseNamesFromKeyInline(keyInput.value || '');
+                if (storeInput && parsed.storeName) storeInput.value = parsed.storeName;
+                if (adminInput && parsed.adminName) adminInput.value = parsed.adminName;
+                enforceIdentityFieldsLocked();
+              } catch (e) {}
+            });
+          }
+          if (btn) {
+            btn.addEventListener('click', function (ev) {
+              ev.preventDefault();
+              submitLicenseLogin();
+            });
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initLicenseLogin);
+        } else {
+          initLicenseLogin();
+        }
+      })();
+    </script>
+    
+    <!-- Back to Top Button -->
+    <button id="backToTopBtn" class="btn btn-primary back-to-top" title="Back to Top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+</body>
+</html>
+
+

@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cashier - POS System</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/vendor/bootstrap/css/bootstrap.min.css" as="style" />
+    <link rel="preload" href="/css/style.css?v=5" as="style" />
+    <link rel="preload" href="/js/performance-optimizer.js" as="script" />
+    
+    <!-- DNS prefetch for external domains -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    
+    <!-- Stylesheets with async loading -->
+    <link
+      href="/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      media="print" onload="this.media='all'"
+    />
+    <link rel="stylesheet" href="/css/style.css?v=5" />
+    <link
+      rel="stylesheet"
+      href="/vendor/bootstrap-icons/bootstrap-icons.css"
+      media="print" onload="this.media='all'"
+    />
+    <link rel="stylesheet" href="/vendor/select2/css/select2.min.css">
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+    
+    <!-- Critical CSS inline -->
+    <style>
+      /* Critical CSS for above-the-fold content */
+      body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
+      .loading-spinner { display: flex; justify-content: center; align-items: center; height: 100vh; }
+      .spinner-border { width: 3rem; height: 3rem; }
+      .d-none { display: none !important; }
+    </style>
+    <style>
+      /* BB-8 Toggle CSS */
+      .bb8-toggle {
+        --toggle-size: 16px;
+        --toggle-width: 10.625em;
+        --toggle-height: 5.625em;
+        --toggle-offset: calc((var(--toggle-height) - var(--bb8-diameter)) / 2);
+        --toggle-bg: linear-gradient(#2c4770, #070e2b 35%, #628cac 50% 70%, #a6c5d4) no-repeat;
+        --bb8-diameter: 4.375em;
+        --radius: 99em;
+        --transition: 0.4s;
+        --accent: #de7d2f;
+        --bb8-bg: #fff;
+        cursor: pointer;
+        font-size: var(--toggle-size);
+      }
+      
+      .bb8-toggle__checkbox {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        display: none;
+      }
+      
+      .bb8-toggle__container {
+        width: var(--toggle-width);
+        height: var(--toggle-height);
+        background: var(--toggle-bg);
+        background-size: 100% 11.25em;
+        background-position-y: -5.625em;
+        border-radius: var(--radius);
+        position: relative;
+        transition: var(--transition);
+      }
+      
+      .bb8 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        top: calc(var(--toggle-offset) - 1.688em + 0.188em);
+        left: var(--toggle-offset);
+        transition: var(--transition);
+        z-index: 2;
+      }
+      
+      .bb8__head-container {
+        position: relative;
+        transition: var(--transition);
+        z-index: 2;
+        transform-origin: 1.25em 3.75em;
+      }
+      
+      .bb8__head {
+        overflow: hidden;
+        margin-bottom: -0.188em;
+        width: 2.5em;
+        height: 1.688em;
+        background: linear-gradient(
+            transparent 0.063em,
+            dimgray 0.063em 0.313em,
+            transparent 0.313em 0.375em,
+            var(--accent) 0.375em 0.5em,
+            transparent 0.5em 1.313em,
+            silver 1.313em 1.438em,
+            transparent 1.438em
+          ),
+          linear-gradient(
+            45deg,
+            transparent 0.188em,
+            var(--bb8-bg) 0.188em 1.25em,
+            transparent 1.25em
+          ),
+          linear-gradient(
+            90deg,
+            transparent 0.188em,
+            var(--bb8-bg) 0.188em 0.875em,
+            transparent 0.875em
+          ),
+          linear-gradient(
+            var(--accent) 0.188em,
+            transparent 0.188em 0.438em,
+            var(--bb8-bg) 0.438em 0.625em,
+            transparent 0.625em 0.813em,
+            var(--accent) 0.813em 1em,
+            transparent 1em
+          ),
+          linear-gradient(
+            transparent 0.188em,
+            var(--bb8-bg) 0.188em 2.313em,
+            transparent 2.313em
+          );
+        border-radius: var(--radius);
+        position: relative;
+        z-index: 1;
+        filter: drop-shadow(0 0.063em 0.125em gray);
+      }
+      
+      .bb8__head::before {
+        content: "";
+        position: absolute;
+        width: 0.563em;
+        height: 0.563em;
+        background: radial-gradient(
+            0.125em circle at 0.25em 0.375em,
+            red,
+            transparent
+          ),
+          radial-gradient(
+            0.063em circle at 0.375em 0.188em,
+            var(--bb8-bg) 50%,
+            transparent 100%
+          ),
+          linear-gradient(45deg, #000 0.188em, dimgray 0.313em 0.375em, #000 0.5em);
+        border-radius: var(--radius);
+        top: 0.413em;
+        left: 50%;
+        transform: translate(-50%);
+        box-shadow: 0 0 0 0.089em lightgray, 0.563em 0.281em 0 -0.148em,
+          0.563em 0.281em 0 -0.1em var(--bb8-bg), 0.563em 0.281em 0 -0.063em;
+        z-index: 1;
+        transition: var(--transition);
+      }
+      
+      .bb8__head::after {
+        content: "";
+        position: absolute;
+        bottom: 0.375em;
+        left: 0;
+        width: 100%;
+        height: 0.188em;
+        background: linear-gradient(
+          to right,
+          var(--accent) 0.125em,
+          transparent 0.125em 0.188em,
+          var(--accent) 0.188em 0.313em,
+          transparent 0.313em 0.375em,
+          var(--accent) 0.375em 0.938em,
+          transparent 0.938em 1em,
+          var(--accent) 1em 1.125em,
+          transparent 1.125em 1.875em,
+          var(--accent) 1.875em 2em,
+          transparent 2em 2.063em,
+          var(--accent) 2.063em 2.25em,
+          transparent 2.25em 2.313em,
+          var(--accent) 2.313em 2.438em
+        );
+        transition: var(--transition);
+      }
+      
+      .bb8__antenna {
+        position: absolute;
+        transform: translateY(-90%);
+        width: 0.059em;
+        border-radius: var(--radius) var(--radius) 0 0;
+        transition: var(--transition);
+      }
+      
+      .bb8__antenna:nth-child(1) {
+        height: 0.938em;
+        right: 0.938em;
+        background: linear-gradient(#000 0.188em, silver 0.188em);
+      }
+      
+      .bb8__antenna:nth-child(2) {
+        height: 0.375em;
+        left: 50%;
+        transform: translate(-50%, -90%);
+        background: silver;
+      }
+      
+      .bb8__body {
+        width: 4.375em;
+        height: 4.375em;
+        background: var(--bb8-bg);
+        border-radius: var(--radius);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+        z-index: 1;
+        transform: rotate(45deg);
+        background: linear-gradient(
+            -90deg,
+            var(--bb8-bg) 4%,
+            var(--accent) 4% 10%,
+            transparent 10% 90%,
+            var(--accent) 90% 96%,
+            var(--bb8-bg) 96%
+          ),
+          linear-gradient(
+            var(--bb8-bg) 4%,
+            var(--accent) 4% 10%,
+            transparent 10% 90%,
+            var(--accent) 90% 96%,
+            var(--bb8-bg) 96%
+          ),
+          radial-gradient(
+            ellipse at center,
+            transparent 2.188em,
+            var(--bb8-bg) 2.188em
+          );
+        background-color: var(--bb8-bg);
+      }
+      
+      .bb8__body::after {
+        content: "";
+        bottom: 1.5em;
+        left: 0.563em;
+        position: absolute;
+        width: 0.188em;
+        height: 0.188em;
+        background: rgb(236, 236, 236);
+        color: rgb(236, 236, 236);
+        border-radius: 50%;
+        box-shadow: 0.875em 0.938em, 0 -1.25em, 0.875em -2.125em, 2.125em -2.125em,
+          3.063em -1.25em, 3.063em 0, 2.125em 0.938em;
+      }
+      
+      .bb8__body::before {
+        content: "";
+        width: 2.625em;
+        height: 2.625em;
+        position: absolute;
+        border-radius: 50%;
+        z-index: 0.1;
+        overflow: hidden;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 0.313em solid var(--accent);
+        background: radial-gradient(
+            1em circle at center,
+            rgb(236, 236, 236) 50%,
+            transparent 51%
+          ),
+          radial-gradient(1.25em circle at center, var(--bb8-bg) 50%, transparent 51%),
+          linear-gradient(
+            -90deg,
+            transparent 42%,
+            var(--bb8-bg) 42% 58%,
+            transparent 58%
+          ),
+          linear-gradient(
+            90deg,
+            transparent 42%,
+            var(--bb8-bg) 42% 58%,
+            transparent 58%
+          );
+        box-shadow: inset 0 0 0 0.125em var(--bb8-bg);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        mask: radial-gradient(circle at center, transparent 45%, black 45%);
+        -webkit-mask: radial-gradient(circle at center, transparent 45%, black 45%);
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      
+      .bb8__shadow {
+        content: "";
+        width: var(--bb8-diameter);
+        height: 20%;
+        border-radius: 50%;
+        background: #3a271c;
+        box-shadow: 0.313em 0 3.125em #3a271c;
+        opacity: 0.25;
+        position: absolute;
+        bottom: 0;
+        left: calc(var(--toggle-offset) - 0.938em);
+        transition: var(--transition);
+        transform: skew(-70deg);
+        z-index: 1;
+      }
+      
+      .bb8-toggle__scenery {
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        position: relative;
+        border-radius: inherit;
+      }
+      
+      .bb8-toggle__scenery::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 30%;
+        bottom: 0;
+        background: #b18d71;
+        z-index: 1;
+      }
+      
+      .bb8-toggle__cloud {
+        z-index: 1;
+        position: absolute;
+        border-radius: 50%;
+      }
+      
+      .bb8-toggle__cloud:nth-last-child(1) {
+        width: 0.875em;
+        height: 0.625em;
+        filter: blur(0.125em) drop-shadow(0.313em 0.313em #ffffffae)
+          drop-shadow(-0.625em 0 #fff) drop-shadow(-0.938em -0.125em #fff);
+        right: 1.875em;
+        top: 2.813em;
+        background: linear-gradient(to top right, #ffffffae, #ffffffae);
+        transition: var(--transition);
+      }
+      
+      .bb8-toggle__cloud:nth-last-child(2) {
+        top: 0.625em;
+        right: 4.375em;
+        width: 0.875em;
+        height: 0.375em;
+        background: #dfdedeae;
+        filter: blur(0.125em) drop-shadow(-0.313em -0.188em #e0dfdfae)
+          drop-shadow(-0.625em -0.188em #bbbbbbae) drop-shadow(-1em 0.063em #cfcfcfae);
+        transition: 0.6s;
+      }
+      
+      .bb8-toggle__cloud:nth-last-child(3) {
+        top: 1.25em;
+        right: 0.938em;
+        width: 0.875em;
+        height: 0.375em;
+        background: #ffffffae;
+        filter: blur(0.125em) drop-shadow(0.438em 0.188em #ffffffae)
+          drop-shadow(-0.625em 0.313em #ffffffae);
+        transition: 0.8s;
+      }
+      
+      .gomrassen,
+      .hermes,
+      .chenini {
+        position: absolute;
+        border-radius: var(--radius);
+        background: linear-gradient(#fff, #6e8ea2);
+        top: 100%;
+      }
+      
+      .gomrassen {
+        width: 0.125em;
+        height: 0.125em;
+        left: 1.25em;
+        box-shadow: 0.625em 1.25em, 1.25em 0.625em, 1.875em 0.313em,
+          1.875em 1.563em, 2.5em 0.938em, 2.5em 1.875em, 3.125em 0.625em,
+          3.125em 1.563em, 3.75em 0.313em, 3.75em 1.25em, 4.375em 0.938em,
+          4.375em 1.875em, 5em 0.313em, 5em 1.25em, 5.625em 0.625em,
+          5.625em 1.563em, 6.25em 0.313em, 6.25em 1.25em, 6.875em 0.938em,
+          6.875em 1.875em, 7.5em 0.313em, 7.5em 1.25em, 8.125em 0.625em,
+          8.125em 1.563em, 8.75em 0.313em, 8.75em 1.25em, 9.375em 0.938em,
+          9.375em 1.875em, 10em 0.313em, 10em 1.25em, 10.625em 0.625em,
+          10.625em 1.563em;
+        transition: 0.5s;
+      }
+      
+      .hermes {
+        width: 0.063em;
+        height: 0.063em;
+        left: 2.5em;
+        box-shadow: 0.625em 0.625em, 1.25em 0.313em, 1.875em 0.938em,
+          2.5em 0.313em, 2.5em 0.938em, 3.125em 0.625em, 3.75em 0.313em,
+          3.75em 0.938em, 4.375em 0.625em, 5em 0.313em, 5.625em 0.938em,
+          6.25em 0.313em, 6.25em 0.938em, 6.875em 0.625em, 7.5em 0.313em,
+          7.5em 0.938em, 8.125em 0.625em, 8.75em 0.313em;
+        transition: 0.5s;
+      }
+      
+      .chenini {
+        width: 0.125em;
+        height: 0.125em;
+        left: 3.75em;
+        box-shadow: 0.625em 0.938em, 1.25em 0.313em, 1.875em 0.625em,
+          2.188em 0.313em, 2.188em 0.938em, 2.813em 0.625em,
+          3.438em 0.313em, 3.438em 0.938em, 4.063em 0.625em,
+          4.688em 0.313em, 4.688em 0.938em, 5.313em 0.625em,
+          5.938em 0.313em, 5.938em 0.938em, 6.563em 0.625em,
+          7.188em 0.313em, 7.188em 0.938em, 7.813em 0.625em,
+          8.438em 0.313em, 8.438em 0.938em, 9.063em 0.625em,
+          9.688em 0.313em, 9.688em 0.938em, 10.313em 0.625em,
+          10.938em 0.313em, 10.938em 0.938em;
+        transition: 0.6s;
+      }
+      
+      .tatto-1,
+      .tatto-2 {
+        position: absolute;
+        border-radius: var(--radius);
+        background: linear-gradient(#fff, #6e8ea2);
+        top: 100%;
+        width: 0.125em;
+        height: 0.125em;
+      }
+      
+      .tatto-1 {
+        left: 2.188em;
+        box-shadow: 0.625em 0.313em, 1.25em 0.625em, 1.875em 0.313em,
+          1.875em 0.938em, 2.5em 0.625em, 3.125em 0.313em,
+          3.125em 0.938em, 3.75em 0.625em, 4.375em 0.313em,
+          4.375em 0.938em, 5em 0.625em, 5.625em 0.313em,
+          5.625em 0.938em, 6.25em 0.625em, 6.875em 0.313em,
+          6.875em 0.938em, 7.5em 0.625em, 8.125em 0.313em,
+          8.125em 0.938em, 8.75em 0.625em, 9.375em 0.313em,
+          9.375em 0.938em, 10em 0.625em, 10.625em 0.313em,
+          10.625em 0.938em;
+        transition: 0.7s;
+      }
+      
+      .tatto-2 {
+        left: 3.125em;
+        box-shadow: 0.625em 0.625em, 1.25em 0.313em, 1.875em 0.938em,
+          2.5em 0.313em, 2.5em 0.938em, 3.125em 0.625em,
+          3.75em 0.313em, 3.75em 0.938em, 4.375em 0.625em,
+          5em 0.313em, 5.625em 0.938em, 6.25em 0.313em,
+          6.25em 0.938em, 6.875em 0.625em, 7.5em 0.313em,
+          7.5em 0.938em, 8.125em 0.625em, 8.75em 0.313em;
+        transition: 0.8s;
+      }
+      
+      .bb8-toggle__star {
+        position: absolute;
+        width: 0.063em;
+        height: 0.063em;
+        background: #fff;
+        border-radius: var(--radius);
+        filter: drop-shadow(0 0 0.063em #fff);
+        color: #fff;
+        top: 100%;
+      }
+      
+      .bb8-toggle__star:nth-child(1) {
+        left: 3.75em;
+        box-shadow: 1.25em 0.938em, -1.25em 2.5em, 0 1.25em, 1.875em 0.625em,
+          -3.125em 1.875em, 1.25em 2.813em;
+        transition: 0.2s;
+      }
+      
+      .bb8-toggle__star:nth-child(2) {
+        left: 4.688em;
+        box-shadow: 0.625em 0, 0 0.625em, -0.625em -0.625em, 0.625em 0.938em,
+          -3.125em 1.25em, 1.25em -1.563em;
+        transition: 0.3s;
+      }
+      
+      .bb8-toggle__star:nth-child(3) {
+        left: 5.313em;
+        box-shadow: -0.625em -0.625em, -2.188em 1.25em, -2.188em 0,
+          -3.75em -0.625em, -3.125em -0.625em, -2.5em -0.313em, 0.75em -0.625em;
+        transition: var(--transition);
+      }
+      
+      .bb8-toggle__star:nth-child(4) {
+        left: 1.875em;
+        width: 0.125em;
+        height: 0.125em;
+        transition: 0.5s;
+      }
+      
+      .bb8-toggle__star:nth-child(5) {
+        left: 5em;
+        width: 0.125em;
+        height: 0.125em;
+        transition: 0.6s;
+      }
+      
+      .bb8-toggle__star:nth-child(6) {
+        left: 2.5em;
+        width: 0.125em;
+        height: 0.125em;
+        transition: 0.7s;
+      }
+      
+      .bb8-toggle__star:nth-child(7) {
+        left: 3.438em;
+        width: 0.125em;
+        height: 0.125em;
+        transition: 0.8s;
+      }
+      
+      /* Toggle state actions */
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__star:nth-child(1) { top: 0.625em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__star:nth-child(2) { top: 1.875em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__star:nth-child(3) { top: 1.25em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__star:nth-child(4) { top: 3.438em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__star:nth-child(5) { top: 3.438em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__star:nth-child(6) { top: 0.313em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__star:nth-child(7) { top: 1.875em; }
+
+      /* Mobile responsive - smaller toggle on mobile devices */
+      @media (max-width: 768px) {
+        .bb8-toggle {
+          --toggle-size: 12px; /* Reduce from 16px to 12px on mobile */
+        }
+      }
+      
+      @media (max-width: 576px) {
+        .bb8-toggle {
+          --toggle-size: 10px; /* Even smaller on very small screens */
+        }
+      }
+      
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8-toggle__cloud { right: -100%; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .gomrassen { top: 0.938em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .hermes { top: 2.5em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .chenini { top: 2.75em; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container { background-position-y: 0; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .tatto-1 { top: 100%; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .tatto-2 { top: 100%; }
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8 { left: calc(100% - var(--bb8-diameter) - var(--toggle-offset)); }
+      
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8__shadow {
+        left: calc(100% - var(--bb8-diameter) - var(--toggle-offset) + 0.938em);
+        transform: skew(70deg);
+      }
+      
+      .bb8-toggle__checkbox:checked + .bb8-toggle__container .bb8__body {
+        transform: rotate(225deg);
+      }
+      
+      .bb8-toggle__checkbox:hover + .bb8-toggle__container .bb8__head::before { left: 100%; }
+      .bb8-toggle__checkbox:not(:checked):hover + .bb8-toggle__container .bb8__antenna:nth-child(1) { right: 1.5em; }
+      .bb8-toggle__checkbox:hover + .bb8-toggle__container .bb8__antenna:nth-child(2) { left: 0.938em; }
+      .bb8-toggle__checkbox:hover + .bb8-toggle__container .bb8__head::after { background-position: 1.375em 0; }
+      .bb8-toggle__checkbox:checked:hover + .bb8-toggle__container .bb8__head::before { left: 0; }
+      .bb8-toggle__checkbox:hover + .bb8-toggle__container .bb8__antenna:nth-child(1) { right: 0.938em; }
+      .bb8-toggle__checkbox:hover + .bb8-toggle__container .bb8__antenna:nth-child(2) { left: 50%; }
+      
+      /* Dark mode styles */
+      body.dark { background-color: #121212; color: #eaeaea; }
+      body.dark .card { background-color: #1e1e1e; color: #eaeaea; }
+      body.dark .navbar { background-color: #1e1e1e !important; }
+      body.dark .navbar-brand { color: #eaeaea !important; }
+      body.dark .btn-outline-light { color: #eaeaea !important; border-color: #555 !important; }
+      body.dark .select2-container--default .select2-selection--single {
+        background-color: #1e1e1e;
+        border-color: #444;
+        color: #eaeaea;
+        min-height: 38px;
+      }
+      body.dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #eaeaea;
+        padding-left: 0.75rem;
+      }
+      body.dark .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #9aa0a6;
+      }
+      body.dark .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #9aa0a6 transparent transparent transparent;
+      }
+      body.dark .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+        border-color: transparent transparent #9aa0a6 transparent;
+      }
+      body.dark .select2-container--default .select2-selection--multiple {
+        background-color: #1e1e1e;
+        border-color: #444;
+        color: #eaeaea;
+        min-height: 38px;
+      }
+      body.dark .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        color: #eaeaea;
+      }
+      body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #2b2b2b;
+        border-color: #3a3a3a;
+        color: #eaeaea;
+      }
+      body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #c9cdd3;
+      }
+      body.dark .select2-dropdown {
+        background-color: #1e1e1e;
+        border-color: #444;
+      }
+      body.dark .select2-container--default .select2-search--dropdown .select2-search__field {
+        background-color: #151515;
+        border-color: #444;
+        color: #eaeaea;
+      }
+      body.dark .select2-container--default .select2-results__option {
+        color: #eaeaea;
+      }
+      body.dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #2b2b2b;
+        color: #ffffff;
+      }
+      body.dark .select2-container--default .select2-results__option[aria-selected="true"] {
+        background-color: #2a3b4f;
+        color: #ffffff;
+      }
+      body.dark .btn-outline-light:hover { background-color: #333 !important; color: #fff !important; }
+      body.dark .btn-outline-warning { color: #ffc107 !important; border-color: #ffc107 !important; }
+      body.dark .btn-outline-warning:hover { background-color: #ffc107 !important; color: #000 !important; }
+      body.dark .btn-outline-danger { color: #dc3545 !important; border-color: #dc3545 !important; }
+      body.dark .btn-outline-danger:hover { background-color: #dc3545 !important; color: #fff !important; }
+      body.dark .btn-primary { background-color: #198754 !important; border-color: #198754 !important; }
+      body.dark .btn-success { background-color: #198754 !important; border-color: #198754 !important; }
+      body.dark .btn-warning { background-color: #ffc107 !important; border-color: #ffc107 !important; color: #000 !important; }
+      body.dark .btn-danger { background-color: #dc3545 !important; border-color: #dc3545 !important; }
+      body.dark .modal-content { background-color: #1e1e1e !important; color: #ffffff !important; border-color: #333 !important; }
+      body.dark .modal-header, body.dark .modal-footer { border-color: #333 !important; background-color: #1e1e1e !important; }
+      body.dark .modal-title { color: #ffffff !important; }
+      body.dark .btn-close { filter: invert(1); opacity: 0.8; }
+      body.dark .form-label, body.dark label { color: #ffffff !important; }
+      body.dark .form-text { color: #bbbbbb !important; }
+      body.dark .text-muted { color: #bbbbbb !important; }
+      body.dark .input-group-text { background-color: #2a2a2a !important; border-color: #444 !important; color: #eaeaea !important; }
+      body.dark .form-select { background-color: #1b1b1b !important; color: #eaeaea !important; border-color: #333 !important; }
+      body.dark .form-control { background-color: #1b1b1b !important; color: #eaeaea !important; border-color: #333 !important; }
+      body.dark .form-control::placeholder, body.dark textarea::placeholder { color: #9e9e9e !important; }
+      body.dark .select2-container--default .select2-selection--single,
+      body.dark .select2-container--default .select2-selection--multiple {
+        background-color: #1b1b1b !important;
+        border-color: #333 !important;
+        color: #eaeaea !important;
+      }
+      body.dark .select2-container--default .select2-selection--single .select2-selection__rendered,
+      body.dark .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        color: #eaeaea !important;
+      }
+      body.dark .select2-container--default .select2-selection--single .select2-selection__placeholder,
+      body.dark .select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+        color: #9e9e9e !important;
+      }
+      body.dark .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #9e9e9e transparent transparent transparent !important;
+      }
+      body.dark .select2-container--default .select2-search--dropdown .select2-search__field {
+        background-color: #1b1b1b !important;
+        color: #eaeaea !important;
+        border-color: #333 !important;
+      }
+      body.dark .select2-dropdown {
+        background-color: #1e1e1e !important;
+        border-color: #333 !important;
+        color: #eaeaea !important;
+      }
+      body.dark .select2-results__option {
+        color: #eaeaea !important;
+      }
+      body.dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #262626 !important;
+        color: #ffffff !important;
+      }
+      body.dark .select2-container--default .select2-results__option[aria-selected="true"] {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+      }
+      body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #2a2a2a !important;
+        border-color: #444 !important;
+        color: #eaeaea !important;
+      }
+      body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #eaeaea !important;
+      }
+      body.dark .select2-container--default.select2-container--disabled .select2-selection--single,
+      body.dark .select2-container--default.select2-container--disabled .select2-selection--multiple {
+        background-color: #222 !important;
+        color: #9e9e9e !important;
+      }
+      body.dark .dropdown-menu { background-color: #1e1e1e !important; color: #ffffff !important; border-color: #333 !important; }
+      body.dark .dropdown-item { color: #ffffff !important; }
+      body.dark .dropdown-item:hover, body.dark .dropdown-item:focus { background-color: #262626 !important; color: #ffffff !important; }
+      body.dark .list-group { background-color: transparent !important; }
+      body.dark .list-group-item { background-color: #1b1b1b !important; color: #ffffff !important; border-color: #333 !important; }
+      body.dark .table { background-color: #121212 !important; color: #ffffff !important; }
+      body.dark .table thead { background-color: #1b1b1b !important; color: #ffffff !important; }
+      body.dark .table thead th { background-color: #1b1b1b !important; color: #ffffff !important; border-color: #333333 !important; }
+      body.dark .table tbody tr { background-color: #181818 !important; color: #ffffff !important; }
+      body.dark .table th, body.dark .table td { background-color: #181818 !important; border-color: #333333 !important; color: #ffffff !important; }
+      body.dark .table td small, body.dark .table td span, body.dark .table td a { color: #ffffff !important; }
+      body.dark .table-striped > tbody > tr:nth-of-type(odd) { background-color: #202020 !important; color: #ffffff !important; }
+      body.dark .table-striped > tbody > tr:nth-of-type(even) { background-color: #181818 !important; color: #ffffff !important; }
+      body.dark .table-hover > tbody > tr:hover { background-color: #262626 !important; color: #ffffff !important; }
+      body.dark .badge { background-color: #333 !important; color: #fff !important; }
+      body.dark .badge.bg-success { background-color: #198754 !important; }
+      body.dark .badge.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
+      body.dark .badge.bg-danger { background-color: #dc3545 !important; }
+      body.dark .badge.bg-info { background-color: #0dcaf0 !important; }
+      body.dark .alert { background-color: #2a2a2a !important; border-color: #444 !important; color: #eaeaea !important; }
+      body.dark .alert-success { background-color: #1e2e1e !important; border-color: #198754 !important; color: #75b798 !important; }
+      body.dark .alert-warning { background-color: #2e2a1e !important; border-color: #ffc107 !important; color: #ffc107 !important; }
+      body.dark .alert-danger { background-color: #2e1e1e !important; border-color: #dc3545 !important; color: #f8d7da !important; }
+      body.dark .alert-info { background-color: #1e2e2e !important; border-color: #0dcaf0 !important; color: #0dcaf0 !important; }
+      body.dark .pagination .page-link { background-color: #1b1b1b !important; border-color: #333 !important; color: #fff !important; }
+      body.dark .pagination .page-link:hover { background-color: #333 !important; color: #fff !important; }
+      body.dark .pagination .page-item.active .page-link { background-color: #198754 !important; border-color: #198754 !important; }
+      body.dark .sidebar { background-color: #151515 !important; }
+      body.dark .sidebar .nav-link { color: #e0e0e0 !important; }
+      body.dark .sidebar .nav-link.active { background-color: #19875440 !important; color: #ffffff !important; }
+      body.dark .sidebar .nav-link:hover { background-color: #1f1f1f !important; color: #ffffff !important; }
+      /* Default (light mode) product card styles */
+      .product-card-wrapper { background: white; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+      .product-card-inner { background: white; color: #000; }
+      .product-card-pattern-border { 
+        background-image: 
+          repeating-linear-gradient(-60deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px), 
+          repeating-linear-gradient(30deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px), 
+          repeating-linear-gradient(120deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px), 
+          repeating-linear-gradient(210deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px);
+        background-size: 3px calc(100% + 24px), calc(100% + 24px) 3px, 3px calc(100% + 24px), calc(100% + 24px) 3px;
+        background-position: 0 0, 0 0, 100% 0, 0 100%;
+        background-repeat: no-repeat;
+        animation: borderAnimation 0.6s infinite linear;
+      }
+      .hide-product-borders .product-card-wrapper { border: 1px solid #dee2e6 !important; background: white !important; }
+      
+      /* Dark mode overrides */
+      body.dark .product-card-wrapper { background: #1e1e1e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+      body.dark .product-card-inner { background: #1e1e1e; color: #eaeaea; }
+      body.dark .product-card-pattern-border { 
+        background-image: 
+          repeating-linear-gradient(-60deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px), 
+          repeating-linear-gradient(30deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px), 
+          repeating-linear-gradient(120deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px), 
+          repeating-linear-gradient(210deg, #4dd2ff, #4dd2ff 0px, transparent 10px, transparent 10px, #4dd2ff 12px);
+        background-size: 3px calc(100% + 24px), calc(100% + 24px) 3px, 3px calc(100% + 24px), calc(100% + 24px) 3px;
+        background-position: 0 0, 0 0, 100% 0, 0 100%;
+        background-repeat: no-repeat;
+        animation: borderAnimation 0.6s infinite linear;
+      }
+      body.dark .hide-product-borders .product-card-wrapper { border: 1px solid #333 !important; background: #1e1e1e !important; }
+      body.dark .cart-container { background-color: #1e1e1e !important; border-color: #333 !important; }
+      body.dark .cart-item { background-color: #2a2a2a !important; border-color: #444 !important; color: #eaeaea !important; }
+      body.dark .cart-total { background-color: #1b1b1b !important; color: #eaeaea !important; }
+      body.dark .checkout-modal .modal-content { background-color: #1e1e1e !important; color: #ffffff !important; }
+      body.dark .receipt-preview { background-color: #ffffff !important; color: #000000 !important; }
+      body.dark .text-success { color: #75b798 !important; }
+      body.dark .text-warning { color: #ffc107 !important; }
+      body.dark .text-danger { color: #f8d7da !important; }
+      body.dark .text-info { color: #0dcaf0 !important; }
+      body.dark .text-primary { color: #198754 !important; }
+      body.dark .border { border-color: #333 !important; }
+      body.dark .border-top { border-top-color: #333 !important; }
+      body.dark .border-bottom { border-bottom-color: #333 !important; }
+      body.dark .border-start { border-left-color: #333 !important; }
+      body.dark .border-end { border-right-color: #333 !important; }
+      body.dark .bg-white { background-color: #1e1e1e !important; }
+      body.dark .bg-light { background-color: #2a2a2a !important; }
+      body.dark .bg-secondary { background-color: #333 !important; }
+      body.dark .text-dark { color: #eaeaea !important; }
+      body.dark .text-white { color: #eaeaea !important; }
+      body.dark .text-body { color: #eaeaea !important; }
+      body.dark .offcanvas { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .offcanvas-header { background-color: #1e1e1e !important; border-bottom-color: #333 !important; }
+      body.dark .offcanvas-body { background-color: #1e1e1e !important; }
+      body.dark .tooltip { background-color: #333 !important; color: #fff !important; }
+      body.dark .tooltip .tooltip-arrow { border-color: #333 transparent transparent transparent; }
+      body.dark .popover { background-color: #1e1e1e !important; color: #eaeaea !important; border-color: #333 !important; }
+      body.dark .popover-header { background-color: #2a2a2a !important; border-bottom-color: #333 !important; color: #eaeaea !important; }
+      body.dark .carousel-item { background-color: #1e1e1e !important; }
+      body.dark .carousel-indicators button { background-color: #666 !important; }
+      body.dark .carousel-indicators button.active { background-color: #198754 !important; }
+      body.dark .accordion-button { background-color: #2a2a2a !important; color: #eaeaea !important; }
+      body.dark .accordion-button:not(.collapsed) { background-color: #198754 !important; color: #fff !important; }
+      body.dark .accordion-item { background-color: #1e1e1e !important; border-color: #333 !important; }
+      body.dark .accordion-body { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .nav-tabs { border-color: #333 !important; }
+      body.dark .nav-tabs .nav-link { color: #eaeaea !important; border-color: #333 !important; }
+      body.dark .nav-tabs .nav-link.active { background-color: #1e1e1e !important; color: #198754 !important; border-color: #333 !important; }
+      body.dark .nav-pills .nav-link { color: #eaeaea !important; }
+      body.dark .nav-pills .nav-link.active { background-color: #198754 !important; color: #fff !important; }
+      body.dark .breadcrumb { background-color: #2a2a2a !important; }
+      body.dark .breadcrumb-item { color: #eaeaea !important; }
+      body.dark .breadcrumb-item.active { color: #198754 !important; }
+      body.dark .progress { background-color: #333 !important; }
+      body.dark .progress-bar { background-color: #198754 !important; }
+      body.dark .spinner-border { border-color: #198754 transparent #198754 transparent !important; }
+      body.dark .spinner-grow { background-color: #198754 !important; }
+      body.dark .img-thumbnail { background-color: #2a2a2a !important; border-color: #333 !important; }
+      body.dark .figure-caption { color: #bbbbbb !important; }
+      body.dark .blockquote { border-color: #198754 !important; color: #eaeaea !important; }
+      body.dark .blockquote-footer { color: #bbbbbb !important; }
+      body.dark .hr { border-color: #333 !important; }
+      body.dark code { background-color: #333 !important; color: #ffc107 !important; }
+      body.dark pre { background-color: #1e1e1e !important; color: #eaeaea !important; border-color: #333 !important; }
+      body.dark kbd { background-color: #333 !important; color: #fff !important; border-color: #666 !important; }
+      body.dark .lead { color: #eaeaea !important; }
+      body.dark .display-1, body.dark .display-2, body.dark .display-3, body.dark .display-4, body.dark .display-5, body.dark .display-6 { color: #eaeaea !important; }
+      body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 { color: #eaeaea !important; }
+      body.dark p { color: #eaeaea !important; }
+      body.dark .container, body.dark .container-fluid, body.dark .row, body.dark .col, body.dark .col-1, body.dark .col-2, body.dark .col-3, body.dark .col-4, body.dark .col-5, body.dark .col-6, body.dark .col-7, body.dark .col-8, body.dark .col-9, body.dark .col-10, body.dark .col-11, body.dark .col-12 { background-color: transparent !important; }
+      body.dark .main-content, body.dark .content-area, body.dark .page-content { background-color: #121212 !important; color: #eaeaea !important; }
+      body.dark .sidebar, body.dark .side-panel, body.dark .side-menu { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .header, body.dark .topbar, body.dark .toolbar { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .footer, body.dark .bottom-bar { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .section, body.dark .panel, body.dark .widget { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .box, body.dark .tile, body.dark .card-body { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .list, body.dark .menu, body.dark .options { background-color: #1e1e1e !important; color: #eaeaea !important; }
+      body.dark .item, body.dark .entry, body.dark .row-item { background-color: #2a2a2a !important; color: #eaeaea !important; }
+      body.dark .divider, body.dark .separator { border-color: #333 !important; }
+      body.dark .shadow { box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5) !important; }
+      body.dark .shadow-sm { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5) !important; }
+      body.dark .shadow-lg { box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5) !important; }
+      body.dark * { scrollbar-color: #666 #333 !important; }
+      body.dark *::-webkit-scrollbar { width: 12px !important; }
+      body.dark *::-webkit-scrollbar-track { background: #333 !important; }
+      body.dark *::-webkit-scrollbar-thumb { background: #666 !important; border-radius: 6px !important; }
+      body.dark *::-webkit-scrollbar-thumb:hover { background: #888 !important; }
+    </style>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('pos_offline_auth_user') || '';
+          if (!raw) { window.location.replace('/login.html'); }
+        } catch (e) {
+          window.location.replace('/login.html');
+        }
+      })();
+    </script>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+          <img
+            id="brandLogo"
+            data-src=""
+            src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjIwIiB5PSIyNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSIjNjY2Ij5MTy90ZXh0Pgo8L3N2Zz4="
+            alt="Logo"
+            class="lazy"
+            style="
+              height: 24px;
+              width: 24px;
+              object-fit: contain;
+              display: none;
+            "
+          />
+          <span id="brandName">POS System</span>
+        </a>
+        <div class="d-flex align-items-center pos-nav-actions">
+          <span id="posClock" class="text-light me-3 small"></span>
+          <button
+            class="btn btn-outline-light btn-sm me-2 d-lg-none"
+            id="sidebarToggleBtn"
+            title="Toggle Sidebar"
+          >
+            <i class="bi bi-layout-sidebar"></i>
+          </button>
+          <button
+            class="btn btn-outline-light btn-sm me-2 d-none"
+            id="navbarReloadBtn"
+            type="button"
+            title="Reload Halaman"
+          >
+            <i class="bi bi-arrow-clockwise"></i> Reload
+          </button>
+          <button
+            class="btn btn-outline-light btn-sm me-2"
+            id="posSettingsBtn"
+            title="Settings"
+          >
+            <i class="bi bi-gear"></i> Settings
+          </button>
+          <a
+            href="/admin.html"
+            class="btn btn-outline-light btn-sm me-2 d-none"
+            id="backToAdminBtn"
+            title="Kembali ke Admin"
+          >
+            <i class="bi bi-arrow-left-circle"></i> Admin
+          </a>
+          <a href="/revenue.html" class="btn btn-outline-light btn-sm me-2" title="Pendapatan">
+            <i class="bi bi-cash-coin"></i> Pendapatan
+          </a>
+          <span
+            id="trialStatusBadge"
+            class="badge bg-warning text-dark me-2 d-none"
+          ></span>
+          <span
+            id="shiftStatusLabel"
+            class="me-2 text-light small d-none d-md-inline"
+          >
+            Shift: Belum dibuka
+          </span>
+          <button
+            class="btn btn-outline-warning btn-sm me-2"
+            id="shiftActionBtn"
+            type="button"
+          >
+            Buka Shift
+          </button>
+          <label class="bb8-toggle" style="font-size: 8px; margin: 0;">
+            <input class="bb8-toggle__checkbox" type="checkbox" id="darkModeToggle">
+            <div class="bb8-toggle__container">
+              <div class="bb8-toggle__scenery">
+                <div class="bb8-toggle__star"></div>
+                <div class="bb8-toggle__star"></div>
+                <div class="bb8-toggle__star"></div>
+                <div class="bb8-toggle__star"></div>
+                <div class="bb8-toggle__star"></div>
+                <div class="bb8-toggle__star"></div>
+                <div class="bb8-toggle__star"></div>
+                <div class="tatto-1"></div>
+                <div class="tatto-2"></div>
+                <div class="gomrassen"></div>
+                <div class="hermes"></div>
+                <div class="chenini"></div>
+                <div class="bb8-toggle__cloud"></div>
+                <div class="bb8-toggle__cloud"></div>
+                <div class="bb8-toggle__cloud"></div>
+              </div>
+              <div class="bb8">
+                <div class="bb8__head-container">
+                  <div class="bb8__antenna"></div>
+                  <div class="bb8__antenna"></div>
+                  <div class="bb8__head"></div>
+                </div>
+                <div class="bb8__body"></div>
+              </div>
+              <div class="artificial__hidden">
+                <div class="bb8__shadow"></div>
+              </div>
+            </div>
+          </label>
+          <button class="btn btn-outline-light btn-sm" id="logoutBtn">
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container-fluid mt-4 flex-grow-1">
+      <!-- Banner Section -->
+      <div class="row mb-3">
+        <div class="col-12" id="bannerContainer">
+          <!-- Banner will be loaded here -->
+        </div>
+      </div>
+
+      <div class="row pos-main-container">
+        <main class="col-lg-8 d-flex flex-column pos-products-container">
+          <!-- PERBAIKAN: Area Pencarian yang Lebih Premium -->
+          <div class="row g-2 mb-3 align-items-center">
+            <div class="col-12 col-sm-6 col-md-4">
+              <div class="input-group">
+                <span class="input-group-text"
+                  ><i class="bi bi-search"></i
+                ></span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="searchInput"
+                  placeholder="Search by product name..."
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 d-flex gap-2 mt-2 mt-sm-0">
+              <div class="dropdown fancy-dropdown-shell">
+                <button
+                  class="btn btn-outline-secondary dropdown-toggle fancy-dropdown-trigger"
+                  type="button"
+                  id="categoryDropdownToggle"
+                  data-bs-toggle="dropdown"
+                >
+                  <i class="bi bi-funnel"></i> <span>Category</span>
+                </button>
+                <ul class="dropdown-menu fancy-dropdown-menu" id="categoryDropdownMenu">
+                  <li>
+                    <a class="dropdown-item" href="#" data-category-id="all"
+                      >All Categories</a
+                    >
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <!-- Kategori akan dimuat secara dinamis oleh JavaScript -->
+                </ul>
+              </div>
+              <button
+                class="btn btn-outline-secondary"
+                id="resetCategoryBtn"
+                title="Reset Category"
+              >
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+            </div>
+            <div
+              class="col-12 col-sm-6 col-md-3 d-flex gap-2 justify-content-sm-end mt-2 mt-md-0"
+            >
+              <div class="btn-group" role="group">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  id="clearSearchBtn"
+                >
+                  Clear
+                </button>
+              </div>
+              <button
+                class="btn btn-outline-secondary"
+                id="refreshPosBtn"
+                title="Refresh"
+              >
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <button
+                class="btn btn-outline-primary"
+                id="openCameraScannerBtn"
+                title="Scan Kamera"
+              >
+                <i class="bi bi-camera"></i>
+              </button>
+            </div>
+            <div
+              class="col-12 col-sm-6 col-md-2 d-flex flex-column align-items-center justify-content-md-end gap-1 mt-2 mt-md-0"
+            >
+              <div class="form-check form-switch m-0">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="scannerToggle"
+                />
+                <label class="form-check-label ms-2" for="scannerToggle"
+                  >USB</label
+                >
+              </div>
+              <small id="scannerStatus" class="text-muted"></small>
+            </div>
+          </div>
+
+          <h3>Products</h3>
+          <div class="mb-3">
+            <button class="btn btn-sm btn-outline-secondary" id="filterAll">
+              All
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" id="filterTop">
+              Top Products
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" id="filterBest">
+              Best Sellers
+            </button>
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              id="filterDiscounted"
+            >
+              Discounted
+            </button>
+          </div>
+          <div id="productList" class="row g-3 flex-grow-1 overflow-auto"></div>
+        </main>
+
+        <!-- Camera Scanner Modal -->
+        <div
+          class="modal fade"
+          id="cameraScannerModal"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          <div
+            class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down"
+          >
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header border-0">
+                <h5 class="modal-title">
+                  <i class="bi bi-camera-video"></i> Scan Kamera
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close btn-close-white"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body pt-0">
+                <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                  <select id="cameraDeviceSelect" class="form-select form-select-sm" style="max-width: 260px;">
+                    <option value="">Memuat kamera...</option>
+                  </select>
+                  <button id="cameraTorchBtn" type="button" class="btn btn-sm btn-outline-light" disabled>
+                    Torch
+                  </button>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="small text-muted">Zoom</span>
+                    <input id="cameraZoomRange" type="range" min="1" max="1" step="0.1" value="1" style="width: 140px;" disabled>
+                  </div>
+                </div>
+                <video
+                  id="cameraScannerVideo"
+                  style="width: 100%; max-height: 60vh; background: #000"
+                  autoplay
+                  muted
+                  playsinline
+                ></video>
+                <div id="cameraRoiBox" style="position: relative; margin-top: -60vh; height: 60vh; pointer-events: none;">
+                  <div style="position:absolute;left:15%;top:20%;right:15%;bottom:20%;border:2px dashed rgba(0,255,0,0.6);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,0.15) inset;"></div>
+                </div>
+                <small class="text-muted"
+                  >Arahkan barcode/QR ke kamera. Deteksi akan otomatis.</small
+                >
+              </div>
+              <div class="modal-footer border-0">
+                <button
+                  id="cameraRefreshBtn"
+                  type="button"
+                  class="btn btn-outline-light"
+                >
+                  Refresh
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-light"
+                  data-bs-dismiss="modal"
+                >
+                  Tutup
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unit Price Variant Selection Modal -->
+        <div
+          class="modal fade"
+          id="variantSelectModal"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Pilih Varian Harga</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div id="variantOptions">
+                  <!-- options rendered by pos.js -->
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="confirmVariantBtn"
+                >
+                  Tambah
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Price Modal -->
+        <div
+          class="modal fade"
+          id="customPriceModal"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Custom Harga Barang</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label">Nama Barang</label>
+                  <input type="text" class="form-control" id="customPriceProductName" readonly>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Harga Asli</label>
+                  <input type="text" class="form-control" id="customPriceOriginal" readonly>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Harga Custom</label>
+                  <div class="input-group">
+                    <span class="input-group-text">Rp</span>
+                    <input type="number" class="form-control" id="customPriceValue" min="0" step="100">
+                  </div>
+                  <small class="form-text text-muted">Masukkan harga kustom untuk barang ini</small>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="confirmCustomPriceBtn"
+                >
+                  Simpan Harga
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="col-lg-4 pos-cart-container">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">Shopping Cart</h5>
+              <div class="d-flex gap-1">
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  id="clearCartBtn"
+                  type="button"
+                  title="Kosongkan Keranjang"
+                >
+                  <i class="bi bi-trash"></i> Kosong
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  id="refreshCartBtn"
+                  type="button"
+                  title="Refresh Cart"
+                >
+                  <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Customer Selection -->
+              <div class="mb-3" id="customerSelectWrap">
+                <label class="form-label" for="customerSelect">Customer</label>
+                <select class="form-select form-select-sm" id="customerSelect" aria-label="Pilih pelanggan">
+                  <option value="default">Pelanggan Umum</option>
+                  <!-- Customer options will be populated by JavaScript -->
+                </select>
+                <div id="customerInfo" class="mt-2 p-2 bg-light rounded small">
+                  <strong>Pelanggan Umum</strong><br />
+                  <span class="text-muted">Tidak ada informasi tambahan</span>
+                </div>
+              </div>
+              <hr />
+              <div
+                id="cartItems"
+                style="min-height: 200px; max-height: 400px; overflow-y: auto"
+              >
+                <p class="text-muted">Cart is empty.</p>
+              </div>
+              <hr />
+              <div class="mb-2">
+                <div class="row g-2 align-items-end">
+                  <div class="col-6">
+                    <label class="form-label mb-1" for="discountType"
+                      >Discount</label
+                    >
+                    <select
+                      id="discountType"
+                      class="form-select form-select-sm no-select2"
+                    >
+                      <option value="percent">Percent (%)</option>
+                      <option value="amount">Amount</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label mb-1" for="discountValue"
+                      >Value</label
+                    >
+                    <input
+                      type="number"
+                      id="discountValue"
+                      class="form-control form-control-sm"
+                      min="0"
+                      step="0.01"
+                      value="0"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="small">
+                <div class="d-flex justify-content-between">
+                  <span>Jumlah Barang</span><span id="cartItemQty">0</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Subtotal</span><span id="cartSubtotal">0</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Discount</span><span id="cartDiscount">0</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Tax</span><span id="cartTax">0</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Service</span><span id="cartService">0</span>
+                </div>
+              </div>
+              <h5 class="mt-2">Total: <span id="cartTotal">0</span></h5>
+            </div>
+            <!-- PERUBAHAN: Tambahkan tombol Save as Draft -->
+            <div class="card-footer d-flex gap-2">
+              <button
+                class="btn btn-outline-danger flex-fill d-none"
+                id="processAdminVoidBtn"
+                title="Void transaksi asal dari Admin"
+              >
+                <i class="bi bi-arrow-repeat"></i> Proses Void Admin
+              </button>
+              <button class="btn btn-secondary flex-fill" id="saveDraftBtn">
+                <i class="bi bi-save"></i> Save as Draft
+              </button>
+              <button class="btn btn-primary flex-fill" id="checkoutBtn">
+                Checkout
+              </button>
+            </div>
+          </div>
+
+          <!-- Saved Drafts Section -->
+          <div class="card mt-4">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">Saved Drafts</h5>
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                id="refreshDraftsBtn"
+                onclick="loadDrafts()"
+              >
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+              </button>
+            </div>
+            <div class="card-body">
+              <div id="draftsList" style="max-height: 300px; overflow-y: auto">
+                <p class="text-muted">No saved drafts.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Debts Summary (POS) -->
+          <div class="card mt-4">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">Daftar Hutang Customer</h5>
+            </div>
+            <div class="card-body">
+              <div
+                id="posCustomerDebtsSummary"
+                class="small"
+                style="max-height: 260px; overflow-y: auto"
+              >
+                <p class="text-muted mb-0">Tidak ada hutang customer aktif.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Transactions Section -->
+          <div class="card mt-4">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">Semua Transaksi</h5>
+              <div class="d-flex gap-2">
+                <div class="input-group input-group-sm" style="width: 200px;">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="transactionSearchInput"
+                    placeholder="Cari transaksi..."
+                    onkeyup="searchTransactions()"
+                  />
+                  <button class="btn btn-outline-secondary" type="button" onclick="clearTransactionSearch()">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  id="refreshAllBtn"
+                  onclick="loadAllTransactions()"
+                >
+                  <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <!-- Search Info -->
+              <div id="searchInfo" class="px-3 pt-2" style="display: none;">
+                <small class="text-muted">
+                  Menampilkan <span id="searchResultsCount">0</span> hasil untuk "<span id="searchTerm"></span>"
+                </small>
+              </div>
+              
+              <!-- Transactions Table -->
+              <div
+                id="allTransactionsList"
+                style="max-height: 400px; overflow-y: auto"
+              >
+                <div class="text-center p-4">
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="text-muted mt-2">Memuat semua transaksi...</p>
+                </div>
+              </div>
+              
+              <!-- Pagination -->
+              <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                <div class="d-flex align-items-center gap-2">
+                  <label class="form-label mb-0 small">Show:</label>
+                  <select class="form-select form-select-sm no-select2" id="transactionsPerPage" onchange="loadAllTransactions()" style="width: auto;">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                  <span class="small text-muted">per page</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-sm btn-outline-secondary" id="prevPageBtn" onclick="changePage(-1)" disabled>
+                    Back
+                  </button>
+                  <span class="small">
+                    Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                  </span>
+                  <button class="btn btn-sm btn-outline-secondary" id="nextPageBtn" onclick="changePage(1)" disabled>
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="bg-dark text-light text-center py-3 mt-4">
+      <div class="container">
+        <p class="mb-0">&copy; <span id="footerYear"></span> POS System. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        try {
+          var y = new Date().getFullYear();
+          var el = document.getElementById('footerYear');
+          if (el) el.textContent = String(y);
+        } catch {}
+      })();
+    </script>
+
+    <!-- Transaction Details Modal -->
+    <div class="modal fade" id="transactionDetailsModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Transaction Details</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="transactionDetailsContent">
+              <!-- Details will be loaded here -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-success" id="sendToWABtn">
+              <i class="bi bi-whatsapp"></i> Kirim ke WA
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="printReceiptFromDetailsBtn"
+            >
+              <i class="bi bi-printer"></i> Print Receipt
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              id="voidTransactionBtn"
+            >
+              Void Transaction
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Debt Details Modal -->
+    <div class="modal fade" id="customerDebtDetailsModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detail Hutang Customer</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="customerDebtDetailsContent">
+              <!-- Details will be loaded here -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="posPrintDebtReceiptBtn"
+            >
+              <i class="bi bi-printer"></i> Print Receipt
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              id="posPayDebtFromDetailsBtn"
+            >
+              <i class="bi bi-cash"></i> Bayar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Debt Payment Modal -->
+    <div class="modal fade" id="customerDebtPaymentModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Pembayaran Hutang Customer</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="customerDebtPaymentContent">
+              <!-- Payment form will be loaded here -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              id="savePosCustomerPaymentBtn"
+            >
+              <i class="bi bi-cash"></i> Simpan Pembayaran
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Checkout</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <h6>Total Amount: <span id="modalTotal"></span></h6>
+            <div id="checkoutCustomerBalanceInfo" class="small text-success mb-2" style="display:none;">
+              Saldo pelanggan digunakan: <strong id="checkoutCustomerBalanceUsed">Rp 0</strong><br />
+              Sisa yang perlu dibayar: <strong id="checkoutPayableTotal">Rp 0</strong>
+            </div>
+            <div id="superAdminCustomDateSection" class="mb-3 d-none">
+              <label for="customTransactionDate" class="form-label">
+                <i class="bi bi-calendar-event"></i> Tanggal Transaksi (Super Admin)
+              </label>
+              <input type="datetime-local" class="form-control" id="customTransactionDate" />
+              <div class="form-text">Kosongkan untuk memakai waktu sekarang.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Payment Method</label>
+              <div id="paymentMethodsContainer">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id="payCash"
+                    value="cash"
+                    checked
+                  /><label class="form-check-label" for="payCash">Cash</label>
+                </div>
+                <!-- Payment methods will be dynamically loaded here -->
+              </div>
+            </div>
+            <div id="cashPaymentSection">
+              <label for="amountReceived" class="form-label"
+                >Amount Received</label
+              >
+              <div class="input-group">
+                <input type="number" class="form-control" id="amountReceived" />
+                <button type="button" class="btn btn-outline-secondary" id="transferTotalBtn" title="Transfer Total Amount">
+                  <i class="bi bi-arrow-down-circle"></i>
+                </button>
+              </div>
+              <h6 class="mt-2">Change: <span id="changeAmount">Rp 0</span></h6>
+            </div>
+            <div id="qrisPaymentSection" style="display: none">
+              <p>Please scan the QR code below to complete the payment.</p>
+              <img
+                id="qrisCheckoutImage"
+                data-src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFFSSVM8L3RleHQ+PC9zdmc+"
+                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxvYWRpbmcuLjwvdGV4dD48L3N2Zz4="
+                alt="QRIS Code"
+                class="lazy img-fluid"
+                style="max-width: min(320px, 90%); max-height: 45vh; height: auto; width: auto; object-fit: contain;"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              id="confirmPaymentBtn"
+            >
+              Confirm Payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Success Modal -->
+    <div
+      class="modal fade"
+      id="paymentSuccessModal"
+      tabindex="-1"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Payment Successful!</h5>
+          </div>
+          <div class="modal-body text-center">
+            <i
+              class="bi bi-check-circle-fill text-success"
+              style="font-size: 3rem"
+            ></i>
+            <p class="mt-3">Transaction has been completed successfully.</p>
+            <p>
+              <strong>Transaction ID:</strong>
+              <span id="successTransactionId"></span>
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="startNewTransaction()"
+            >
+              New Transaction
+            </button>
+            <button type="button" class="btn btn-primary" id="printReceiptBtn">
+              Print Receipt
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POS Settings Modal -->
+    <div class="modal fade" id="posSettingsModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-gear"></i> POS Settings</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label" for="posPaperWidth"
+                ><i class="bi bi-file-earmark-ruled"></i> Paper Width</label
+              >
+              <select class="form-select no-select2" id="posPaperWidth">
+                <option value="48">48 mm</option>
+                <option value="58">58 mm</option>
+                <option value="76">76 mm</option>
+                <option value="80">80 mm</option>
+                <option value="100">100 mm</option>
+              </select>
+              <small class="form-text text-muted"
+                >Choose paper width for receipt printing. Font size will adjust
+                automatically.</small
+              >
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="posStoreName"
+                ><i class="bi bi-shop"></i> Store Name</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="posStoreName"
+                placeholder="Enter store name"
+                readonly
+              />
+              <small class="form-text text-muted"
+                >Store name displayed on receipts (from license, cannot be edited)</small
+              >
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">Customer</label>
+                <select class="form-select" id="posSettingsCustomerSelect">
+                  <option value="">-- Pilih Customer --</option>
+                  <option value="default">Pelanggan Umum</option>
+                  <!-- Customer options will be populated by JavaScript (settings modal) -->
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Customer Info</label>
+                <div id="posSettingsCustomerInfo" class="p-2 bg-light rounded">
+                  <small class="text-muted">Belum ada customer dipilih</small>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="posShowAddress"
+                />
+                <label class="form-check-label" for="posShowAddress">
+                  <i class="bi bi-geo-alt"></i> Show Address on Receipt
+                </label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="posShowPhone"
+                />
+                <label class="form-check-label" for="posShowPhone">
+                  <i class="bi bi-telephone"></i> Show Phone on Receipt
+                </label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="posShowFooter"
+                  checked
+                />
+                <label class="form-check-label" for="posShowFooter">
+                  <i class="bi bi-card-text"></i> Show Footer on Receipt
+                </label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="posScanSoundEnabled"
+                  checked
+                />
+                <label class="form-check-label" for="posScanSoundEnabled">
+                  <i class="bi bi-volume-up"></i> Suara Scan Barcode
+                </label>
+              </div>
+              <small class="form-text text-muted"
+                >Aktif/nonaktif bunyi saat scan barcode (tersimpan lokal).</small
+              >
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="posScanSoundVolume"
+                ><i class="bi bi-volume-down"></i> Volume Suara Scan</label
+              >
+              <select class="form-select no-select2" id="posScanSoundVolume">
+                <option value="normal">Normal (100%)</option>
+                <option value="low">Low (50%)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="posScanSoundSuccess"
+                ><i class="bi bi-check-circle"></i> Suara Scan Sukses</label
+              >
+              <select class="form-select no-select2" id="posScanSoundSuccess">
+                <option value="beep">Beep (Default)</option>
+                <option value="error">Error</option>
+                <option value="none">Tidak ada</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="posScanSoundError"
+                ><i class="bi bi-exclamation-triangle"></i> Suara Scan Gagal</label
+              >
+              <select class="form-select no-select2" id="posScanSoundError">
+                <option value="error">Error (Default)</option>
+                <option value="beep">Beep</option>
+                <option value="none">Tidak ada</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="posScanSoundSuccessFile"
+                ><i class="bi bi-music-note-beamed"></i> Custom Suara Sukses</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                id="posScanSoundSuccessFile"
+                accept="audio/*"
+              />
+              <div class="d-flex align-items-center gap-2 mt-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm d-none"
+                  id="posScanSoundSuccessPlay"
+                >
+                  Putar
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm d-none"
+                  id="posScanSoundSuccessClear"
+                >
+                  Hapus
+                </button>
+              </div>
+              <small class="form-text text-muted"
+                >Format MP3/WAV, maksimal 300KB (disimpan lokal).</small
+              >
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="posScanSoundErrorFile"
+                ><i class="bi bi-music-note"></i> Custom Suara Gagal</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                id="posScanSoundErrorFile"
+                accept="audio/*"
+              />
+              <div class="d-flex align-items-center gap-2 mt-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm d-none"
+                  id="posScanSoundErrorPlay"
+                >
+                  Putar
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm d-none"
+                  id="posScanSoundErrorClear"
+                >
+                  Hapus
+                </button>
+              </div>
+              <small class="form-text text-muted"
+                >Format MP3/WAV, maksimal 300KB (disimpan lokal).</small
+              >
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="posReceiptTemplate"
+                ><i class="bi bi-receipt"></i> Template Struk</label
+              >
+              <select class="form-select no-select2" id="posReceiptTemplate">
+                <option value="classic">Classic (Default)</option>
+                <option value="compact">Compact</option>
+                <option value="minimal">Minimal</option>
+              </select>
+              <small class="form-text text-muted"
+                >Disimpan lokal di perangkat ini (tidak mengubah data server).</small
+              >
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label" for="posReceiptLogoInput"
+                ><i class="bi bi-image"></i> Logo Struk</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                id="posReceiptLogoInput"
+                accept="image/*"
+              />
+              <div class="d-flex align-items-center gap-2 mt-2">
+                <img
+                  id="posReceiptLogoPreview"
+                  alt="Logo Preview"
+                  class="d-none"
+                  style="max-height: 60px; max-width: 160px; object-fit: contain; border: 1px dashed #ccc; padding: 4px; background: #fff;"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm d-none"
+                  id="posReceiptLogoClear"
+                >
+                  Hapus Logo
+                </button>
+              </div>
+              <small class="form-text text-muted"
+                >Format JPG/PNG, disimpan lokal di perangkat ini.</small
+              >
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><i class="bi bi-image"></i> Banner Kasir</label>
+              <select class="form-select no-select2" id="posBannerMode">
+                <option value="server">Gunakan banner dari server</option>
+                <option value="image">Gambar lokal (file)</option>
+                <option value="html">HTML/Script kustom</option>
+              </select>
+              <small class="form-text text-muted">Pengaturan ini disimpan di server.</small>
+            </div>
+            <div class="mb-3 d-none" id="posBannerImageWrap">
+              <label class="form-label" for="posBannerImageFile"><i class="bi bi-file-image"></i> Gambar Banner</label>
+              <input type="file" class="form-control" id="posBannerImageFile" accept="image/*" />
+              <div class="d-flex align-items-center gap-2 mt-2">
+                <img
+                  id="posBannerImagePreview"
+                  alt="Banner Preview"
+                  class="d-none"
+                  style="max-height: 120px; max-width: 100%; object-fit: cover; border: 1px dashed #ccc; padding: 4px; background: #fff;"
+                />
+                <button type="button" class="btn btn-outline-danger btn-sm d-none" id="posBannerImageClear">Hapus Banner</button>
+              </div>
+              <small class="form-text text-muted">Format JPG/PNG, maksimal 500KB (disimpan di server).</small>
+            </div>
+            <div class="mb-3 d-none" id="posBannerHtmlWrap">
+              <label class="form-label" for="posBannerHtml"><i class="bi bi-code-slash"></i> HTML/Script Banner</label>
+              <textarea class="form-control" id="posBannerHtml" rows="4" placeholder="<div>Promo...</div>"></textarea>
+              <small class="form-text text-muted">Hati-hati: HTML/Script akan dirender langsung di halaman kasir.</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="savePosSettingsBtn"
+            >
+              <i class="bi bi-save"></i> Save Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Optimizer - Load first -->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/select2/js/select2.min.js"></script>
+    <script src="/js/performance-optimizer.js"></script>
+    <script src="/js/optimized-loader.js?v=20260209"></script>
+    <script>
+      (function () {
+        const scriptPromises = {};
+        function loadScriptOnce(src) {
+          if (scriptPromises[src]) return scriptPromises[src];
+          scriptPromises[src] = new Promise((resolve, reject) => {
+            const existing = document.querySelector('script[data-src="' + src + '"]');
+            if (existing) {
+              existing.addEventListener('load', () => resolve(), { once: true });
+              existing.addEventListener('error', reject, { once: true });
+              return;
+            }
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            script.dataset.src = src;
+            script.onload = () => resolve();
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+          return scriptPromises[src];
+        }
+
+        let select2Promise = null;
+        window.loadPosSelect2Assets = function () {
+          if (window.jQuery && window.jQuery.fn && window.jQuery.fn.select2) return Promise.resolve();
+          if (!select2Promise) {
+            select2Promise = loadScriptOnce('/vendor/select2/js/select2.min.js').catch(function () {
+              return loadScriptOnce('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js');
+            });
+          }
+          return select2Promise;
+        };
+
+        let pdfPromise = null;
+        window.loadPosPdfLibraries = function () {
+          if ((window.jspdf && window.jspdf.jsPDF) && window.html2canvas && window.html2pdf) {
+            return Promise.resolve();
+          }
+          if (!pdfPromise) {
+            pdfPromise = Promise.all([
+              loadScriptOnce('/vendor/jspdf/jspdf.umd.min.js'),
+              loadScriptOnce('/vendor/html2canvas/html2canvas.min.js'),
+              loadScriptOnce('/vendor/html2pdf/html2pdf.bundle.min.js')
+            ]).then(() => {});
+          }
+          return pdfPromise;
+        };
+      })();
+    </script>
+    <!-- Capacitor/Cordova Support - only load in mobile app environment -->
+    <script>
+      // Only load cordova/capacitor scripts when running in mobile app
+      if (window.location.protocol === 'capacitor:' || window.location.protocol === 'file:' || window.cordova || window.Capacitor) {
+        var cordovaScript = document.createElement('script');
+        cordovaScript.src = 'cordova.js';
+        document.head.appendChild(cordovaScript);
+        
+        var capacitorScript = document.createElement('script');
+        capacitorScript.src = 'capacitor.js';
+        document.head.appendChild(capacitorScript);
+      }
+    </script>
+    <script>
+      // Initialize Capacitor
+      if (window.Capacitor) {
+        document.addEventListener('DOMContentLoaded', function() {
+          // Initialize any Capacitor plugins you might need
+          // For example, camera, geolocation, etc.
+        });
+      }
+    </script>
+    
+    <!-- External scripts with defer for non-blocking loading -->
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+    
+    <!-- Application scripts -->
+    <script src="/js/variant-stock-sync.js?v=20260315e"></script>
+    <script src="/js/offline-api.js?v=20260627live"></script>
+    <script src="/js/android-auto-sync.js?v=20260627live"></script>
+    <script src="/js/offline-fetch-bridge.js?v=20260312d"></script>
+    <script src="/js/pos/00-cart-session.js?v=20260707usercart"></script>
+    <script src="/js/pos/00-realtime-sse.js?v=20260620syncreload"></script>
+    <script src="/js/pos/01-select2.js?v=20260707usercart"></script>
+    <script src="/js/pos/02-usb-scanner.js?v=20260421cam2"></script>
+    <script src="/js/pos/03-debug.js?v=20260407scanvar1"></script>
+    <script src="/js/pos/04-stability.js?v=20260421cam2"></script>
+    <script src="/js/pos/05-cleanup.js?v=20260421cam2"></script>
+    <script src="/js/pos/06-initialization.js?v=20260707usercart"></script>
+    <script src="/js/pos/07-all-transactions.js?v=18"></script>
+    <script src="/js/pos/08-recent-transactions.js?v=20260707usercart"></script>
+    <script src="/js/pos/09-receipt-local-settings.js?v=15"></script>
+    <script src="/js/pos/10-pos-settings.js?v=20260707usercart"></script>
+    <script src="/js/back-to-top.js?v=2"></script>
+    <!-- Register Service Worker for PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registered: ', registration);
+            })
+            .catch(error => {
+              console.log('ServiceWorker registration failed: ', error);
+            });
+        });
+      }
+    </script>
+    <script>
+      (function () {
+        async function loadTrialStatus() {
+          try {
+            var el = document.getElementById('trialStatusBadge');
+            if (!el) return;
+            var showBadge = function(){ try { el.classList.remove('d-none'); } catch(e){} };
+            var hideBadge = function(){ try { el.classList.add('d-none'); el.textContent=''; } catch(e){} };
+            var resp = await fetch('/api/trial-status', { headers: { 'Accept': 'application/json' } });
+            if (!resp.ok) return;
+            var data = await resp.json();
+            if (data && data.enabled) {
+              showBadge();
+              if (data.expired) {
+                el.textContent = 'Trial habis';
+                el.classList.remove('bg-warning', 'text-dark');
+                el.classList.add('bg-danger', 'text-light');
+              } else {
+                var mode = (data.mode || 'days').toString().toLowerCase();
+                if (mode === 'runs') {
+                  var remainingRuns = typeof data.remainingRuns === 'number' ? data.remainingRuns : null;
+                  var totalRuns = typeof data.totalRuns === 'number' ? data.totalRuns : null;
+                  if (remainingRuns !== null && totalRuns !== null) {
+                    el.textContent = 'Trial buka: ' + remainingRuns + ' / ' + totalRuns + ' kali';
+                  } else if (remainingRuns !== null) {
+                    el.textContent = 'Trial buka tersisa ' + remainingRuns + ' kali';
+                  } else {
+                    var usedRuns = typeof data.usedRuns === 'number' ? data.usedRuns : (typeof data.runCount === 'number' ? data.runCount : null);
+                    if (usedRuns !== null && totalRuns) {
+                      el.textContent = 'Trial buka: ' + usedRuns + ' dari ' + totalRuns + ' kali';
+                    } else {
+                      el.textContent = 'Trial aktif (mode jumlah buka)';
+                    }
+                  }
+                } else {
+                  var remaining = typeof data.remainingDays === 'number' ? data.remainingDays : null;
+                  var total = typeof data.totalDays === 'number' ? data.totalDays : null;
+                  if (remaining !== null && total !== null) {
+                    el.textContent = 'Trial: ' + remaining + ' / ' + total + ' hari';
+                  } else if (remaining !== null) {
+                    el.textContent = 'Trial sisa ' + remaining + ' hari';
+                  } else {
+                    el.textContent = 'Trial aktif';
+                  }
+                }
+              }
+              return;
+            }
+
+            // Trial non-aktif: cek license berbasis tanggal
+            try {
+              var respLic = await fetch('/api/license/status', { headers: { 'Accept': 'application/json' } });
+              if (!respLic.ok) { hideBadge(); return; }
+              var lic = await respLic.json();
+              var off = lic && lic.offline;
+              var rem = (lic && typeof lic.remainingDays === 'number') ? lic.remainingDays : null;
+              if (off && off.valid && rem !== null && rem >= 0) {
+                showBadge();
+                el.classList.remove('bg-danger', 'text-light');
+                el.classList.add('bg-warning', 'text-dark');
+                el.textContent = 'License sisa ' + rem + ' hari';
+              } else {
+                hideBadge();
+              }
+            } catch (e2) {
+              hideBadge();
+            }
+          } catch (e) {}
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadTrialStatus);
+        } else {
+          loadTrialStatus();
+        }
+      })();
+    </script>
+
+    <!-- Back to Top Button -->
+    <button
+      id="backToTopBtn"
+      class="btn btn-primary back-to-top"
+      title="Back to Top"
+    >
+      <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- Audio Elements for Sound Effects -->
+    <audio id="pos-sound-beep" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+    <audio id="pos-sound-error" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+  </body>
+</html>
+
+
+
+
