@@ -1,0 +1,665 @@
+/* Admin page specific styles (extracted from admin.html) */
+body {
+    overflow-x: hidden;
+}
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+.is-valid {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+/* Stock-in form specific styles */
+.stock-in-product:focus,
+.stock-in-qty:focus,
+.stock-in-price:focus,
+.stock-in-selling:focus,
+.stock-in-variant:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.stock-in-qty:invalid,
+.stock-in-price:invalid,
+.stock-in-selling:invalid,
+.stock-in-variant:invalid {
+    border-color: #dc3545;
+}
+
+/* Variant dropdown styling */
+.stock-in-variant {
+    font-size: 0.875rem;
+    min-width: 120px;
+}
+
+.stock-in-variant:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+/* Table layout for stock-in form */
+#stockInItemsTable {
+    min-width: 980px;
+    table-layout: auto;
+}
+
+#stockInItemsTable .stock-in-product,
+#stockInItemsTable .stock-in-variant,
+#stockInItemsTable .stock-in-qty,
+#stockInItemsTable .stock-in-price,
+#stockInItemsTable .stock-in-selling,
+#stockInItemsTable .stock-in-prevprice,
+#stockInItemsTable .stock-in-prevsell {
+    width: 100%;
+}
+
+#stockInItemsTable .stock-in-product { min-width: 220px; }
+#stockInItemsTable .stock-in-variant { min-width: 180px; }
+#stockInItemsTable .stock-in-qty { min-width: 90px; }
+#stockInItemsTable .stock-in-price { min-width: 140px; }
+#stockInItemsTable .stock-in-selling { min-width: 140px; }
+#stockInItemsTable .stock-in-prevprice { min-width: 140px; }
+#stockInItemsTable .stock-in-prevsell { min-width: 140px; }
+
+#stockInItemsBody td {
+    vertical-align: middle;
+}
+
+#stockInItemsBody .stock-in-variant {
+    background-color: #f8f9fa;
+}
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination .page-item {
+    margin: 0 2px;
+}
+
+.pagination .page-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: #0d6efd;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    color: #0a58ca;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+/* Responsive pagination: transaksi & pelanggan */
+.pagination-footer {
+    width: 100%;
+    max-width: 100%;
+}
+
+#transactions-view .transactions-pagination-footer {
+    align-items: center;
+    text-align: center;
+}
+
+#transactions-view .transactions-pagination-footer .pagination-scroll-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#transactions-view .transactions-pagination-footer #transactionSummary {
+    display: block;
+    width: 100%;
+    line-height: 1.45;
+}
+
+.pagination-scroll-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.pagination-nav {
+    width: 100%;
+    max-width: 100%;
+}
+
+#transactionPaginationTop .pagination,
+#transactionPaginationBottom .pagination,
+#customerPaginationTop .pagination,
+#customerPaginationBottom .pagination,
+#autoBackupPaginationTop .pagination,
+#autoBackupPaginationBottom .pagination,
+#languagePaginationTop .pagination,
+#languagePaginationBottom .pagination,
+.pagination-nav .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    row-gap: 4px;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+#transactionPaginationTop .page-link,
+#transactionPaginationBottom .page-link,
+#customerPaginationTop .page-link,
+#customerPaginationBottom .page-link,
+#autoBackupPaginationTop .page-link,
+#autoBackupPaginationBottom .page-link,
+#languagePaginationTop .page-link,
+#languagePaginationBottom .page-link,
+.pagination-nav .page-link {
+    white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+    #transactionSummary small,
+    #customerSummary small,
+    #autoBackupSummary small,
+    #languageSummary small {
+        display: block;
+        line-height: 1.45;
+        word-break: break-word;
+    }
+
+    #transactionPaginationTop .pagination,
+    #transactionPaginationBottom .pagination,
+    #customerPaginationTop .pagination,
+    #customerPaginationBottom .pagination,
+    #autoBackupPaginationTop .pagination,
+    #autoBackupPaginationBottom .pagination,
+    #languagePaginationTop .pagination,
+    #languagePaginationBottom .pagination,
+    .pagination-nav .pagination {
+        padding-bottom: 2px;
+    }
+
+    #transactionPaginationTop .page-link,
+    #transactionPaginationBottom .page-link,
+    #customerPaginationTop .page-link,
+    #customerPaginationBottom .page-link,
+    #autoBackupPaginationTop .page-link,
+    #autoBackupPaginationBottom .page-link,
+    #languagePaginationTop .page-link,
+    #languagePaginationBottom .page-link,
+    .pagination-nav .page-link {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.82rem;
+    }
+}
+
+/* Supplier & Kredit & Hutang: pagination compact + responsif */
+#suppliers-view .stock-in-pagination-header,
+#suppliers-view .stock-in-pagination-footer,
+#customer-debts-view .customer-debts-pagination-header,
+#customer-debts-view .customer-debts-pagination-footer,
+#credits-view .credits-pagination-header,
+#credits-view .credits-pagination-footer {
+    align-items: center;
+    text-align: center;
+}
+
+#suppliers-view .stock-in-pagination-header .pagination-scroll-wrap,
+#suppliers-view .stock-in-pagination-footer .pagination-scroll-wrap,
+#customer-debts-view .customer-debts-pagination-header .pagination-scroll-wrap,
+#customer-debts-view .customer-debts-pagination-footer .pagination-scroll-wrap,
+#credits-view .credits-pagination-header .pagination-scroll-wrap,
+#credits-view .credits-pagination-footer .pagination-scroll-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#suppliers-view .stock-in-pagination-footer #stockInSummary {
+    display: block;
+    width: 100%;
+    line-height: 1.45;
+}
+
+#customer-debts-view .customer-debts-pagination-footer #customerDebtsSummary {
+    display: block;
+    width: 100%;
+    line-height: 1.45;
+}
+
+#credits-view .credits-pagination-footer #creditsSummary {
+    display: block;
+    width: 100%;
+    line-height: 1.45;
+}
+
+#suppliers-view .pagination-scroll-wrap,
+#customer-debts-view .pagination-scroll-wrap,
+#credits-view .pagination-scroll-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#suppliers-view #supplierPaginationTop,
+#suppliers-view #supplierPaginationBottom,
+#suppliers-view #stockInPaginationTop,
+#suppliers-view #stockInPaginationBottom,
+#customer-debts-view #customerDebtsPaginationTop,
+#customer-debts-view #customerDebtsPaginationBottom,
+#credits-view #creditsPaginationTop,
+#credits-view #creditsPaginationBottom {
+    width: 100%;
+    max-width: 100%;
+}
+
+#suppliers-view #supplierPaginationTop .pagination,
+#suppliers-view #supplierPaginationBottom .pagination,
+#suppliers-view #stockInPaginationTop .pagination,
+#suppliers-view #stockInPaginationBottom .pagination,
+#customer-debts-view #customerDebtsPaginationTop .pagination,
+#customer-debts-view #customerDebtsPaginationBottom .pagination,
+#credits-view #creditsPaginationTop .pagination,
+#credits-view #creditsPaginationBottom .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    row-gap: 4px;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 767.98px) {
+    #suppliers-view #supplierSummary small,
+    #suppliers-view #stockInSummary,
+    #customer-debts-view #customerDebtsSummary,
+    #credits-view #creditsSummary {
+        display: block;
+        line-height: 1.45;
+        word-break: break-word;
+    }
+}
+
+/* More specific selectors for user pagination */
+#userPaginationTop .page-link,
+#userPaginationBottom .page-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: #0d6efd;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+#userPaginationTop .page-link:hover,
+#userPaginationBottom .page-link:hover {
+    color: #0a58ca;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+#userPaginationTop .page-item.active .page-link,
+#userPaginationBottom .page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+#userPaginationTop .page-item.disabled .page-link,
+#userPaginationBottom .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+#suppliers-view .stock-in-product-summary {
+    display: inline-block;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+/* Variant prices display in product table */
+#productTableBody td.variant-prices-cell {
+    font-size: 0.85rem !important;
+    white-space: nowrap !important;
+    width: 160px !important;
+    max-width: 320px !important;
+    text-align: left !important;
+    line-height: 1.2 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    /* vertical-align: middle !important; */
+    padding: 8px !important;
+}
+
+/* Dark mode for variant prices */
+body.dark #productTableBody td.variant-prices-cell {
+    color: #eaeaea !important;
+}
+
+/* Select2 dark mode */
+body.dark .select2-container--default .select2-selection--single {
+    background-color: #1e1e1e;
+    border-color: #444;
+    color: #eaeaea;
+    min-height: 38px;
+}
+body.dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #eaeaea;
+    padding-left: 0.75rem;
+}
+body.dark .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #9aa0a6;
+}
+body.dark .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #9aa0a6 transparent transparent transparent;
+}
+body.dark .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent #9aa0a6 transparent;
+}
+body.dark .select2-container--default .select2-selection--multiple {
+    background-color: #1e1e1e;
+    border-color: #444;
+    color: #eaeaea;
+    min-height: 38px;
+}
+body.dark .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    color: #eaeaea;
+}
+body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #2b2b2b;
+    border-color: #3a3a3a;
+    color: #eaeaea;
+}
+body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #c9cdd3;
+}
+body.dark .select2-dropdown {
+    background-color: #1e1e1e;
+    border-color: #444;
+}
+body.dark .select2-container--default .select2-search--dropdown .select2-search__field {
+    background-color: #151515;
+    border-color: #444;
+    color: #eaeaea;
+}
+body.dark .select2-container--default .select2-results__option {
+    color: #eaeaea;
+}
+body.dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #2b2b2b;
+    color: #ffffff;
+}
+body.dark .select2-container--default .select2-results__option[aria-selected="true"] {
+    background-color: #2a3b4f;
+    color: #ffffff;
+}
+
+/* Success feedback for stock updates */
+.stock-update-success {
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    color: #0f5132;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.stock-update-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffecb5;
+    color: #664d03;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading states */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    margin: auto;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    border-top: 2px solid #fff;
+    animation: spin 1s ease infinite;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* Responsive sidebar sizing */
+#sidebar { overflow-y: auto; overflow-x: hidden; }
+#sidebar .nav-link { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Make toggle work at all breakpoints */
+body.sidebar-hidden #sidebar { display: none !important; }
+body.sidebar-hidden #mainContent { max-width: 100% !important; }
+/* Mobile/tablet: show sidebar as overlay when toggled */
+@media (max-width: 1199.98px) {
+  /* Hide sidebar by default on mobile/tablet to override Bootstrap's d-md-block */
+  #sidebar { display: none !important; z-index: 1040; }
+
+  /* Keep navbar (z-index:1030 in Bootstrap) above backdrop, below sidebar */
+  body.sidebar-visible::before { content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1020; }
+  body.sidebar-visible #sidebar { 
+    display: block !important; 
+    position: fixed; 
+    top: 56px; /* approx navbar height */
+    left: 0; 
+    height: calc(100dvh - 56px);
+    width: clamp(220px, 80vw, 320px);
+    max-width: 90vw;
+    overflow-y: auto; 
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+  }
+  body.sidebar-visible #sidebar .position-sticky {
+    position: static !important;
+    top: 0 !important;
+  }
+  body.sidebar-visible #sidebar {
+    padding-top: 0 !important;
+  }
+  /* Mobile: main content always full width */
+  #mainContent {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+/* At xl and above, define fixed sidebar width and shift main content */
+@media (min-width: 1200px) {
+  :root { --sidebar-width: clamp(200px, 18vw, 280px); }
+  #sidebar { flex: 0 0 var(--sidebar-width) !important; max-width: var(--sidebar-width) !important; width: var(--sidebar-width) !important; }
+  /* Ketika sidebar terlihat, geser konten ke kanan dan kurangi lebarnya */
+  #mainContent {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    max-width: calc(100% - var(--sidebar-width));
+    transition: all 0.2s ease-in-out;
+  }
+  /* Ketika sidebar disembunyikan, konten kembali penuh */
+  body.sidebar-hidden #mainContent {
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /*
+   * LOCKED (2026-06-15): Jangan tambahkan margin-left/width pada #xxx-view di dalam #mainContent.
+   * Semua view admin berada di dalam #mainContent; offset sidebar cukup dari #mainContent saja.
+   */
+
+  /* Ensure tables and containers adapt properly */
+  .table-responsive {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Modal positioning adjustment for sidebar */
+  body:not(.sidebar-hidden) .modal-dialog {
+    margin-left: calc(var(--sidebar-width) / 2);
+  }
+  
+  body.sidebar-hidden .modal-dialog {
+    margin-left: 0;
+  }
+}
+/* View content scrolling */
+.view-content {
+    max-height: calc(100dvh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Customer table specific styles */
+#customers-view .table th:nth-child(4), #customers-view .table td:nth-child(4) { /* Email column */
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#customers-view .table th:nth-child(5), #customers-view .table td:nth-child(5) { /* Address column */
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#customers-view .table th:nth-child(6), #customers-view .table td:nth-child(6) { /* Date column */
+    min-width: 120px;
+}
+#customers-view .table th:last-child, #customers-view .table td:last-child { /* Actions column */
+    width: 100px;
+    min-width: 100px;
+}
+/* For md screens, keep sidebar narrower when visible */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  :root { --sidebar-width: clamp(180px, 22vw, 240px); }
+}
+
+/* Product modal - variant price input sizing */
+#productModal #unitVariantPricesTable {
+  min-width: 1240px;
+}
+
+#productModal #unitPricesBody .up-use {
+  min-width: 18px;
+}
+
+#productModal #unitPricesBody .up-qty {
+  min-width: 100px;
+}
+
+#productModal #unitPricesBody .up-unit {
+  min-width: 160px;
+}
+
+#productModal #unitPricesBody .up-sku {
+  min-width: 180px;
+}
+
+#productModal #unitPricesBody .up-price,
+#productModal #unitPricesBody .up-stock {
+  min-width: 120px;
+}
+
+#productModal #unitPricesBody .up-note {
+  min-width: 240px;
+}
+
+#productModal #unitPricesBody .up-sku-scan,
+#productModal #unitPricesBody .up-photo-btn,
+#productModal #unitPricesBody .up-remove {
+  white-space: nowrap;
+}
+
+#productModal #unitPricesBody .form-control,
+#productModal #unitPricesBody .form-select {
+  width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  #productModal #unitVariantPricesTable {
+    min-width: 1380px;
+  }
+
+  #productModal #unitPricesBody .up-qty,
+  #productModal #unitPricesBody .up-price,
+  #productModal #unitPricesBody .up-stock {
+    min-width: 120px;
+  }
+
+  #productModal #unitPricesBody .up-unit {
+    min-width: 180px;
+  }
+
+  #productModal #unitPricesBody .up-sku {
+    min-width: 220px;
+  }
+
+  #productModal #unitPricesBody .up-note {
+    min-width: 280px;
+  }
+}
+
+

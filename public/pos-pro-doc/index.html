@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+    />
+    <title>POS PRO Offline - Dokumentasi Pengguna</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #050816;
+        --bg-elevated: #0b1020;
+        --accent: #6366f1;
+        --accent-soft: rgba(99, 102, 241, 0.12);
+        --accent-strong: rgba(129, 140, 248, 0.3);
+        --border-subtle: rgba(148, 163, 184, 0.25);
+        --text-main: #e5e7eb;
+        --text-muted: #9ca3af;
+        --text-strong: #f9fafb;
+        --danger: #f97373;
+        --success: #4ade80;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top, #111827 0, #020617 55%);
+        color: var(--text-main);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: 100vh;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+        }
+      }
+
+      .sidebar {
+        border-right: 1px solid var(--border-subtle);
+        background: linear-gradient(180deg, #020617 0, #020617ee 48%, #020617 100%);
+        backdrop-filter: blur(18px);
+      }
+
+      .sidebar-inner {
+        padding: 18px 20px 20px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 12px;
+        background: conic-gradient(
+          from 220deg,
+          #6366f1,
+          #22d3ee,
+          #a855f7,
+          #6366f1
+        );
+        box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.2),
+          0 10px 25px rgba(15, 23, 42, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #020617;
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand-title {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-strong);
+      }
+
+      .brand-subtitle {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .sidebar-section-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 13px;
+      }
+
+      .nav-group {
+        margin-bottom: 8px;
+      }
+
+      .nav-group-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 9px;
+        border-radius: 9px;
+        color: var(--text-main);
+        text-decoration: none;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.17s ease-out;
+      }
+
+      .nav-link span.nav-badge {
+        margin-left: auto;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: rgba(15, 118, 110, 0.25);
+        color: #a5f3fc;
+        border: 1px solid rgba(34, 211, 238, 0.4);
+      }
+
+      .nav-link:hover {
+        background: radial-gradient(
+          circle at top left,
+          var(--accent-soft),
+          transparent 65%
+        );
+        border-color: var(--accent-strong);
+        transform: translateY(-1px);
+      }
+
+      .nav-link.active {
+        background: linear-gradient(135deg, var(--accent-soft), transparent);
+        border-color: var(--accent-strong);
+      }
+
+      .nav-icon {
+        width: 18px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: rgba(15, 23, 42, 0.7);
+        color: #c7d2fe;
+        font-size: 12px;
+      }
+
+      .nav-link-label {
+        flex: 1;
+        text-align: left;
+      }
+
+      .nav-footnote {
+        margin-top: auto;
+        padding-top: 8px;
+        border-top: 1px solid rgba(15, 23, 42, 0.8);
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .nav-footnote-code {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        font-size: 10px;
+        margin-top: 4px;
+      }
+
+      .content {
+        padding: 24px 24px 40px;
+        overflow-x: hidden;
+      }
+
+      .hero-card {
+        border-radius: 18px;
+        padding: 20px 20px 18px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background:
+          radial-gradient(circle at top left, rgba(129, 140, 248, 0.16), transparent 55%),
+          radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.16), transparent 60%),
+          rgba(15, 23, 42, 0.92);
+        box-shadow:
+          0 22px 40px rgba(15, 23, 42, 0.85),
+          0 0 0 1px rgba(15, 23, 42, 0.8);
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.78);
+        border: 1px solid rgba(129, 140, 248, 0.55);
+        font-size: 11px;
+        color: #c7d2fe;
+        margin-bottom: 10px;
+      }
+
+      .hero-pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+      }
+
+      .hero-title {
+        font-size: 22px;
+        letter-spacing: -0.03em;
+        color: var(--text-strong);
+        margin: 0 0 6px;
+      }
+
+      .hero-subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+        max-width: 520px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+        gap: 16px;
+        align-items: center;
+        margin-top: 16px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .hero-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .btn {
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-size: 13px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.85);
+        color: var(--text-main);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: all 0.16s ease-out;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #22c55e);
+        color: #e5e7eb;
+        border-color: transparent;
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.55);
+      }
+
+      .btn-primary:hover {
+        filter: brightness(1.07);
+        transform: translateY(-1px);
+        box-shadow: 0 18px 45px rgba(79, 70, 229, 0.7);
+      }
+
+      .btn-ghost {
+        background: rgba(15, 23, 42, 0.8);
+      }
+
+      .btn-ghost:hover {
+        background: rgba(15, 23, 42, 0.95);
+        border-color: rgba(148, 163, 184, 0.8);
+        transform: translateY(-1px);
+      }
+
+      .btn-icon {
+        font-size: 14px;
+      }
+
+      .hero-highlight {
+        font-size: 11px;
+        color: #a5f3fc;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .hero-highlight-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: #22c55e;
+      }
+
+      .hero-preview-card {
+        border-radius: 14px;
+        padding: 10px 10px 9px;
+        background: radial-gradient(circle at top, #0b1120 0, #020617 70%);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+        font-size: 11px;
+      }
+
+      .hero-preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .hero-preview-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: #e5e7eb;
+      }
+
+      .hero-preview-tag {
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: rgba(34, 211, 238, 0.1);
+        color: #67e8f9;
+        border: 1px solid rgba(45, 212, 191, 0.5);
+      }
+
+      .hero-preview-body {
+        border-radius: 11px;
+        padding: 8px 9px;
+        background: radial-gradient(circle at top left, #0b1120 0, #020617 70%);
+        border: 1px dashed rgba(148, 163, 184, 0.5);
+      }
+
+      .hero-preview-step {
+        display: flex;
+        gap: 7px;
+        margin-bottom: 4px;
+      }
+
+      .hero-preview-step:last-child {
+        margin-bottom: 0;
+      }
+
+      .hero-preview-badge {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: rgba(55, 65, 81, 0.9);
+        color: #e5e7eb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+      }
+
+      .hero-preview-text {
+        color: #e5e7eb;
+      }
+
+      .hero-preview-sub {
+        color: var(--text-muted);
+        font-size: 10px;
+        margin-top: 4px;
+      }
+
+      .hero-ring {
+        position: absolute;
+        inset: -60%;
+        opacity: 0.35;
+        background:
+          radial-gradient(circle at 10% -10%, rgba(59, 130, 246, 0.5), transparent 60%),
+          radial-gradient(circle at 100% 110%, rgba(45, 212, 191, 0.35), transparent 60%);
+        mix-blend-mode: screen;
+        pointer-events: none;
+      }
+
+      .hero-ring::before {
+        content: "";
+        position: absolute;
+        inset: 35%;
+        border-radius: 999px;
+        border: 1px dashed rgba(148, 163, 184, 0.45);
+      }
+
+      .hero-card-inner {
+        position: relative;
+        z-index: 1;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.2fr);
+        gap: 18px;
+        align-items: flex-start;
+      }
+
+      @media (max-width: 1024px) {
+        .content-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .panel {
+        border-radius: 16px;
+        padding: 16px 18px;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.85);
+      }
+
+      .panel + .panel {
+        margin-top: 14px;
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        gap: 8px;
+      }
+
+      .panel-title {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--text-strong);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .panel-tag {
+        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: rgba(30, 64, 175, 0.78);
+        border: 1px solid rgba(129, 140, 248, 0.7);
+        color: #c7d2fe;
+      }
+
+      .panel-description {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+
+      .panel-body {
+        font-size: 12px;
+        color: var(--text-main);
+      }
+
+      .badge-inline {
+        padding: 1px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #cbd5f5;
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      h3 {
+        font-size: 13px;
+        margin: 10px 0 4px;
+        color: var(--text-strong);
+      }
+
+      p {
+        margin: 4px 0;
+        line-height: 1.6;
+      }
+
+      ul,
+      ol {
+        padding-left: 18px;
+        margin: 4px 0 6px;
+      }
+
+      li {
+        margin-bottom: 3px;
+      }
+
+      code,
+      kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        font-size: 11px;
+        padding: 1px 5px;
+        border-radius: 6px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        color: #e5e7eb;
+      }
+
+      kbd {
+        box-shadow: 0 1px 0 rgba(148, 163, 184, 0.7);
+      }
+
+      .callout {
+        border-radius: 10px;
+        padding: 7px 9px;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        font-size: 11px;
+        margin-top: 6px;
+        display: flex;
+        gap: 7px;
+      }
+
+      .callout-icon {
+        margin-top: 1px;
+      }
+
+      .callout-warning {
+        border-color: rgba(248, 250, 252, 0.3);
+        background: radial-gradient(circle at top left, #7c2d12 0, #020617 70%);
+      }
+
+      .callout-success {
+        border-color: rgba(22, 163, 74, 0.6);
+        background: radial-gradient(circle at top left, #14532d 0, #020617 70%);
+      }
+
+      .callout-danger {
+        border-color: rgba(220, 38, 38, 0.6);
+        background: radial-gradient(circle at top left, #7f1d1d 0, #020617 70%);
+      }
+
+      .callout p {
+        margin: 0;
+      }
+
+      .step-list {
+        counter-reset: step-counter;
+        list-style: none;
+        padding-left: 0;
+        margin-top: 6px;
+      }
+
+      .step-list li {
+        counter-increment: step-counter;
+        position: relative;
+        padding-left: 26px;
+        margin-bottom: 6px;
+      }
+
+      .step-list li::before {
+        content: counter(step-counter);
+        position: absolute;
+        left: 0;
+        top: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #4f46e5, #22c55e);
+        color: #f9fafb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+      }
+
+      .shortcut-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      @media (max-width: 600px) {
+        .shortcut-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .shortcut-item {
+        border-radius: 9px;
+        padding: 6px 8px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+      }
+
+      .shortcut-label {
+        color: var(--text-main);
+      }
+
+      .shortcut-keys {
+        display: inline-flex;
+        gap: 4px;
+      }
+
+      .mini-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 4px;
+        font-size: 11px;
+      }
+
+      .mini-table th,
+      .mini-table td {
+        border: 1px solid rgba(30, 64, 175, 0.7);
+        padding: 4px 6px;
+        text-align: left;
+      }
+
+      .mini-table th {
+        background: rgba(30, 64, 175, 0.9);
+        color: #e5e7eb;
+        font-weight: 500;
+      }
+
+      .mini-table td {
+        background: rgba(15, 23, 42, 0.95);
+      }
+
+      a.inline-link {
+        color: #a5b4fc;
+        text-decoration: none;
+        border-bottom: 1px dashed rgba(129, 140, 248, 0.6);
+      }
+
+      a.inline-link:hover {
+        color: #e0e7ff;
+        border-bottom-style: solid;
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+        display: inline-block;
+      }
+
+      .status-dot.danger {
+        background: #f97373;
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.3);
+      }
+
+      .divider {
+        height: 1px;
+        margin: 10px 0 6px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(148, 163, 184, 0.9),
+          transparent
+        );
+        opacity: 0.8;
+      }
+
+      .pill-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .pill-item {
+        border-radius: 999px;
+        padding: 3px 7px;
+        font-size: 11px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        color: #e5e7eb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-inner">
+          <header class="brand">
+            <div class="brand-logo">P</div>
+            <div class="brand-text">
+              <div class="brand-title">POS PRO Offline</div>
+              <div class="brand-subtitle">Panduan penggunaan &amp; setup</div>
+            </div>
+          </header>
+
+          <section>
+            <div class="sidebar-section-title">Dokumentasi</div>
+
+            <nav class="nav">
+              <div class="nav-group">
+                <div class="nav-group-label">Mulai Cepat</div>
+                <button class="nav-link active" data-section="overview">
+                  <span class="nav-icon">🏠</span>
+                  <span class="nav-link-label">Ringkasan &amp; alur kerja</span>
+                </button>
+                <button class="nav-link" data-section="install">
+                  <span class="nav-icon">⚙️</span>
+                  <span class="nav-link-label">Instalasi &amp; setup awal</span>
+                  <span class="nav-badge">Disarankan</span>
+                </button>
+              </div>
+
+              <div class="nav-group">
+                <div class="nav-group-label">Pengaturan</div>
+                <button class="nav-link" data-section="master">
+                  <span class="nav-icon">📚</span>
+                  <span class="nav-link-label">Master data toko</span>
+                </button>
+                <button class="nav-link" data-section="printer">
+                  <span class="nav-icon">🖨️</span>
+                  <span class="nav-link-label">Printer &amp; struk</span>
+                </button>
+                <button class="nav-link" data-section="user">
+                  <span class="nav-icon">👥</span>
+                  <span class="nav-link-label">User &amp; hak akses</span>
+                </button>
+              </div>
+
+              <div class="nav-group">
+                <div class="nav-group-label">Operasional Harian</div>
+                <button class="nav-link" data-section="kasir">
+                  <span class="nav-icon">🧾</span>
+                  <span class="nav-link-label">Transaksi kasir (POS)</span>
+                </button>
+                <button class="nav-link" data-section="mutasi">
+                  <span class="nav-icon">📦</span>
+                  <span class="nav-link-label">Stok &amp; mutasi barang</span>
+                </button>
+                <button class="nav-link" data-section="hutang">
+                  <span class="nav-icon">💳</span>
+                  <span class="nav-link-label">Piutang / hutang pelanggan</span>
+                </button>
+                <button class="nav-link" data-section="laporan">
+                  <span class="nav-icon">📊</span>
+                  <span class="nav-link-label">Laporan penjualan &amp; kas</span>
+                </button>
+              </div>
+
+              <div class="nav-group">
+                <div class="nav-group-label">Keamanan &amp; Backup</div>
+                <button class="nav-link" data-section="backup">
+                  <span class="nav-icon">🛡️</span>
+                  <span class="nav-link-label">Backup, restore &amp; sinkron</span>
+                </button>
+                <button class="nav-link" data-section="troubleshoot">
+                  <span class="nav-icon">🧩</span>
+                  <span class="nav-link-label">Troubleshooting cepat</span>
+                </button>
+              </div>
+            </nav>
+
+            <div class="nav-footnote">
+              Status dokumentasi:
+              <span class="status-dot"></span>
+              Stabil untuk versi saat ini.
+              <div class="nav-footnote-code">
+                <span>Tips:</span>
+                <code>Ctrl + F</code>
+                <span>untuk cari menu</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="hero-card">
+          <div class="hero-ring"></div>
+          <div class="hero-card-inner">
+            <div class="hero-pill">
+              <span class="hero-pill-dot"></span>
+              <span>Panduan resmi POS PRO Offline</span>
+              <span style="opacity: 0.7">— dibuat langsung di aplikasi</span>
+            </div>
+
+            <div class="hero-grid">
+              <div>
+                <h1 class="hero-title">Semua panduan dalam satu tempat.</h1>
+                <p class="hero-subtitle">
+                  Halaman ini berisi dokumentasi ringkas namun lengkap untuk
+                  membantu Anda menginstal, mengatur, dan mengoperasikan
+                  aplikasi <strong>POS PRO Offline</strong> di toko Anda,
+                  sekelas aplikasi premium.
+                </p>
+
+                <div class="hero-buttons">
+                  <button class="btn btn-primary" data-section="install">
+                    <span class="btn-icon">⚙️</span>
+                    <span>Mulai dari instalasi &amp; setup</span>
+                  </button>
+                  <button class="btn btn-ghost" data-section="kasir">
+                    <span class="btn-icon">🧾</span>
+                    <span>Panduan cepat kasir</span>
+                  </button>
+                </div>
+
+                <div class="hero-highlight">
+                  <span class="hero-highlight-dot"></span>
+                  <span>
+                    Ikuti urutan: Instalasi → Master Data → Hak Akses →
+                    Transaksi → Backup
+                  </span>
+                </div>
+              </div>
+
+              <div class="hero-preview-card">
+                <div class="hero-preview-header">
+                  <div class="hero-preview-title">
+                    Checklist setup toko baru
+                  </div>
+                  <div class="hero-preview-tag">Direkomendasikan</div>
+                </div>
+
+                <div class="hero-preview-body">
+                  <div class="hero-preview-step">
+                    <div class="hero-preview-badge">1</div>
+                    <div class="hero-preview-text">
+                      Install aplikasi sampai bisa login
+                      <div class="hero-preview-sub">
+                        Gunakan akses <strong>admin</strong> / pemilik untuk
+                        pertama kali.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="hero-preview-step">
+                    <div class="hero-preview-badge">2</div>
+                    <div class="hero-preview-text">
+                      Lengkapi data toko &amp; master barang
+                      <div class="hero-preview-sub">
+                        Input nama toko, kategori, supplier, dan stok awal.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="hero-preview-step">
+                    <div class="hero-preview-badge">3</div>
+                    <div class="hero-preview-text">
+                      Atur hak akses kasir &amp; uji cetak struk
+                      <div class="hero-preview-sub">
+                        Buat user kasir, hubungkan ke printer, lakukan penjualan
+                        percobaan.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hero-preview-sub">
+                  Ikuti panduan di bawah ini untuk detail setiap langkah.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="content-grid">
+          <!-- Kolom kiri -->
+          <div>
+            <!-- OVERVIEW -->
+            <article class="panel" data-section-content="overview">
+              <header class="panel-header">
+                <h2 class="panel-title">
+                  Ringkasan aplikasi &amp; alur kerja harian
+                </h2>
+                <span class="panel-tag">Overview</span>
+              </header>
+
+              <div class="panel-description">
+                Gambaran umum fitur utama POS PRO Offline dan alur kerja harian
+                yang disarankan untuk kasir dan pemilik usaha.
+              </div>
+
+              <div class="panel-body">
+                <h3>Apa itu POS PRO Offline?</h3>
+                <p>
+                  POS PRO Offline adalah aplikasi kasir yang berjalan lokal di
+                  komputer/laptop Anda, dirancang untuk:
+                </p>
+                <ul>
+                  <li>Mengelola penjualan kasir harian (menu <code>pos.html</code>).</li>
+                  <li>
+                    Mengelola stok, mutasi barang, dan penyesuaian
+                    (menu <code>mutasi-barang.html</code> dan halaman admin).
+                  </li>
+                  <li>
+                    Mencatat piutang / hutang pelanggan beserta cetak struk
+                    khusus.
+                  </li>
+                  <li>
+                    Menyajikan laporan penjualan &amp; kas (menu
+                    <code>revenue.html</code> dan laporan lainnya).
+                  </li>
+                  <li>
+                    Sinkronisasi data (bila diaktifkan) melalui
+                    <code>sync.html</code>.
+                  </li>
+                </ul>
+
+                <div class="divider"></div>
+
+                <h3>Alur kerja harian yang direkomendasikan</h3>
+                <ol class="step-list">
+                  <li>
+                    <strong>Buka aplikasi &amp; login</strong><br />
+                    Jalankan aplikasi, login sebagai kasir atau admin sesuai
+                    kebutuhan.
+                  </li>
+                  <li>
+                    <strong>Pastikan kas awal &amp; printer siap</strong><br />
+                    Siapkan uang kembalian di laci, pastikan printer struk
+                    menyala dan kertas cukup.
+                  </li>
+                  <li>
+                    <strong>Lakukan transaksi kasir (POS)</strong><br />
+                    Input barang, pilih pelanggan bila perlu, dan simpan
+                    transaksi. Struk akan otomatis tercetak.
+                  </li>
+                  <li>
+                    <strong>Catat mutasi khusus (bila ada)</strong><br />
+                    Untuk retur, koreksi stok, atau pindah gudang, gunakan menu
+                    mutasi/stok.
+                  </li>
+                  <li>
+                    <strong>Cek laporan penjualan</strong><br />
+                    Di akhir shift/hari, cek menu laporan penjualan &amp; kas,
+                    cocokkan dengan uang fisik.
+                  </li>
+                  <li>
+                    <strong>Lakukan backup data</strong><br />
+                    Minimal 1x per hari, simpan backup ke flashdisk atau cloud
+                    storage.
+                  </li>
+                </ol>
+
+                <div class="callout callout-success">
+                  <div class="callout-icon">✅</div>
+                  <div>
+                    <p>
+                      Ikuti alur di atas setiap hari untuk meminimalkan
+                      selisih kas, kehilangan data, dan stok yang tidak akurat.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- INSTALL -->
+            <article class="panel" data-section-content="install" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">
+                  Instalasi &amp; setup awal aplikasi
+                </h2>
+                <span class="panel-tag">Setup awal</span>
+              </header>
+
+              <div class="panel-description">
+                Langkah demi langkah mulai dari persiapan komputer, instalasi,
+                hingga berhasil login pertama kali ke aplikasi.
+              </div>
+
+              <div class="panel-body">
+                <h3>1. Spesifikasi minimum perangkat</h3>
+                <ul>
+                  <li>OS: Windows 10 / 11 (64-bit) disarankan.</li>
+                  <li>RAM: minimal 4 GB (8 GB lebih nyaman).</li>
+                  <li>Prosesor: setara Intel i3 / AMD sekelasnya.</li>
+                  <li>Ruang kosong disarankan: 5–10 GB.</li>
+                  <li>
+                    Printer struk USB/LAN (58 mm atau 80 mm) bila ingin cetak
+                    struk.
+                  </li>
+                </ul>
+
+                <div class="callout callout-warning">
+                  <div class="callout-icon">⚠️</div>
+                  <div>
+                    <p>
+                      Hindari instal di komputer yang sering dimatikan paksa,
+                      agar data database tidak mudah rusak.
+                    </p>
+                  </div>
+                </div>
+
+                <h3>2. Instalasi aplikasi</h3>
+                <ol class="step-list">
+                  <li>Pastikan file installer/aplikasi sudah lengkap.</li>
+                  <li>
+                    Klik kanan → <strong>Run as administrator</strong> bila
+                    diminta izin.
+                  </li>
+                  <li>
+                    Ikuti wizard instalasi sampai selesai (Next → Next →
+                    Finish).
+                  </li>
+                  <li>
+                    Setelah selesai, pastikan ada shortcut aplikasi di Desktop
+                    atau Start Menu.
+                  </li>
+                </ol>
+
+                <h3>3. Login pertama kali</h3>
+                <p>
+                  Secara default, biasanya tersedia akun admin awal (contoh):
+                </p>
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Role</th>
+                      <th>User</th>
+                      <th>Password</th>
+                      <th>Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Admin / Owner</td>
+                      <td>admin</td>
+                      <td>••••••</td>
+                      <td>Gunakan akun ini hanya untuk pemilik.</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="callout callout-danger">
+                  <div class="callout-icon">⛔</div>
+                  <div>
+                    <p>
+                      Setelah berhasil login, segera ganti password default
+                      admin, dan jangan sebarkan ke kasir.
+                    </p>
+                  </div>
+                </div>
+
+                <h3>4. Urutan setup awal yang direkomendasikan</h3>
+                <ol class="step-list">
+                  <li>
+                    Login sebagai <strong>admin/pemilik</strong>.
+                  </li>
+                  <li>
+                    Buka menu
+                    <strong>Pengaturan Toko / Company Profile</strong> dan
+                    isi:
+                    <ul>
+                      <li>Nama toko, alamat, no. telp, NPWP (bila ada).</li>
+                      <li>Logo (jika didukung, akan tampil di struk/faktur).</li>
+                    </ul>
+                  </li>
+                  <li>
+                    Isi <strong>master kategori, satuan, supplier</strong>.
+                  </li>
+                  <li>
+                    Input <strong>master barang</strong> beserta harga jual dan
+                    stok awal.
+                  </li>
+                  <li>
+                    Atur <strong>user kasir</strong> dan batasi hak aksesnya.
+                  </li>
+                  <li>
+                    Hubungkan dan uji <strong>printer struk</strong>.
+                  </li>
+                  <li>
+                    Lakukan <strong>1–2 transaksi percobaan</strong> dan cek
+                    laporan.
+                  </li>
+                </ol>
+              </div>
+            </article>
+
+            <!-- MASTER DATA -->
+            <article class="panel" data-section-content="master" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Pengaturan master data toko</h2>
+                <span class="panel-tag">Master data</span>
+              </header>
+
+              <div class="panel-description">
+                Master data yang rapi akan membuat transaksi kasir dan laporan
+                menjadi lebih akurat dan mudah dianalisa.
+              </div>
+
+              <div class="panel-body">
+                <h3>1. Data toko / profil perusahaan</h3>
+                <p>Buka menu <strong>Pengaturan &rarr; Data Toko</strong>:</p>
+                <ul>
+                  <li>Isi nama toko sesuai yang ingin tampil di struk.</li>
+                  <li>Lengkapi alamat, nomor telepon, dan keterangan pajak.</li>
+                  <li>
+                    Jika mendukung logo, upload logo resolusi kecil
+                    (sekitar 200–300 px lebar).
+                  </li>
+                </ul>
+
+                <h3>2. Kategori &amp; satuan barang</h3>
+                <p>Sebelum input barang, buat kategori dan satuan:</p>
+                <ul>
+                  <li>
+                    Contoh kategori: <em>Minuman</em>, <em>Makanan</em>,
+                    <em>Snack</em>, <em>Obat</em>, dll.
+                  </li>
+                  <li>
+                    Contoh satuan: <em>Pcs</em>, <em>Dus</em>, <em>Botol</em>,
+                    <em>Pack</em>.
+                  </li>
+                  <li>
+                    Gunakan penamaan singkat dan konsisten agar kasir mudah
+                    mencari.
+                  </li>
+                </ul>
+
+                <h3>3. Supplier dan pelanggan (opsional tapi direkomendasikan)</h3>
+                <p>
+                  Untuk memudahkan tracking hutang/piutang dan laporan per
+                  relasi:
+                </p>
+                <ul>
+                  <li>
+                    Tambahkan <strong>supplier</strong> utama (distributor
+                    besar tempat Anda belanja stok).
+                  </li>
+                  <li>
+                    Tambahkan <strong>pelanggan langganan</strong> yang sering
+                    berhutang / pembayaran tempo.
+                  </li>
+                </ul>
+
+                <h3>4. Input master barang</h3>
+                <ol class="step-list">
+                  <li>
+                    Buka menu
+                    <strong>Master Barang / Produk</strong> pada halaman admin.
+                  </li>
+                  <li>
+                    Untuk setiap barang, isi minimal:
+                    <ul>
+                      <li>Kode barang (boleh gunakan kode sendiri / barcode).</li>
+                      <li>Nama barang yang mudah dibaca kasir.</li>
+                      <li>Kategori &amp; satuan.</li>
+                      <li>Harga beli dan harga jual.</li>
+                      <li>Stok awal (bila Anda mulai menggunakan di tengah jalan).</li>
+                    </ul>
+                  </li>
+                  <li>
+                    Simpan dan cek di menu POS; pastikan bisa dicari dengan
+                    cepat.
+                  </li>
+                </ol>
+
+                <div class="callout callout-success">
+                  <div class="callout-icon">💡</div>
+                  <div>
+                    <p>
+                      Jika memakai barcode scanner, pastikan nilai
+                      <strong>kode barang</strong> diisi sesuai dengan barcode
+                      fisik, agar kasir cukup scan tanpa ketik manual.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- PRINTER -->
+            <article class="panel" data-section-content="printer" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Pengaturan printer &amp; struk</h2>
+                <span class="panel-tag">Printer</span>
+              </header>
+
+              <div class="panel-description">
+                Menghubungkan aplikasi dengan printer struk agar setiap
+                transaksi penjualan otomatis mencetak bukti bayar profesional.
+              </div>
+
+              <div class="panel-body">
+                <h3>1. Hubungkan printer ke Windows</h3>
+                <ol class="step-list">
+                  <li>
+                    Colokkan kabel USB / pastikan koneksi LAN printer sudah
+                    benar.
+                  </li>
+                  <li>
+                    Buka <strong>Control Panel &rarr; Devices and Printers</strong>.
+                  </li>
+                  <li>
+                    Pastikan printer struk muncul dan bisa melakukan
+                    <em>Print Test Page</em>.
+                  </li>
+                </ol>
+
+                <h3>2. Pilih printer di aplikasi</h3>
+                <p>
+                  Di menu pengaturan printer pada halaman admin
+                  (<code>admin.html</code>), pilih:
+                </p>
+                <ul>
+                  <li>Nama printer default yang sama dengan di Windows.</li>
+                  <li>Lebar kertas (58 mm atau 80 mm).</li>
+                  <li>
+                    Template struk (simple / full) sesuai kebutuhan
+                    (<code>receipt-print.html</code>,
+                    <code>receipt-print-full.html</code>, dll).
+                  </li>
+                </ul>
+
+                <h3>3. Uji coba cetak</h3>
+                <ol class="step-list">
+                  <li>Lakukan 1 transaksi percobaan di menu POS.</li>
+                  <li>Pastikan struk tercetak dengan rapi dan terbaca.</li>
+                  <li>
+                    Bila hasil terpotong atau berantakan, sesuaikan margin
+                    &amp; pengaturan lebar kertas di aplikasi.
+                  </li>
+                </ol>
+
+                <div class="callout callout-warning">
+                  <div class="callout-icon">🧾</div>
+                  <div>
+                    <p>
+                      Jika printer tidak merespons sama sekali, pastikan
+                      driver sudah benar dan tidak ada antrian print error di
+                      Windows.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- USER -->
+            <article class="panel" data-section-content="user" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">User, role &amp; hak akses</h2>
+                <span class="panel-tag">Keamanan</span>
+              </header>
+
+              <div class="panel-description">
+                Atur siapa saja yang boleh mengakses aplikasi dan menu mana
+                yang dapat mereka gunakan.
+              </div>
+
+              <div class="panel-body">
+                <h3>1. Role yang umum digunakan</h3>
+                <ul>
+                  <li>
+                    <strong>Owner / Superadmin</strong> – akses penuh termasuk
+                    pengaturan, master data, dan laporan.
+                  </li>
+                  <li>
+                    <strong>Admin</strong> – hampir sama dengan owner tetapi
+                    bisa dibatasi di beberapa menu sensitif.
+                  </li>
+                  <li>
+                    <strong>Kasir</strong> – fokus pada transaksi penjualan,
+                    tidak boleh mengubah harga pokok dan master data.
+                  </li>
+                </ul>
+
+                <h3>2. Membuat user baru</h3>
+                <ol class="step-list">
+                  <li>Masuk sebagai owner/admin.</li>
+                  <li>
+                    Buka menu <strong>Pengguna / User Management</strong>.
+                  </li>
+                  <li>
+                    Klik <em>Tambah User</em>, lalu isi:
+                    <ul>
+                      <li>Username &amp; password.</li>
+                      <li>Role (Kasir / Admin / Owner).</li>
+                      <li>Nama lengkap (opsional tapi disarankan).</li>
+                    </ul>
+                  </li>
+                  <li>Simpan dan catat username untuk masing-masing pegawai.</li>
+                </ol>
+
+                <h3>3. Tips keamanan</h3>
+                <ul>
+                  <li>
+                    Jangan berikan user admin/owner kepada kasir harian.
+                  </li>
+                  <li>Gunakan password yang berbeda untuk setiap user.</li>
+                  <li>Rutin ganti password bila ada pergantian pegawai.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- Kolom kanan -->
+          <div>
+            <!-- KASIR -->
+            <article class="panel" data-section-content="kasir" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Panduan cepat transaksi kasir (POS)</h2>
+                <span class="panel-tag">Kasir</span>
+              </header>
+
+              <div class="panel-description">
+                Cara melakukan transaksi penjualan dari awal sampai cetak struk
+                di menu POS (<code>pos.html</code>).
+              </div>
+
+              <div class="panel-body">
+                <h3>A. Langkah transaksi standar</h3>
+                <ol class="step-list">
+                  <li>Login sebagai user kasir.</li>
+                  <li>
+                    Buka menu <strong>POS / Penjualan</strong>
+                    (<code>pos.html</code>).
+                  </li>
+                  <li>
+                    Cari barang dengan:
+                    <ul>
+                      <li>Scan barcode, atau</li>
+                      <li>Ketik nama/kode lalu pilih dari daftar.</li>
+                    </ul>
+                  </li>
+                  <li>
+                    Masukkan jumlah (qty) dan pastikan harga jual sudah benar.
+                  </li>
+                  <li>
+                    Pilih pelanggan bila penjualan tempo / piutang
+                    (opsional).
+                  </li>
+                  <li>Pilih metode bayar (tunai, transfer, dll).</li>
+                  <li>Klik <strong>Simpan / Bayar</strong> untuk menyelesaikan.</li>
+                  <li>Struk akan tercetak otomatis jika printer tersambung.</li>
+                </ol>
+
+                <h3>B. Shortcut penting untuk kasir</h3>
+                <div class="shortcut-grid">
+                  <div class="shortcut-item">
+                    <span class="shortcut-label">Simpan / bayar transaksi</span>
+                    <span class="shortcut-keys">
+                      <kbd>Enter</kbd>
+                    </span>
+                  </div>
+                  <div class="shortcut-item">
+                    <span class="shortcut-label">Cari barang</span>
+                    <span class="shortcut-keys">
+                      <kbd>Ctrl</kbd><kbd>F</kbd>
+                    </span>
+                  </div>
+                  <div class="shortcut-item">
+                    <span class="shortcut-label">Hapus baris barang</span>
+                    <span class="shortcut-keys">
+                      <kbd>Del</kbd>
+                    </span>
+                  </div>
+                  <div class="shortcut-item">
+                    <span class="shortcut-label">Batal transaksi</span>
+                    <span class="shortcut-keys">
+                      <kbd>Esc</kbd>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="callout callout-success">
+                  <div class="callout-icon">💡</div>
+                  <div>
+                    <p>
+                      Latih kasir menggunakan shortcut di atas untuk
+                      mempercepat antrian di jam ramai.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- MUTASI -->
+            <article class="panel" data-section-content="mutasi" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Stok &amp; mutasi barang</h2>
+                <span class="panel-tag">Stok</span>
+              </header>
+
+              <div class="panel-description">
+                Mengatur keluar-masuk stok di luar transaksi penjualan biasa
+                sehingga laporan stok tetap akurat.
+              </div>
+
+              <div class="panel-body">
+                <h3>Jenis mutasi yang umum</h3>
+                <ul>
+                  <li>
+                    <strong>Stok masuk</strong>: pembelian dari supplier, stok
+                    awal, koreksi stok kurang.
+                  </li>
+                  <li>
+                    <strong>Stok keluar</strong>: barang rusak, hilang, atau
+                    pemakaian internal.
+                  </li>
+                  <li>
+                    <strong>Mutasi antar gudang</strong> (bila menggunakan
+                    multi-gudang).
+                  </li>
+                </ul>
+
+                <h3>Cara membuat mutasi stok</h3>
+                <ol class="step-list">
+                  <li>Masuk menu <strong>Mutasi / Stok</strong>.</li>
+                  <li>Pilih jenis mutasi (masuk/keluar/pindah gudang).</li>
+                  <li>Pilih barang dan isi jumlah mutasi.</li>
+                  <li>Tulis catatan singkat (contoh: <em>stok awal</em>).</li>
+                  <li>Simpan dan cek apakah stok sudah berubah sesuai.</li>
+                </ol>
+              </div>
+            </article>
+
+            <!-- HUTANG / PIUTANG -->
+            <article class="panel" data-section-content="hutang" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Piutang / hutang pelanggan</h2>
+                <span class="panel-tag">Piutang</span>
+              </header>
+
+              <div class="panel-description">
+                Mengatur transaksi yang belum langsung lunas dan bukti cetak
+                struk khusus piutang / pembayaran angsuran.
+              </div>
+
+              <div class="panel-body">
+                <h3>1. Mencatat piutang saat penjualan</h3>
+                <ol class="step-list">
+                  <li>Pilih pelanggan yang sudah terdaftar.</li>
+                  <li>
+                    Pilih metode bayar <strong>tempo / piutang</strong>.
+                  </li>
+                  <li>Simpan transaksi.</li>
+                  <li>
+                    Aplikasi akan mencatat saldo piutang pelanggan tersebut.
+                  </li>
+                </ol>
+
+                <h3>2. Pembayaran piutang</h3>
+                <ol class="step-list">
+                  <li>
+                    Masuk menu <strong>Piutang / Pembayaran</strong> di admin.
+                  </li>
+                  <li>Pilih pelanggan, lalu pilih transaksi/piutang yang akan dibayar.</li>
+                  <li>Isi nominal bayar dan metode pembayaran.</li>
+                  <li>Cetak bukti bayar bila diperlukan.</li>
+                </ol>
+
+                <div class="callout callout-warning">
+                  <div class="callout-icon">📌</div>
+                  <div>
+                    <p>
+                      Biasakan mencatat pembayaran piutang di hari yang sama
+                      saat pelanggan membayar, agar saldo selalu akurat.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- LAPORAN -->
+            <article class="panel" data-section-content="laporan" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Laporan penjualan &amp; kas</h2>
+                <span class="panel-tag">Laporan</span>
+              </header>
+
+              <div class="panel-description">
+                Mengakses ringkasan penjualan harian, bulanan, dan laporan
+                kas lain untuk pemilik usaha.
+              </div>
+
+              <div class="panel-body">
+                <h3>1. Laporan penjualan</h3>
+                <p>
+                  Biasanya tersedia di menu
+                  <strong>Laporan &rarr; Penjualan</strong>
+                  atau <code>revenue.html</code>.
+                </p>
+                <ul>
+                  <li>Filter per tanggal / rentang tanggal.</li>
+                  <li>Filter per kasir atau per shift (bila ada).</li>
+                  <li>
+                    Cetak / ekspor (jika didukung) untuk arsip atau dilaporkan
+                    ke manajemen.
+                  </li>
+                </ul>
+
+                <h3>2. Cocokkan dengan kas fisik</h3>
+                <ol class="step-list">
+                  <li>Ambil total penjualan tunai dari laporan.</li>
+                  <li>
+                    Cocokkan dengan uang di laci kas setelah dikurangi kas
+                    awal.
+                  </li>
+                  <li>
+                    Jika ada selisih, periksa:
+                    <ul>
+                      <li>Transaksi yang dibatalkan / dihapus.</li>
+                      <li>Retur barang.</li>
+                      <li>Salah input nominal bayar / kembalian.</li>
+                    </ul>
+                  </li>
+                </ol>
+              </div>
+            </article>
+
+            <!-- BACKUP & SYNC -->
+            <article class="panel" data-section-content="backup" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Backup, restore &amp; sinkron data</h2>
+                <span class="panel-tag">Backup</span>
+              </header>
+
+              <div class="panel-description">
+                Menjaga keamanan data dengan rutinitas backup, serta
+                pengenalan fitur sinkronisasi jika tersedia.
+              </div>
+
+              <div class="panel-body">
+                <h3>1. Backup rutin yang disarankan</h3>
+                <ul>
+                  <li>Minimal 1x per hari setelah tutup toko.</li>
+                  <li>
+                    Simpan file backup ke media eksternal (flashdisk / HDD
+                    eksternal) atau cloud.
+                  </li>
+                  <li>Gunakan nama file yang jelas, misal: <code>backup-pospro-2026-07-08.bak</code>.</li>
+                </ul>
+
+                <h3>2. Cara backup</h3>
+                <ol class="step-list">
+                  <li>Masuk sebagai owner/admin.</li>
+                  <li>
+                    Buka menu <strong>Backup Database</strong> di halaman
+                    admin.
+                  </li>
+                  <li>Pilih lokasi penyimpanan file backup.</li>
+                  <li>Tunggu sampai proses selesai dan catat lokasi file.</li>
+                </ol>
+
+                <h3>3. Restore (pemulihan) data</h3>
+                <div class="callout callout-danger">
+                  <div class="callout-icon">❗</div>
+                  <div>
+                    <p>
+                      Saat melakukan <strong>restore</strong>, data yang ada
+                      sekarang bisa tertimpa oleh data lama. Lakukan hanya
+                      bila benar-benar diperlukan.
+                    </p>
+                  </div>
+                </div>
+                <ol class="step-list">
+                  <li>
+                    Pastikan file backup yang akan digunakan adalah versi
+                    terbaru yang Anda inginkan.
+                  </li>
+                  <li>
+                    Buka menu <strong>Restore Database</strong> dan pilih file
+                    backup.
+                  </li>
+                  <li>
+                    Ikuti instruksi di layar, kemudian restart aplikasi bila
+                    diminta.
+                  </li>
+                </ol>
+
+                <h3>4. Sinkronisasi data (bila fitur diaktifkan)</h3>
+                <p>
+                  Beberapa instalasi POS PRO Offline dapat terhubung ke
+                  layanan sinkronisasi melalui halaman
+                  <code>sync.html</code>.
+                </p>
+                <ul>
+                  <li>Gunakan hanya bila akun sinkron / server sudah disiapkan.</li>
+                  <li>Pastikan koneksi internet stabil saat sinkron.</li>
+                  <li>
+                    Hindari melakukan sinkron berulang kali saat jam sibuk,
+                    agar tidak mengganggu transaksi kasir.
+                  </li>
+                </ul>
+              </div>
+            </article>
+
+            <!-- TROUBLESHOOT -->
+            <article class="panel" data-section-content="troubleshoot" style="display: none">
+              <header class="panel-header">
+                <h2 class="panel-title">Troubleshooting cepat</h2>
+                <span class="panel-tag">Bantuan</span>
+              </header>
+
+              <div class="panel-description">
+                Daftar masalah yang paling sering terjadi dan solusi singkat
+                yang bisa dicoba sendiri.
+              </div>
+
+              <div class="panel-body">
+                <h3>Masalah umum &amp; solusi</h3>
+
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Masalah</th>
+                      <th>Penyebab umum</th>
+                      <th>Solusi singkat</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Aplikasi tidak bisa dibuka</td>
+                      <td>File terblokir antivirus / izin Windows.</td>
+                      <td>
+                        Jalankan sebagai admin, cek antivirus, atau reinstall.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Struk tidak tercetak</td>
+                      <td>
+                        Printer offline / salah pilih printer di aplikasi.
+                      </td>
+                      <td>
+                        Cek printer di Windows, lakukan test print, lalu cek
+                        lagi pengaturan printer di admin.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Selisih kas di laporan</td>
+                      <td>
+                        Ada transaksi dibatalkan, retur, atau salah input.
+                      </td>
+                      <td>
+                        Audit transaksi hari tersebut, cek log kasir (bila
+                        ada).
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Stok tidak sesuai</td>
+                      <td>
+                        Mutasi manual tidak tercatat / penyesuaian stok belum
+                        dilakukan.
+                      </td>
+                      <td>
+                        Lakukan stok opname dan koreksi dengan mutasi stok.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="callout callout-success">
+                  <div class="callout-icon">🤝</div>
+                  <div>
+                    <p>
+                      Bila masalah belum terselesaikan setelah mengikuti
+                      langkah ini, siapkan screenshot error dan data singkat
+                      (kapan terjadi, di menu apa) sebelum menghubungi
+                      support, agar bantuan bisa lebih cepat.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        function setActiveSection(section) {
+          var links = document.querySelectorAll(".nav-link");
+          var panels = document.querySelectorAll("[data-section-content]");
+
+          links.forEach(function (btn) {
+            if (btn.getAttribute("data-section") === section) {
+              btn.classList.add("active");
+            } else {
+              btn.classList.remove("active");
+            }
+          });
+
+          panels.forEach(function (panel) {
+            if (panel.getAttribute("data-section-content") === section) {
+              panel.style.display = "";
+            } else {
+              panel.style.display = "none";
+            }
+          });
+
+          try {
+            localStorage.setItem("pospro_doc_last_section", section);
+          } catch (e) {}
+        }
+
+        document.addEventListener("click", function (ev) {
+          var target = ev.target;
+          var btn = target.closest("[data-section]");
+          if (!btn) return;
+          var section = btn.getAttribute("data-section");
+          if (!section) return;
+          ev.preventDefault();
+          setActiveSection(section);
+        });
+
+        // Inisialisasi awal berdasarkan localStorage atau default
+        var initialSection = "overview";
+        try {
+          var saved = localStorage.getItem("pospro_doc_last_section");
+          if (saved) initialSection = saved;
+        } catch (e) {}
+        setActiveSection(initialSection);
+      })();
+    </script>
+  </body>
+</html>
+
