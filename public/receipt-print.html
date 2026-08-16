@@ -1818,7 +1818,21 @@
             }
         }
 
+        function isEmbeddedReceiptView() {
+            try {
+                const p = new URLSearchParams(window.location.search || '');
+                if (p.get('embed') === '1' || p.get('warm') === '1') return true;
+            } catch (e) {}
+            try { return window.self !== window.top; } catch (e2) { return true; }
+        }
+
         function safeCloseReceiptPage() {
+            try {
+                if (isEmbeddedReceiptView()) {
+                    try { parent.postMessage({ type: 'pos-close-receipt' }, '*'); } catch (eMsg) {}
+                    return;
+                }
+            } catch (eEmb) {}
             try {
                 if (window.opener && !window.opener.closed) {
                     window.close();
@@ -1861,7 +1875,7 @@
             if (cachedStoreSettings) return cachedStoreSettings;
             try {
                 // Try to get from settings API (includes license data)
-                const response = await fetch('/api/settings', { cache: 'no-store' });
+                const response = await fetch('/api/settings', { cache: 'force-cache' });
                 if (response.ok) {
                     cachedStoreSettings = await response.json();
                     return cachedStoreSettings;
@@ -1907,21 +1921,47 @@
             return String(item.variantUnit || '').trim();
         }
 
+        function buildUnitMapFromProductList(products) {
+            const map = new Map();
+            if (!Array.isArray(products)) return map;
+            products.forEach((p) => {
+                if (!p || p.id == null) return;
+                const unit = String(pickFirst(p.unit, p.satuan, p.unitName)).trim();
+                if (unit) map.set(String(p.id), unit);
+            });
+            return map;
+        }
+
+        function tryParentProductUnitMap() {
+            try {
+                if (window.parent && window.parent !== window && Array.isArray(window.parent.products)) {
+                    return buildUnitMapFromProductList(window.parent.products);
+                }
+            } catch (e) {}
+            return null;
+        }
+
         let cachedProductUnitMap = null;
         async function loadProductUnitMap() {
             if (cachedProductUnitMap) return cachedProductUnitMap;
+            const fromParent = tryParentProductUnitMap();
+            if (fromParent && fromParent.size) {
+                cachedProductUnitMap = fromParent;
+                return cachedProductUnitMap;
+            }
             cachedProductUnitMap = new Map();
             try {
-                const response = await fetch('/api/products', { cache: 'no-store' });
+                // Hanya field satuan — jangan unduh katalog penuh (imageBase64 dll).
+                const response = await fetch('/api/products?fields=id,unit,satuan,unitName', {
+                    credentials: 'include',
+                    cache: 'force-cache'
+                });
                 if (response.ok) {
-                    const products = await response.json();
-                    if (Array.isArray(products)) {
-                        products.forEach((p) => {
-                            if (!p || p.id == null) return;
-                            const unit = String(pickFirst(p.unit, p.satuan, p.unitName)).trim();
-                            if (unit) cachedProductUnitMap.set(String(p.id), unit);
-                        });
-                    }
+                    const payload = await response.json();
+                    const products = Array.isArray(payload)
+                        ? payload
+                        : (Array.isArray(payload && payload.data) ? payload.data : []);
+                    cachedProductUnitMap = buildUnitMapFromProductList(products);
                 }
             } catch (e) {}
             return cachedProductUnitMap;
@@ -1929,6 +1969,12 @@
 
         async function enrichItemsWithUnits(items) {
             const list = Array.isArray(items) ? items.slice() : [];
+            if (!list.length) return list;
+            // Skip fetch katalog besar jika semua item sudah punya satuan.
+            const needsLookup = list.some((item) => !getItemUnitLabel(item));
+            if (!needsLookup) {
+                return list.map((item) => Object.assign({}, item, { unit: getItemUnitLabel(item) }));
+            }
             const productMap = await loadProductUnitMap();
             return list.map((item) => {
                 const unit = getItemUnitLabel(item);
@@ -2031,38 +2077,36 @@
                 receiptContainer.classList.add('template-' + template);
             }
 
-            // Apply logo (local override)
+            // Apply logo (local override) — jangan blokir render dengan fetch settings.
             const logoEl = document.getElementById('receiptLogo');
             let logoUrl = tx.receiptLogo || tx.storeLogo || '';
             if (logoEl) {
-                if (!logoUrl) {
-                    try {
-                        const settings = await loadStoreSettings();
-                        logoUrl = settings?.logoBase64 || '';
-                    } catch {}
-                }
                 if (logoUrl) {
                     logoEl.src = logoUrl;
                     logoEl.style.display = 'block';
                 } else {
                     logoEl.style.display = 'none';
+                    loadStoreSettings().then((settings) => {
+                        const url = settings && settings.logoBase64 ? settings.logoBase64 : '';
+                        if (!url || !logoEl) return;
+                        logoEl.src = url;
+                        logoEl.style.display = 'block';
+                    }).catch(function () {});
                 }
             }
 
             // Populate city name with store name from settings/license
             const cityNameElement = document.getElementById('cityName');
             if (cityNameElement) {
-                // Try to get city from transaction first, then from settings/license
-                let cityName = tx.storeCity || tx.city || tx.storeName || 'Indonesia';
-                if (cityName === 'Indonesia' || !cityName) {
-                    // If still default, try to load from settings
-                    try {
-                        cityName = await loadStoreName();
-                    } catch (e) {
-                        cityName = 'Indonesia';
-                    }
+                let cityName = tx.storeCity || tx.city || tx.storeName || '';
+                if (cityName) {
+                    cityNameElement.textContent = cityName;
+                } else {
+                    cityNameElement.textContent = 'Indonesia';
+                    loadStoreName().then((name) => {
+                        if (cityNameElement && name) cityNameElement.textContent = name;
+                    }).catch(function () {});
                 }
-                cityNameElement.textContent = cityName;
             }
             
             // Populate basic info
@@ -2191,6 +2235,32 @@
             return new Intl.NumberFormat('id-ID').format(num);
         }
         
+
+        async function applyReceiptBootTransaction(transaction) {
+            if (!transaction || typeof transaction !== 'object') return false;
+            try {
+                window.transactionData = transaction;
+                await populateReceipt(transaction);
+                try { updateStatus(''); } catch (e) {}
+                return true;
+            } catch (e) {
+                console.warn('Gagal apply boot struk:', e);
+                return false;
+            }
+        }
+
+        try {
+            window.addEventListener('message', function (ev) {
+                try {
+                    const data = ev && ev.data;
+                    if (!data || data.type !== 'pos-receipt-boot') return;
+                    const tx = data.transaction;
+                    if (!tx) return;
+                    applyReceiptBootTransaction(tx);
+                } catch (e) {}
+            });
+        } catch (eMsgBind) {}
+
         async function loadTransactionData() {
             // Check for embedded data first (from server)
             if (window.transactionData) {
@@ -2232,6 +2302,31 @@
                 const txId = urlParams.get('txId') || urlParams.get('id');
                 if (txId) {
                     try {
+                        const bootRaw = sessionStorage.getItem('pos_receipt_boot_' + txId);
+                        if (bootRaw) {
+                            const bootTx = JSON.parse(bootRaw);
+                            window.transactionData = bootTx;
+                            await populateReceipt(bootTx);
+                            updateStatus('');
+                            const bootHasItems = Array.isArray(bootTx.items) && bootTx.items.length > 0;
+                            // Boot dari POS sudah lengkap — jangan refetch yang memicu render ulang lambat.
+                            if (bootTx._receiptBootReady || bootHasItems) {
+                                return;
+                            }
+                            // Refresh ringan di background hanya jika boot minim.
+                            fetch('/api/transactions/' + encodeURIComponent(txId), {
+                                credentials: 'include',
+                                cache: 'no-store'
+                            }).then(function (res) { return res.ok ? res.json() : null; }).then(function (fresh) {
+                                if (fresh) {
+                                    window.transactionData = fresh;
+                                    populateReceipt(fresh).catch(function () {});
+                                }
+                            }).catch(function () {});
+                            return;
+                        }
+                    } catch (eBoot) {}
+                    try {
                         updateStatus('Memuat data transaksi...');
                         const res = await fetch('/api/transactions/' + encodeURIComponent(txId), {
                             credentials: 'include',
@@ -2258,17 +2353,34 @@
             applyReceiptLayoutMode();
             // Set default paper size
             updatePaperSize();
-            await ensureCapacitorBridgeReady(6000);
-            for (let i = 0; i < 25 && !window.PosBrowserNative && !hasNativeBluetoothSupport(); i++) {
-                await new Promise(r => setTimeout(r, 120));
-            }
-            applyBluetoothCapabilityUI();
-            
-            // Load transaction data
+
+            // Tampilkan struk dulu (jangan ditahan bridge Bluetooth sampai 6 detik).
+            try {
+                const warmParams = new URLSearchParams(window.location.search || '');
+                if (warmParams.get('warm') === '1') {
+                    try { updateStatus('Siap cetak'); } catch (eW) {}
+                    try { window.parent && window.parent.postMessage({ type: 'pos-receipt-shell-ready' }, '*'); } catch (eP) {}
+                    return;
+                }
+            } catch (eWarmGate) {}
             await loadTransactionData();
 
-            // Populate paired printers list
-            await populatePairedPrinters();
+            // Bridge native / daftar printer di background — tidak blokir tampilan.
+            (async () => {
+                try {
+                    await ensureCapacitorBridgeReady(2500);
+                    for (let i = 0; i < 10 && !window.PosBrowserNative && !hasNativeBluetoothSupport(); i++) {
+                        await new Promise(r => setTimeout(r, 100));
+                    }
+                    applyBluetoothCapabilityUI();
+                    await populatePairedPrinters();
+                    if (hasNativeBluetoothSupport()) {
+                        updateStatus('Printer Android native siap. Klik Cari Printer untuk scan printer.');
+                    } else if (isPosBrowserNativeApp()) {
+                        updateStatus('Siap cetak. Hubungkan printer Bluetooth jika belum.');
+                    }
+                } catch (e) {}
+            })();
             
             // Add keyboard shortcuts
             document.addEventListener('keydown', function(e) {
@@ -2293,20 +2405,6 @@
                     updatePaperSize();
                 }
             });
-            
-            if (hasNativeBluetoothSupport()) {
-                updateStatus('Printer Android native siap. Klik Cari Printer untuk scan printer.');
-            } else if (isPosBrowserNativeApp()) {
-                updateStatus(getBluetoothUnavailableMessage());
-            } else if (isAndroidBrowserContext() && hasWebBluetoothSupport()) {
-                updateStatus('Browser Android: klik "Cari Printer" untuk memilih printer Bluetooth. Printer yang dipilih akan tersimpan di daftar.');
-            } else if (isAndroidBrowserContext()) {
-                updateStatus(getWebBluetoothBlockReason());
-            } else if (!hasWebBluetoothSupport() && !hasNativeBluetoothSupport() && isAndroidNativeAppContext()) {
-                updateStatus('Mode aplikasi Android: Bluetooth langsung tidak tersedia. Gunakan Dialog Sistem untuk cetak.');
-            } else {
-                updateStatus('Struk siap dicetak. Pilih ukuran kertas dan metode print.');
-            }
         });
     </script>
 </body>

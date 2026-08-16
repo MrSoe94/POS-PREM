@@ -1790,7 +1790,21 @@
             }
         }
 
+        function isEmbeddedReceiptView() {
+            try {
+                const p = new URLSearchParams(window.location.search || '');
+                if (p.get('embed') === '1' || p.get('warm') === '1') return true;
+            } catch (e) {}
+            try { return window.self !== window.top; } catch (e2) { return true; }
+        }
+
         function safeCloseReceiptPage() {
+            try {
+                if (isEmbeddedReceiptView()) {
+                    try { parent.postMessage({ type: 'pos-close-receipt' }, '*'); } catch (eMsg) {}
+                    return;
+                }
+            } catch (eEmb) {}
             try {
                 if (window.opener && !window.opener.closed) {
                     window.close();
@@ -1882,18 +1896,33 @@
         let cachedProductUnitMap = null;
         async function loadProductUnitMap() {
             if (cachedProductUnitMap) return cachedProductUnitMap;
+            try {
+                if (window.parent && window.parent !== window && Array.isArray(window.parent.products)) {
+                    cachedProductUnitMap = new Map();
+                    window.parent.products.forEach((p) => {
+                        if (!p || p.id == null) return;
+                        const unit = String(pickFirst(p.unit, p.satuan, p.unitName)).trim();
+                        if (unit) cachedProductUnitMap.set(String(p.id), unit);
+                    });
+                    if (cachedProductUnitMap.size) return cachedProductUnitMap;
+                }
+            } catch (e) {}
             cachedProductUnitMap = new Map();
             try {
-                const response = await fetch('/api/products', { cache: 'no-store' });
+                const response = await fetch('/api/products?fields=id,unit,satuan,unitName', {
+                    credentials: 'include',
+                    cache: 'force-cache'
+                });
                 if (response.ok) {
-                    const products = await response.json();
-                    if (Array.isArray(products)) {
-                        products.forEach((p) => {
-                            if (!p || p.id == null) return;
-                            const unit = String(pickFirst(p.unit, p.satuan, p.unitName)).trim();
-                            if (unit) cachedProductUnitMap.set(String(p.id), unit);
-                        });
-                    }
+                    const payload = await response.json();
+                    const products = Array.isArray(payload)
+                        ? payload
+                        : (Array.isArray(payload && payload.data) ? payload.data : []);
+                    products.forEach((p) => {
+                        if (!p || p.id == null) return;
+                        const unit = String(pickFirst(p.unit, p.satuan, p.unitName)).trim();
+                        if (unit) cachedProductUnitMap.set(String(p.id), unit);
+                    });
                 }
             } catch (e) {}
             return cachedProductUnitMap;
@@ -1901,6 +1930,11 @@
 
         async function enrichItemsWithUnits(items) {
             const list = Array.isArray(items) ? items.slice() : [];
+            if (!list.length) return list;
+            const needsLookup = list.some((item) => !getItemUnitLabel(item));
+            if (!needsLookup) {
+                return list.map((item) => Object.assign({}, item, { unit: getItemUnitLabel(item) }));
+            }
             const productMap = await loadProductUnitMap();
             return list.map((item) => {
                 const unit = getItemUnitLabel(item);
@@ -2104,6 +2138,32 @@
             return new Intl.NumberFormat('id-ID').format(num);
         }
         
+
+        async function applyReceiptBootTransaction(transaction) {
+            if (!transaction || typeof transaction !== 'object') return false;
+            try {
+                window.transactionData = transaction;
+                await populateReceipt(transaction);
+                try { updateStatus(''); } catch (e) {}
+                return true;
+            } catch (e) {
+                console.warn('Gagal apply boot struk:', e);
+                return false;
+            }
+        }
+
+        try {
+            window.addEventListener('message', function (ev) {
+                try {
+                    const data = ev && ev.data;
+                    if (!data || data.type !== 'pos-receipt-boot') return;
+                    const tx = data.transaction;
+                    if (!tx) return;
+                    applyReceiptBootTransaction(tx);
+                } catch (e) {}
+            });
+        } catch (eMsgBind) {}
+
         async function loadTransactionData() {
             // Check for embedded data first (from server)
             if (window.transactionData) {
@@ -2144,6 +2204,26 @@
                 const txId = urlParams.get('txId') || urlParams.get('id');
                 if (txId) {
                     try {
+                        const bootRaw = sessionStorage.getItem('pos_receipt_boot_' + txId);
+                        if (bootRaw) {
+                            const bootTx = JSON.parse(bootRaw);
+                            window.transactionData = bootTx;
+                            await populateReceipt(bootTx);
+                            updateStatus('');
+                            // Refresh ringan di background agar data server tetap otoritatif.
+                            fetch('/api/transactions/' + encodeURIComponent(txId), {
+                                credentials: 'include',
+                                cache: 'no-store'
+                            }).then(function (res) { return res.ok ? res.json() : null; }).then(function (fresh) {
+                                if (fresh) {
+                                    window.transactionData = fresh;
+                                    populateReceipt(fresh).catch(function () {});
+                                }
+                            }).catch(function () {});
+                            return;
+                        }
+                    } catch (eBoot) {}
+                    try {
                         updateStatus('Memuat data transaksi...');
                         const res = await fetch('/api/transactions/' + encodeURIComponent(txId), {
                             credentials: 'include',
@@ -2177,6 +2257,14 @@
             applyBluetoothCapabilityUI();
             
             // Load transaction data
+            try {
+                const warmParams = new URLSearchParams(window.location.search || '');
+                if (warmParams.get('warm') === '1') {
+                    try { updateStatus('Siap cetak'); } catch (eW) {}
+                    try { window.parent && window.parent.postMessage({ type: 'pos-receipt-shell-ready' }, '*'); } catch (eP) {}
+                    return;
+                }
+            } catch (eWarmGate) {}
             await loadTransactionData();
 
             // Populate paired printers list
