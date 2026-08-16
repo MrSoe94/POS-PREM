@@ -2122,7 +2122,7 @@
     
     <!-- Application scripts -->
     <script src="/js/variant-stock-sync.js?v=20260315e"></script>
-    <script src="/js/offline-api.js?v=20260627live"></script>
+    <script src="/js/offline-api.js?v=20260813void"></script>
     <script src="/js/android-auto-sync.js?v=20260627live"></script>
     <script src="/js/offline-fetch-bridge.js?v=20260312d"></script>
     <script src="/js/pos/00-cart-session.js?v=20260707usercart"></script>
@@ -2134,16 +2134,17 @@
     <script src="/js/pos/05-cleanup.js?v=20260421cam2"></script>
     <script src="/js/pos/06-initialization.js?v=20260707usercart"></script>
     <script src="/js/pos/07-all-transactions.js?v=18"></script>
-    <script src="/js/pos/08-recent-transactions.js?v=20260707usercart"></script>
+    <script src="/js/pos/08-recent-transactions.js?v=20260816tx3"></script>
     <script src="/js/pos/09-receipt-local-settings.js?v=15"></script>
-    <script src="/js/pos/10-pos-settings.js?v=20260707usercart"></script>
+    <script src="/js/pos/10-pos-settings.js?v=20260815pay"></script>
     <script src="/js/back-to-top.js?v=2"></script>
     <!-- Register Service Worker for PWA -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('/sw.js?v=20260816sw')
             .then(registration => {
+              try { registration.update(); } catch (e) {}
               console.log('ServiceWorker registered: ', registration);
             })
             .catch(error => {

@@ -2228,6 +2228,27 @@
                     updateStatus('Error: Data transaksi tidak valid');
                 }
             } else {
+                // POS Browser aman: buka struk dengan ID saja (hindari payload/URL besar → force-close).
+                const txId = urlParams.get('txId') || urlParams.get('id');
+                if (txId) {
+                    try {
+                        updateStatus('Memuat data transaksi...');
+                        const res = await fetch('/api/transactions/' + encodeURIComponent(txId), {
+                            credentials: 'include',
+                            cache: 'no-store'
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const transaction = await res.json();
+                        window.transactionData = transaction;
+                        await populateReceipt(transaction);
+                        updateStatus('');
+                        return;
+                    } catch (e) {
+                        console.error('Error memuat transaksi by id:', e);
+                        updateStatus('Error: Gagal memuat transaksi');
+                        return;
+                    }
+                }
                 updateStatus('Error: Data transaksi tidak ditemukan');
             }
         }

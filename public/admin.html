@@ -17,15 +17,38 @@
     <script>
       (function () {
         try {
+          // POS Browser memaksa online (POS_ANDROID_OFFLINE=0) — jangan pakai auth offline.
+          var forced = '';
+          try {
+            forced = String(localStorage.getItem('POS_ANDROID_OFFLINE') || '').trim().toLowerCase();
+            if (forced === '0' || forced === 'false') return;
+          } catch (eForced) {}
+          try {
+            if (String(window.POS_ANDROID_OFFLINE || '').trim() === '0') return;
+          } catch (eWin) {}
+
+          var host = '';
+          try { host = String(location.hostname || '').toLowerCase(); } catch (eHost) {}
+          var isLocalHost = (
+            host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' ||
+            host === '::1' || host.indexOf('.localhost') !== -1
+          );
+          // Hosting/tunnel/remote = mode online server (meski Capacitor kebetulan ter-inject).
+          if (!isLocalHost) {
+            try {
+              var pRemote = String(location.protocol || '').toLowerCase();
+              if (pRemote === 'http:' || pRemote === 'https:') return;
+            } catch (eRemote) {}
+          }
+
           var isOfflineNative = false;
           try {
-            if (window.Capacitor && (typeof window.Capacitor.isNativePlatform === 'function' ? window.Capacitor.isNativePlatform() : true)) {
+            if (isLocalHost && window.Capacitor && (typeof window.Capacitor.isNativePlatform === 'function' ? window.Capacitor.isNativePlatform() : true)) {
               isOfflineNative = true;
             }
           } catch (e0) {}
           try {
-            var forced = String(localStorage.getItem('POS_ANDROID_OFFLINE') || '').trim();
-            if (forced === '1' || forced.toLowerCase() === 'true') isOfflineNative = true;
+            if (forced === '1' || forced === 'true') isOfflineNative = true;
           } catch (e1) {}
           try {
             var p = String(location.protocol || '').toLowerCase();
@@ -37,6 +60,10 @@
           var user = JSON.parse(raw);
           if (!user || !user.username) { window.location.replace('/login.html'); }
         } catch (e) {
+          try {
+            var f = String(localStorage.getItem('POS_ANDROID_OFFLINE') || '').trim().toLowerCase();
+            if (f === '0' || f === 'false') return;
+          } catch (eSkip) {}
           window.location.replace('/login.html');
         }
       })();
@@ -3341,14 +3368,14 @@
     <script src="/vendor/scrypt-js/scrypt.js"></script>
     <script src="/js/enc1-crypto.js?v=20260314b"></script>
     <script src="/js/variant-stock-sync.js?v=20260315e"></script>
-    <script src="/js/offline-api.js?v=20260627live"></script>
+    <script src="/js/offline-api.js?v=20260815browser"></script>
     <script src="/js/android-auto-sync.js?v=20260704sync"></script>
     <script src="/js/offline-fetch-bridge.js?v=20260314c"></script>
-    <script src="/js/admin/00-api-base.js?v=20260315g" defer></script>
+    <script src="/js/admin/00-api-base.js?v=20260815browser" defer></script>
     <script src="/js/admin/01-select2.js?v=20260616select2pos" defer></script>
     <script src="/js/admin/02-stability.js?v=20260208c" defer></script>
     <script src="/js/admin/03-global-error.js?v=20260208c" defer></script>
-    <script src="/js/admin/04-csrf.js?v=20260208c" defer></script>
+    <script src="/js/admin/04-csrf.js?v=20260815csrf" defer></script>
     <script src="/js/admin/05-expired-products.js?v=20260619stockinvatnominal" defer></script>
     <script src="/js/admin/06-open-edit-product.js?v=20260617variantfix" defer></script>
     <script src="/js/admin/07-units.js?v=20260208c" defer></script>
@@ -3365,7 +3392,7 @@
     <script src="/js/admin/31-invoices.js?v=20260315a" defer></script>
     <script src="/js/admin/18-shifts.js?v=20260218d" defer></script>
     <script src="/js/admin/19-banner-qris.js?v=20260208c" defer></script>
-    <script src="/js/admin/20-modal-edit.js?v=20260617variantfix" defer></script>
+    <script src="/js/admin/20-modal-edit.js?v=20260815csrf" defer></script>
     <script src="/js/admin/21-form-setup.js?v=20260315f" defer></script>
     <script src="/js/admin/22-ai-image.js?v=20260216c" defer></script>
     <script src="/js/admin/23-delete-item.js?v=20260208c" defer></script>
