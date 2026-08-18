@@ -54,80 +54,23 @@ function Open-AccessQrPage {
     param(
         [Parameter(Mandatory = $true)]
         [string]$LanUrl,
-        [string]$TunnelUrl
+        [string]$TunnelUrl,
+        [int]$Port = 3011
     )
 
-    $lanEncoded = [uri]::EscapeDataString($LanUrl)
-    $lanQr = "https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=$lanEncoded"
-
-    $tunnelBlock = ''
     if ($TunnelUrl) {
-        $tunnelEncoded = [uri]::EscapeDataString($TunnelUrl)
-        $tunnelQr = "https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=$tunnelEncoded"
-        $tunnelEsc = [System.Net.WebUtility]::HtmlEncode($TunnelUrl)
-        $tunnelBlock = @"
-      <section class="card">
-        <h2>Online (Tunnel)</h2>
-        <p>Akses dari internet / luar jaringan</p>
-        <img src="$tunnelQr" alt="QR Tunnel" width="360" height="360" />
-        <a href="$tunnelEsc">$tunnelEsc</a>
-      </section>
-"@
         Write-Host "Link tunnel: $TunnelUrl" -ForegroundColor Green
     }
-
-    $lanEsc = [System.Net.WebUtility]::HtmlEncode($LanUrl)
     Write-Host "Link lokal (LAN): $LanUrl" -ForegroundColor Green
-    Write-Host "Membuka QR Code (LAN + Tunnel) di browser..." -ForegroundColor Cyan
 
-    $html = @"
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>POS Access QR</title>
-  <style>
-    :root { color-scheme: light; }
-    body {
-      margin: 0; min-height: 100vh; font-family: Segoe UI, Tahoma, sans-serif;
-      background: #f3f6fb; color: #10233f;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 20px; padding: 24px;
+    $qrPageUrl = "http://127.0.0.1:$Port/pos-access-qr.html?lan=" + [uri]::EscapeDataString($LanUrl)
+    if ($TunnelUrl) {
+        $qrPageUrl += "&tunnel=" + [uri]::EscapeDataString($TunnelUrl)
     }
-    h1 { margin: 0; font-size: 1.35rem; }
-    .hint { margin: 0; color: #4b5d78; text-align: center; max-width: 720px; }
-    .row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-    .card {
-      background: #fff; border: 1px solid #d7e0ee; border-radius: 14px;
-      padding: 18px 18px 14px; width: 400px; text-align: center;
-      box-shadow: 0 8px 24px rgba(16, 35, 63, 0.06);
-    }
-    .card h2 { margin: 0 0 4px; font-size: 1.05rem; }
-    .card p { margin: 0 0 12px; color: #4b5d78; font-size: 0.92rem; }
-    .card img { display: block; margin: 0 auto 12px; border-radius: 8px; }
-    .card a { word-break: break-all; color: #0b5fff; font-size: 0.88rem; }
-  </style>
-</head>
-<body>
-  <h1>Scan QR untuk buka aplikasi</h1>
-  <p class="hint">LAN = HP/tablet di WiFi yang sama. Tunnel = akses online via Cloudflare.</p>
-  <div class="row">
-    <section class="card">
-      <h2>Lokal (LAN / IP)</h2>
-      <p>Jaringan yang sama — lebih ringan untuk cetak &amp; kasir</p>
-      <img src="$lanQr" alt="QR LAN" width="360" height="360" />
-      <a href="$lanEsc">$lanEsc</a>
-    </section>
-$tunnelBlock
-  </div>
-</body>
-</html>
-"@
 
-    $htmlPath = Join-Path $env:TEMP ("pos-access-qr-" + [Guid]::NewGuid().ToString("N") + ".html")
-    Set-Content -LiteralPath $htmlPath -Value $html -Encoding UTF8
-    Start-Process $htmlPath | Out-Null
+    Write-Host "Membuka halaman QR di browser (tab aplikasi): $qrPageUrl" -ForegroundColor Cyan
+    # Buka URL langsung — sama seperti server.js (start admin.html), tab baru di browser default.
+    Start-Process -FilePath $qrPageUrl | Out-Null
 }
 
 function Get-CloudflaredVersion {
@@ -188,7 +131,7 @@ try {
 
     if ($NoTunnel) {
         Write-Host "Mode lokal aktif. Buka: $lanUrl" -ForegroundColor Green
-        Open-AccessQrPage -LanUrl $lanUrl
+        Open-AccessQrPage -LanUrl $lanUrl -Port $Port
         Pause-IfNeeded
         return
     }
@@ -244,7 +187,7 @@ try {
                 Write-Host $line
                 if (-not $qrOpened -and ($line -match $regex)) {
                     $qrOpened = $true
-                    Open-AccessQrPage -LanUrl $lanUrl -TunnelUrl $Matches[0]
+                    Open-AccessQrPage -LanUrl $lanUrl -Port $Port -TunnelUrl $Matches[0]
                 }
             }
         }
@@ -259,14 +202,14 @@ try {
             Write-Host $line
             if (-not $qrOpened -and ($line -match $regex)) {
                 $qrOpened = $true
-                Open-AccessQrPage -LanUrl $lanUrl -TunnelUrl $Matches[0]
+                Open-AccessQrPage -LanUrl $lanUrl -Port $Port -TunnelUrl $Matches[0]
             }
         }
     }
 
     if (-not $qrOpened) {
         Write-Host "[WARN] URL tunnel tidak terdeteksi. Membuka QR lokal saja." -ForegroundColor Yellow
-        Open-AccessQrPage -LanUrl $lanUrl
+        Open-AccessQrPage -LanUrl $lanUrl -Port $Port
     }
 
     Remove-Item -LiteralPath $stdoutLog -ErrorAction SilentlyContinue
