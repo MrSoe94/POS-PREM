@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>POS Access QR</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      margin: 0; min-height: 100vh; font-family: Segoe UI, Tahoma, sans-serif;
+      background: #f3f6fb; color: #10233f;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 20px; padding: 24px;
+    }
+    h1 { margin: 0; font-size: 1.35rem; }
+    .hint { margin: 0; color: #4b5d78; text-align: center; max-width: 720px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .actions a {
+      display: inline-block; padding: 10px 16px; border-radius: 10px;
+      background: #0b5fff; color: #fff; text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    }
+    .actions a.secondary { background: #e2e8f0; color: #10233f; }
+    .row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .card {
+      background: #fff; border: 1px solid #d7e0ee; border-radius: 14px;
+      padding: 18px 18px 14px; width: min(400px, 100%); text-align: center;
+      box-shadow: 0 8px 24px rgba(16, 35, 63, 0.06);
+    }
+    .card h2 { margin: 0 0 4px; font-size: 1.05rem; }
+    .card p { margin: 0 0 12px; color: #4b5d78; font-size: 0.92rem; }
+    .card img { display: block; margin: 0 auto 12px; border-radius: 8px; max-width: 100%; height: auto; }
+    .card a.link { word-break: break-all; color: #0b5fff; font-size: 0.88rem; }
+    .pending { color: #64748b; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <h1>Scan QR untuk buka aplikasi</h1>
+  <p class="hint">LAN = HP/tablet di WiFi yang sama. Tunnel = akses online via Cloudflare.</p>
+  <div class="actions">
+    <a href="/admin.html" target="_self">Buka Admin</a>
+    <a href="/kasir" class="secondary" target="_self">Buka Kasir</a>
+  </div>
+  <div class="row" id="qrRow">
+    <p class="pending">Memuat QR...</p>
+  </div>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search || '');
+      const lanUrl = params.get('lan') || '';
+      const tunnelUrl = params.get('tunnel') || '';
+      const row = document.getElementById('qrRow');
+      if (!row) return;
+
+      function qrImg(url) {
+        const enc = encodeURIComponent(url);
+        return 'https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=' + enc;
+      }
+
+      function card(title, subtitle, url) {
+        const section = document.createElement('section');
+        section.className = 'card';
+        section.innerHTML =
+          '<h2>' + title + '</h2>' +
+          '<p>' + subtitle + '</p>' +
+          '<img src="' + qrImg(url) + '" alt="QR ' + title + '" width="360" height="360" />' +
+          '<a class="link" href="' + url.replace(/"/g, '&quot;') + '">' + url + '</a>';
+        return section;
+      }
+
+      row.innerHTML = '';
+      if (!lanUrl && !tunnelUrl) {
+        row.innerHTML = '<p class="pending">Menunggu link akses dari launcher...</p>';
+        return;
+      }
+      if (lanUrl) {
+        row.appendChild(card('Lokal (LAN / IP)', 'Jaringan yang sama — lebih ringan untuk cetak &amp; kasir', lanUrl));
+      }
+      if (tunnelUrl) {
+        row.appendChild(card('Online (Tunnel)', 'Akses dari internet / luar jaringan', tunnelUrl));
+      }
+    })();
+  </script>
+</body>
+</html>
