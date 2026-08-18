@@ -1,1 +1,169 @@
-const _0x42edbe=_0x55cb;(function(_0x3f49be,_0x2912c3){const _0x274728=_0x55cb,_0x3f6f98=_0x3f49be();while(!![]){try{const _0x377673=-parseInt(_0x274728(0x1e0))/0x1*(-parseInt(_0x274728(0x22e))/0x2)+-parseInt(_0x274728(0x214))/0x3*(-parseInt(_0x274728(0x232))/0x4)+parseInt(_0x274728(0x225))/0x5*(parseInt(_0x274728(0x247))/0x6)+parseInt(_0x274728(0x235))/0x7+parseInt(_0x274728(0x244))/0x8+-parseInt(_0x274728(0x1fb))/0x9+-parseInt(_0x274728(0x239))/0xa;if(_0x377673===_0x2912c3)break;else _0x3f6f98['push'](_0x3f6f98['shift']());}catch(_0x4de8e5){_0x3f6f98['push'](_0x3f6f98['shift']());}}}(_0x1d13,0x3e4a8));function _0x55cb(_0x3a0d08,_0x1791fe){_0x3a0d08=_0x3a0d08-0x1e0;const _0x1d1382=_0x1d13();let _0x55cb26=_0x1d1382[_0x3a0d08];if(_0x55cb['iEfvZv']===undefined){var _0x408b26=function(_0x1f5567){const _0x30e13e='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x4a6701='',_0x41dcca='';for(let _0x4e79b4=0x0,_0x32b9dc,_0x3bbc5f,_0x594b5d=0x0;_0x3bbc5f=_0x1f5567['charAt'](_0x594b5d++);~_0x3bbc5f&&(_0x32b9dc=_0x4e79b4%0x4?_0x32b9dc*0x40+_0x3bbc5f:_0x3bbc5f,_0x4e79b4++%0x4)?_0x4a6701+=String['fromCharCode'](0xff&_0x32b9dc>>(-0x2*_0x4e79b4&0x6)):0x0){_0x3bbc5f=_0x30e13e['indexOf'](_0x3bbc5f);}for(let _0x56aed5=0x0,_0x7d6652=_0x4a6701['length'];_0x56aed5<_0x7d6652;_0x56aed5++){_0x41dcca+='%'+('00'+_0x4a6701['charCodeAt'](_0x56aed5)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x41dcca);};_0x55cb['Ivdmyy']=_0x408b26,_0x55cb['eDvwmL']={},_0x55cb['iEfvZv']=!![];}const _0xe6934d=_0x1d1382[0x0],_0x52e6e3=_0x3a0d08+_0xe6934d,_0x58f215=_0x55cb['eDvwmL'][_0x52e6e3];return!_0x58f215?(_0x55cb26=_0x55cb['Ivdmyy'](_0x55cb26),_0x55cb['eDvwmL'][_0x52e6e3]=_0x55cb26):_0x55cb26=_0x58f215,_0x55cb26;}const CACHE_NAME=_0x42edbe(0x20f),urlsToCache=[_0x42edbe(0x22b),_0x42edbe(0x20a),_0x42edbe(0x217),_0x42edbe(0x236),_0x42edbe(0x242),_0x42edbe(0x245),_0x42edbe(0x21b),_0x42edbe(0x241),_0x42edbe(0x1eb),_0x42edbe(0x23f),_0x42edbe(0x218),_0x42edbe(0x215),_0x42edbe(0x1e4),_0x42edbe(0x234),_0x42edbe(0x249),_0x42edbe(0x1ed),_0x42edbe(0x1f6),_0x42edbe(0x246),_0x42edbe(0x243),_0x42edbe(0x212),_0x42edbe(0x21a),_0x42edbe(0x219),_0x42edbe(0x203),_0x42edbe(0x223),_0x42edbe(0x1f7),_0x42edbe(0x1fa),_0x42edbe(0x237),_0x42edbe(0x233),_0x42edbe(0x20d)],APP_SHELL_PATHS=new Set(['/',_0x42edbe(0x1e2),_0x42edbe(0x230),_0x42edbe(0x23e),_0x42edbe(0x22b),_0x42edbe(0x1f4),_0x42edbe(0x1f9),_0x42edbe(0x229),_0x42edbe(0x1f3),_0x42edbe(0x201)]);function isAppShellRequest(_0x4a6701){const _0x31e953=_0x42edbe;try{const _0x41dcca=String(_0x4a6701[_0x31e953(0x20b)]||'')[_0x31e953(0x220)](/\/+$/,'')||'/';if(APP_SHELL_PATHS[_0x31e953(0x1e8)](_0x41dcca)||APP_SHELL_PATHS[_0x31e953(0x1e8)](_0x4a6701[_0x31e953(0x20b)]))return!![];if(_0x41dcca===_0x31e953(0x1e2)||_0x41dcca[_0x31e953(0x238)](_0x31e953(0x22c)))return!![];if(_0x41dcca===_0x31e953(0x230)||_0x41dcca[_0x31e953(0x238)](_0x31e953(0x20e)))return!![];if(_0x41dcca===_0x31e953(0x23e)||_0x41dcca[_0x31e953(0x238)](_0x31e953(0x1ea)))return!![];}catch(_0x4e79b4){}return![];}function _0x1d13(){const _0x1cdfea=['mJaWn2zoDgnjrq','l3zLBMrVCI9ODg1SmMnHBNzHCY9ODg1SmMnHBNzHCY5TAw4UANm','Bg9N','l3zLBMrVCI9IB290C3rYyxaVy3nZl2jVB3rZDhjHCc5TAw4Uy3nZ','l3zLBMrVCI9QC3bKzI9QC3bKzI51BwqUBwLUlMPZ','l0XPyNjHCNKVyNjVD3nLCI91BM1PBMLMAwvKl1zLCNnPjtiWmc4XlJuVENHPBMCTyNjVD3nLCI5QCW','l0XPyNjHCNKVyNjVD3nLCI9vtLblrY9wzxjZAsuYmdaUms4Xl3P4Aw5NlwjYB3DZzxiUBwLUlMPZ','l2PZl3bVCY5QCZ92pte1','ywrKrxzLBNrmAxn0zw5LCG','CMvZCg9UzfDPDgG','y2f0y2G','ywXSu2v0DgXLza','CMvWBgfJzq','B3jPz2LU','ywn0AxzHDgu','l0XPyNjHCNKVBgLICMfYEs9QC0rLBgL2CI9wzxjZAsuYmdaUmJeUmY9PBMrLEc5TAw4UANm','BMf2AwDHDgu','mtvfA1nwqLC','zgvZDgLUyxrPB24','D2fPDfvUDgLS','Aw5ZDgfSBa','l3jLy2vPChqTChjPBNqUAhrTBa','CMvXDwvZDa','l3bVCY5ODg1S','l2THC2LYlW','Bwv0Ag9K','mte3ndq4wwXzyunb','u2vYDMLJzsbvBMf2ywLSywjSzq','l2fKBwLU','z2v0','mJmZnML5shPgDW','l0XPyNjHCNKVBgLICMfYEs9vtLblrY92zxjZAsuYmdaUmtiUmY9PBMrLEc5TAw4UANm','l2PZl3zLBMrVCI96EgLUzY1ICM93C2vYlM1PBI5QCW','mtKZmdy4nePtzfzvva','l3zLBMrVCI9IB290C3rYyxaTAwnVBNmVyM9VDhn0CMfWlwLJB25ZlMnZCW','l0XPyNjHCNKVBgLICMfYEs9vtLblrY9wzxjZAsuYmdaUmtKUmY9PBMrLEc5TAw4UANm','C3rHCNrZv2L0Aa','odu5nJKZme1KwxvJwa','rgvSzxrPBMCGB2XKignHy2HLoG','l2fWAs8','tMv0D29YAYbYzxf1zxn0igzHAwXLzcbMB3i6','zg9JDw1LBNq','l2XVz2LU','l3zLBMrVCI9IB290C3rYyxaVANmVyM9VDhn0CMfWlMj1BMrSzs5TAw4UANm','zxjYB3i','l2PZl2jHy2STDg8TDg9WlMPZp3y9mG','l2PZl3bLCMzVCM1HBMnLlw9WDgLTAxPLCI5QCW','l0XPyNjHCNKVyNjVD3nLCI9vtLblrY9wzxjZAsuYmdaUms40l3P4Aw5NlwjYB3DZzxiUBwLUlMPZ','mtiWndu1mKDmuhHpCW','l2PZl29WDgLTAxPLzc1SB2fKzxiUANm/DJ0Ymdi2mdiWoq','l0XPyNjHCNKVyNjVD3nLCI9QC0rLBgL2CI9wzxjZAsuYmdaUms40l3P4Aw5NlwjYB3DZzxiUBwLUlMPZ','nJK2mtC0uK9juwny','zgvSzxrL','l2PZl3zLBMrVCI96EgLUzY1SAwjYyxj5lM1PBI5QCW','mw5Mu1j1CW','q2fJAguGywrKigzHAwXLzdO','l2THC2LY','t3bLBMvKignHy2HL','l3zLBMrVCI9ODg1SmNbKzI9ODg1SmNbKzI5IDw5KBguUBwLUlMPZ','ywnJzxb0','D2fYBG','Bw9Kzq','AgfZ','tMv0D29YAYb1BMf2ywLSywjSzq','l2XVz2LUlW','l3zLBMrVCI9QCxvLCNKVANf1zxj5lM1PBI5QCW','Dgv4Dc9LDMvUDc1ZDhjLyw0','l0XPyNjHCNKVyNjVD3nLCI9QC0rLBgL2CI9wzxjZAsuYmdaUms41l3P4Aw5NlwjYB3DZzxiUBwLUlMPZ','yxbWBgLJyxrPB24VANnVBG','ywXS','A2v5CW','BwfW','u2vYDMLJzsb3B3jRzxiGzMv0y2GGzxjYB3i6','l2rLyNqTCMvJzwLWDc1WCMLUDc5ODg1S','l2fKBwLUlMH0BwW','y2XPzw50CW','l0XPyNjHCNKVyNjVD3nLCI9vtLblrY9wzxjZAsuYmdaUms41l3P4Aw5NlwjYB3DZzxiUBwLUlMPZ','l0XPyNjHCNKVBgLICMfYEs9vtLblrY9wzxjZAsuYmdaUmJeUmY9PBMrLEc5TAw4UANm','B3bLBG','l2LUzgv4lMH0BwW','l0XPyNjHCNKVBgLICMfYEs9vtLblrY9wzxjZAsuYmdaUmJaUmc9PBMrLEc5TAw4UANm','otGXndu5BgvSzK1r','y2XHAw0','Dgv4Dc9WBgfPBJSGy2HHCNnLDd11DgyToa','l2v2zw50CW','AgvHzgvYCW','Bg9JyxrPB24','l211DgfZAs1IyxjHBMCUAhrTBa','t2zMBgLUzq','l0XPyNjHCNKVyNjVD3nLCI91BM1PBMLMAwvKl1zLCNnPjtiWmc4XlJqVENHPBMCTyNjVD3nLCI5QCW','DxjS','Bwf0y2G','C3rYAw5NAwz5','DgHLBG','tM8Gq29UDgvUDa','r0vu','l2nZCY9ZDhLSzs5JC3m/DJ0Y','Cgf0Ag5HBwu','Aw5JBhvKzxm','l0XPyNjHCNKVBgLICMfYEs91BM1PBMLMAwvKl1zLCNnPjtiWmc4XmI4Zl2LUzgv4lM1PBI5QCW','l2fKBwLUlW','Cg9ZlxyXlJiUma','ywrK','C2TPCfDHAxrPBMC','l0XPyNjHCNKVyNjVD3nLCI9QC0rLBgL2CI9wzxjZAsuYmdaUms4Xl3P4Aw5NlwjYB3DZzxiUBwLUlMPZ','zMv0y2G'];_0x1d13=function(){return _0x1cdfea;};return _0x1d13();}function offlineJson(_0x32b9dc){const _0x345424=_0x42edbe;return new Response(JSON[_0x345424(0x206)]({'success':![],'offline':!![],'message':_0x32b9dc||_0x345424(0x1e9)}),{'status':0x1f7,'headers':{'Content-Type':_0x345424(0x1ee)}});}self[_0x42edbe(0x21c)](_0x42edbe(0x228),_0x3bbc5f=>{const _0x36eaab=_0x42edbe;self[_0x36eaab(0x211)](),_0x3bbc5f[_0x36eaab(0x227)](caches[_0x36eaab(0x1f8)](CACHE_NAME)[_0x36eaab(0x207)](async _0x594b5d=>{const _0x468074=_0x36eaab;console[_0x468074(0x216)](_0x468074(0x1e3)),await Promise[_0x468074(0x21f)](urlsToCache[_0x468074(0x1f1)](async _0x56aed5=>{const _0x238773=_0x468074;try{await _0x594b5d[_0x238773(0x210)](_0x56aed5);}catch(_0x7d6652){console[_0x238773(0x1e6)](_0x238773(0x1e1),_0x56aed5);}}));}));}),self[_0x42edbe(0x21c)](_0x42edbe(0x213),_0x3b01cd=>{const _0x22dd34=_0x42edbe;try{const _0x52b035=_0x3b01cd[_0x22dd34(0x22a)];if(!_0x52b035||_0x52b035[_0x22dd34(0x22d)]!==_0x22dd34(0x209))return;let _0x3a8ae4;try{_0x3a8ae4=new URL(_0x52b035[_0x22dd34(0x204)]);}catch(_0x18a762){return;}if(_0x3a8ae4[_0x22dd34(0x221)]!==self[_0x22dd34(0x200)][_0x22dd34(0x221)])return;const _0x15902f=_0x52b035[_0x22dd34(0x1ff)]&&_0x52b035[_0x22dd34(0x1ff)][_0x22dd34(0x231)](_0x22dd34(0x1e5))||'',_0x24663e=_0x15902f[_0x22dd34(0x20c)](_0x22dd34(0x1ec))||_0x3a8ae4[_0x22dd34(0x20b)][_0x22dd34(0x20c)](_0x22dd34(0x1fe)),_0x102c29=_0x52b035[_0x22dd34(0x1e7)]===_0x22dd34(0x224)||_0x52b035[_0x22dd34(0x226)]===_0x22dd34(0x23d),_0x5d0530=_0x3a8ae4[_0x22dd34(0x20b)][_0x22dd34(0x238)](_0x22dd34(0x23b));if(_0x102c29||isAppShellRequest(_0x3a8ae4))return;if(_0x24663e){_0x3b01cd[_0x22dd34(0x21d)](fetch(_0x52b035)[_0x22dd34(0x21e)](()=>new Response(null,{'status':0xcc,'statusText':_0x22dd34(0x208)})));return;}if(_0x5d0530){_0x3b01cd[_0x22dd34(0x21d)](fetch(_0x52b035)[_0x22dd34(0x21e)](()=>offlineJson(_0x22dd34(0x1e9))));return;}_0x3b01cd[_0x22dd34(0x21d)](caches[_0x22dd34(0x205)](_0x52b035)[_0x22dd34(0x207)](async _0x5b8fb5=>{const _0x2d42b4=_0x22dd34;if(_0x5b8fb5)return _0x5b8fb5;try{const _0x234c65=await fetch(_0x52b035);return _0x234c65;}catch(_0x4b679f){console[_0x2d42b4(0x1e6)](_0x2d42b4(0x23c),_0x52b035[_0x2d42b4(0x204)]);const _0x2aeb21=await caches[_0x2d42b4(0x205)](_0x52b035);if(_0x2aeb21)return _0x2aeb21;return new Response(_0x2d42b4(0x202),{'status':0x1f7,'statusText':_0x2d42b4(0x22f),'headers':{'Content-Type':_0x2d42b4(0x1fd)}});}}));}catch(_0x144ffc){console[_0x22dd34(0x240)](_0x22dd34(0x1f2),_0x144ffc);}}),self[_0x42edbe(0x21c)](_0x42edbe(0x222),_0x45e899=>{const _0x5e541b=_0x42edbe;_0x45e899[_0x5e541b(0x227)](caches[_0x5e541b(0x1f0)]()[_0x5e541b(0x207)](_0x547d3f=>{const _0x2d0153=_0x5e541b;return Promise[_0x2d0153(0x1ef)](_0x547d3f[_0x2d0153(0x1f1)](_0x231c19=>{const _0x20f783=_0x2d0153;if(_0x231c19!==CACHE_NAME)return console[_0x20f783(0x216)](_0x20f783(0x23a),_0x231c19),caches[_0x20f783(0x248)](_0x231c19);}));})[_0x5e541b(0x207)](()=>self[_0x5e541b(0x1f5)][_0x5e541b(0x1fc)]()));});
+// Service Worker for POS PWA
+const CACHE_NAME = 'pos-v1.2.0';
+const urlsToCache = [
+  '/pos.html',
+  '/css/style.css?v=2',
+  '/vendor/bootstrap/css/bootstrap.min.css',
+  '/vendor/bootstrap-icons/bootstrap-icons.css',
+  '/js/performance-optimizer.js',
+  '/js/optimized-loader.js?v=20260209',
+  '/js/pos.js?v=15',
+  '/js/back-to-top.js?v=2',
+  '/vendor/jquery/jquery.min.js',
+  '/vendor/bootstrap/js/bootstrap.bundle.min.js',
+  '/vendor/jspdf/jspdf.umd.min.js',
+  '/vendor/html2canvas/html2canvas.min.js',
+  '/vendor/html2pdf/html2pdf.bundle.min.js',
+  '/js/vendor/zxing-browser.min.js',
+  '/js/vendor/zxing-library.min.js',
+  '/Library/browser/jsDelivr/Versi%200.1.5/zxing-browser.min.js',
+  '/Library/browser/UNPKG/Versi%200.1.5/zxing-browser.min.js',
+  '/Library/browser/jsDelivr/Versi%200.1.4/zxing-browser.min.js',
+  '/Library/browser/UNPKG/Versi%200.1.4/zxing-browser.min.js',
+  '/Library/browser/jsDelivr/Versi%200.1.1/zxing-browser.min.js',
+  '/Library/browser/UNPKG/Versi%200.1.1/zxing-browser.min.js',
+  '/Library/browser/unminified/Versi%200.1.5/zxing-browser.js',
+  '/Library/browser/unminified/Versi%200.1.4/zxing-browser.js',
+  '/Library/library/jsDelivr/Versi%200.21.3/index.min.js',
+  '/Library/library/UNPKG/Versi%200.21.3/index.min.js',
+  '/Library/library/UNPKG/Versi%200.20.0/index.min.js',
+  '/Library/library/UNPKG/Versi%200.19.3/index.min.js',
+  '/Library/library/UNPKG/versi%200.12.3/index.min.js',
+  '/Library/library/unminified/Versi%200.12.3/index.min.js'
+];
+
+const APP_SHELL_PATHS = new Set([
+  '/',
+  '/kasir',
+  '/admin',
+  '/login',
+  '/pos.html',
+  '/admin.html',
+  '/index.html',
+  '/receipt-print.html',
+  '/debt-receipt-print.html',
+  '/mutasi-barang.html'
+]);
+
+function isAppShellRequest(reqUrl) {
+  try {
+    const path = String(reqUrl.pathname || '').replace(/\/+$/, '') || '/';
+    if (APP_SHELL_PATHS.has(path) || APP_SHELL_PATHS.has(reqUrl.pathname)) return true;
+    // Jangan ganggu route HTML autentikasi / halaman utama.
+    if (path === '/kasir' || path.startsWith('/kasir/')) return true;
+    if (path === '/admin' || path.startsWith('/admin/')) return true;
+    if (path === '/login' || path.startsWith('/login/')) return true;
+  } catch (e) {}
+  return false;
+}
+
+function offlineJson(message) {
+  return new Response(JSON.stringify({ success: false, offline: true, message: message || 'Network unavailable' }), {
+    status: 503,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+self.addEventListener('install', event => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(async cache => {
+        console.log('Opened cache');
+        await Promise.allSettled(
+          urlsToCache.map(async (url) => {
+            try {
+              await cache.add(url);
+            } catch (error) {
+              console.warn('Cache add failed:', url);
+            }
+          })
+        );
+      })
+  );
+});
+
+self.addEventListener('fetch', event => {
+  try {
+    const req = event.request;
+    if (!req || req.method !== 'GET') {
+      return;
+    }
+
+    let reqUrl;
+    try {
+      reqUrl = new URL(req.url);
+    } catch (e) {
+      return;
+    }
+
+    if (reqUrl.origin !== self.location.origin) {
+      return;
+    }
+
+    const accept = (req.headers && req.headers.get('accept')) || '';
+    const isSse = accept.includes('text/event-stream') || reqUrl.pathname.includes('/events');
+    const isNavigate = req.mode === 'navigate' || req.destination === 'document';
+    const isApi = reqUrl.pathname.startsWith('/api/');
+
+    // Biarkan browser menangani navigasi & halaman app shell (hindari error FetchEvent /kasir).
+    if (isNavigate || isAppShellRequest(reqUrl)) {
+      return;
+    }
+
+    // SSE: network only, jangan Response.error() (bising di console).
+    if (isSse) {
+      event.respondWith(
+        fetch(req).catch(() => new Response(null, { status: 204, statusText: 'No Content' }))
+      );
+      return;
+    }
+
+    // API: network first, fallback JSON 503 (bukan Response.error).
+    if (isApi) {
+      event.respondWith(
+        fetch(req).catch(() => offlineJson('Network unavailable'))
+      );
+      return;
+    }
+
+    // Static assets: cache first, lalu network, lalu cache ulang.
+    event.respondWith(
+      caches.match(req).then(async (cached) => {
+        if (cached) return cached;
+        try {
+          const networkResponse = await fetch(req);
+          return networkResponse;
+        } catch (error) {
+          console.warn('Network request failed for:', req.url);
+          const cachedFallback = await caches.match(req);
+          if (cachedFallback) return cachedFallback;
+          // Jangan pakai Response.error() — memicu "FetchEvent ... error response object".
+          return new Response('Offline', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+          });
+        }
+      })
+    );
+  } catch (error) {
+    console.error('Service worker fetch error:', error);
+    // Jangan respondWith(Response.error()); biarkan request jalan normal.
+  }
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
